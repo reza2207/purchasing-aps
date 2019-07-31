@@ -1,0 +1,120 @@
+.waiting
+{
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    display:block;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,.4);
+    overflow-y: hidden;
+}
+
+.warning-alert
+{
+    position: relative;
+    top: 45%;
+    left: 47%;
+    width: 20%;
+    display: block;
+    
+    color: white;
+    /*border: 2px solid #ddd;*/
+    border-radius: 5px;
+    /*background: #6495ED;*/
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px
+}
+.loader{
+    display: inline-block;
+}
+.warning-text{
+    position: absolute;
+    display: inline-block;
+    height: 100%;
+    padding-top: 20px;
+    padding-left: 5px
+
+}
+.warning-text .fa{
+    display: inline-block;
+}
+.collapsible-header,
+.collapsible-body
+{
+    padding-left: 30px !important;
+}
+li .active
+{
+    background: teal;
+}
+.header
+{
+    position: fixed;
+    z-index: 3;
+}
+.header
+{
+    padding-bottom: 50px;
+}
+div.fixed
+{
+    font-family: Arial, Helvetica, sans-serif;
+
+    position: fixed;
+    z-index: 999;
+    bottom: 0;
+    left: 10px;
+
+    width: 250px;
+
+    text-shadow: 0 0 3px #f00;
+}
+.first
+{
+    padding-top: 30px;
+}
+
+@font-face {
+    font-family: crackWall;
+    src: url('../font/CRACKWALL-Regular.ttf');
+}
+@font-face {
+    font-family: happySchool;
+    src: url('../font/Happy School.otf');
+}
+
+@font-face {
+    font-family: ogresse;
+    src: url('../font/Print Ogresse.ttf');
+    word-spacing: 100px
+}
+@font-face {
+    font-family: caviar;
+    src: url('../font/CaviarDreams.ttf');
+    word-spacing: 100px
+}
+@font-face {
+    font-family: comfortaa;
+    src: url('../font/Comfortaa-Regular.ttf');
+    word-spacing: 100px
+}
+@font-face {
+    font-family: comfortaa;
+    src: url('../font/Comfortaa-Regular.ttf');
+    word-spacing: 100px
+}
+#brand-logo{
+    font-family: crackWall;
+    letter-spacing: 10px;
+    text-decoration-line: underline;
+    text-decoration-style:double;
+    text-shadow: 10px 4px 3px #FF0000;
+}
+
+#reminder li marquee {
+    font-family: happySchool;
+    letter-spacing: 10px;
+}

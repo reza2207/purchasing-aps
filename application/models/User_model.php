@@ -120,11 +120,12 @@ class User_model extends CI_Model {
 		$this->db->select('username, nama');
 		$this->db->from('user');
 		$this->db->where('status', 'aktif');
+		$this->db->where('username !=', 'admin');
 		if($role != NULL){
 		$this->db->where_in('jabatan',$role);	
 		}
 
-		return $this->db->get()->result();
+		return $this->db->get();
 
 	}
 

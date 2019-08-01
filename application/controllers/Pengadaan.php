@@ -28,6 +28,8 @@ class Pengadaan extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->model('Pks_model');
 		$this->load->model('Tdr_model');
+		$this->load->model('Setting_model');
+		$this->load->model('User_model');
 
 	}	
 	public function index()
@@ -38,8 +40,9 @@ class Pengadaan extends CI_Controller {
 			$data->role = $_SESSION['role'];
 			$data->select_tdr = $this->Tdr_model->select_tdr();
 			$data->tahun = $this->Pengadaan_model->get_tahun();
-			$data->id = $this->get_id_pengadaan();
-			$data->select_user = $this->get_user();
+			//$data->id = $this->get_id_pengadaan();
+			$data->select_user = $this->User_model->select_user()->result();
+			$data->divisi = $this->Setting_model->get_divisi()->result();
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$this->load->view('header', $data);
 			$this->load->view('pengadaan', $data);
@@ -86,66 +89,83 @@ class Pengadaan extends CI_Controller {
 		}
 	}
 
-	public function add_data()
+	public function submit_new_data()
 	{	
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
-			//echo json_encode($this->input->post());
-			/*{"tgl_surat":"2019-02-14","no_surat":"ss","jenis_surat":"sss","tgl_disposisi":"2019-02-15","tahun_pengadaan":"2020","perihal":"dsadsa","no_usulan":"3","tgl_usulan":"2019-02-21","divisi":"BSK","jenis_pengadaan":"Pembelian Langsung","pembuat_pekerjaan":"handimulyawan","keterangan":"ss","kewenangan":"Pimpinan Kelompok","item":["ddd",""],"ukuran":["sss",""],"bahan":["aaa",""],"jumlah":["",""],"satuan":["",""],"hpsusd":["",""],"hpsid":["",""],"hpssatuan":["",""],"penawaran":["",""],"realisasiusd":["",""],"realisasirp":["",""],"realisasiqty":["",""],"nokontrak":["",""],"tglkontrak":["",""],"vendor":["--pilih--","--pilih--"]}*/
-			$tglsurat = $this->input->post('tgl_surat');
-			$nosurat =  $this->input->post('no_surat');
-			$jenissurat = $this->input->post('jenis_surat');
-			$tgldisposisi = $this->input->post('tgl_disposisi');
-			$tahun = $this->input->post('tahun_pengadaan');
-			$perihal = $this->input->post('perihal');
-			$nousulan = $this->input->post('no_usulan');
-			$tglusulan = $this->input->post('tgl_usulan');
-			$divisi = $this->input->post('divisi');
-			$jenispengadaan = $this->input->post('jenis_pengadaan');
-			$pembuat = $this->input->post('pembuat_pekerjaan');
-			$keterangan = $this->input->post('keterangan');
-			$kewenangan = $this->input->post('kewenangan');
+			if($this->input->post(null)){
+				$this->form_validation->set_rules('tgl_surat', 'Tanggal Surat', 'required');
+				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
+				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required');
 
-			//array
-			$item = $this->input->post('item');
-			$ukuran = $this->input->post('ukuran');
-			$bahan = $this->input->post('bahan');
-			$jumlah = $this->input->post('jumlah');
-			$satuan = $this->input->post('satuan');
-			$hpsusd = $this->input->post('hpsusd');
-			$hpsidr = $this->input->post('hpsidr');
-			$hpssatuan = $this->input->post('hpssatuan');
-			$penawaran = $this->input->post('penawaran');
-			$realisasiusd = $this->input->post('realisasiusd');
-			$realisasirp = $this->input->post('realisasirp');
-			$realisasiqty = $this->input->post('realisasiqty');
-			$nokontrak = $this->input->post('nokontrak');
-			$tglkontrak = $this->input->post('tglkontrak');
-			$vendor = $this->input->post('vendor');
+				$this->form_validation->set_rules('kelompok', 'Kelompok', 'required');
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+				$this->form_validation->set_rules('jenis_pengadaan', 'Jenis Pengadaan', 'required');
+				
+				if(($this->input->post('jenis_pengadaan')!= 'Pembelian Langsung') || ($this->input->post('jenis_pengadaan')!= ''){
+					$this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');
+					$this->form_validation->set_rules('tgl_usulan', 'Tgl. Usulan', 'required');
+				}
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+				$jenispengadaan = $this->input->post('jenis_pengadaan');
+				$tglsurat = tanggal1($this->input->post('tgl_surat'));
+				$nosurat =  $this->input->post('no_surat');
+				$jenissurat = $this->input->post('jenis_surat');
+				$tgldisposisi = tanggal1($this->input->post('tgl_disposisi'));
+				$tahun = $this->input->post('tahun_pengadaan');
+				$perihal = $this->input->post('perihal');
+				$nousulan = $this->input->post('no_usulan');
+				
+				$tglusulan = tanggal1($this->input->post('tgl_usulan'));
+				$divisi = $this->input->post('divisi');
+				$kelompok = $this->input->post('kelompok');
+				//$pembuat = $this->input->post('pembuat_pekerjaan');
+				$keterangan = $this->input->post('keterangan');
+				$kewenangan = $this->input->post('kewenangan');
+				$id = $this->_get_id_pengadaan($tahun);
+				//array
+				$item = $this->input->post('item');
+				$ukuran = $this->input->post('ukuran');
+				$bahan = $this->input->post('bahan');
+				$jumlah = $this->input->post('jumlah');
+				$satuan = $this->input->post('satuan');
+				$hpsusd = $this->input->post('hpsusd');
+				$hpsidr = $this->input->post('hpsidr');
+				$hpssatuan = $this->input->post('hpssatuan');
+				$penawaran = $this->input->post('penawaran');
+				$realisasiusd = $this->input->post('realisasiusd');
+				$realisasirp = $this->input->post('realisasirp');
+				$realisasiqty = $this->input->post('realisasiqty');
+				$nokontrak = $this->input->post('nokontrak');
+				$tglkontrak = tanggal1($this->input->post('tglkontrak'));
+				$vendor = $this->input->post('vendor');
 
-			$result[] = array();
-			foreach($item AS $key => $val){
-				$result[] = array(
-					"id_pengadaan" => '',
-					"id_pengadaan_uniq" => '',
-					"item" =>$item[$key],
-					"ukuran" =>$ukuran[$key],
-					"bahan" => $bahan[$key],
-					"jumlah" => $jumlah[$key],
-					"satuan" => $satuan[$key],
-					"hps_usd" =>$hpsusd[$key],
-					"hps_idr" =>$hpsidr[$key],
-					"hps_satuan"=> $hpssatuan[$key],
-					"penawaran" => $penawaran[$key],
-					"realisasi_nego_usd" => $realisasiusd[$key],
-					"realisasi_nego_rp" => $realisasirp[$key],
-					"realisasi_qty_unit"=>$realisasiqty[$key],
-					"no_kontrak" => $nokontrak[$key],
-					"tgl_kontrak"=> $tglkontrak[$key],
-					"id_vendor" => $vendor[$key]
-				);
+				$result[] = array();
+				foreach($item AS $key => $val){
+					$result[] = array(
+						"id_pengadaan" => $id,
+						"id_pengadaan_uniq" => $id.'-'.str_pad($key,3,"0",STR_PAD_LEFT),
+						"item" =>$item[$key],
+						"ukuran" =>$ukuran[$key],
+						"bahan" => $bahan[$key],
+						"jumlah" => $jumlah[$key],
+						"satuan" => $satuan[$key],
+						"hps_usd" =>$hpsusd[$key],
+						"hps_idr" =>$hpsidr[$key],
+						"hps_satuan"=> $hpssatuan[$key],
+						"penawaran" => $penawaran[$key],
+						"realisasi_nego_usd" => $realisasiusd[$key],
+						"realisasi_nego_rp" => $realisasirp[$key],
+						"realisasi_qty_unit"=>$realisasiqty[$key],
+						"no_kontrak" => $nokontrak[$key],
+						"tgl_kontrak"=> $tglkontrak[$key],
+						"id_vendor" => $vendor[$key]
+					);
+				}
 			}
-			echo json_encode($result);
+			//echo json_encode($result);
 
 		}
 
@@ -309,12 +329,7 @@ memo_keluar
 invoice_ke_user*/
 	}
 
-	private function get_user(){
-
-		$this->load->model('User_model');
-
-		return $this->User_model->select_user();
-	}
+	
 
 	public function get_kewenangan(){
 		$divisi = $this->input->post('divisi');
@@ -327,27 +342,18 @@ invoice_ke_user*/
 		echo json_encode($this->Pengadaan_model->get_kewenangan($divisi));
 	}
 
-	public function get_id_pengadaan(){
-		//$tahun = '2019';
-		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+	protected function _get_id_pengadaan($tahun)
+	{
 
-			if($this->input->post('tahun') != NULL){
-				$tahun = $this->input->post('tahun');
-				if($this->Pengadaan_model->get_id_pengadaan($tahun)){
-					if($this->Pengadaan_model->get_id_pengadaan($tahun)->num_rows() == 0){
-						$idpengadaan = $tahun.'-0001';
-					}else{
-						$idlast = $this->Pengadaan_model->get_id_pengadaan($tahun)->row('id_pengadaan');
-						$p = explode('-', $idlast);
-						$idpengadaan = $tahun.'-'.str_pad((int) $p[1]+1,4,"0",STR_PAD_LEFT);
-					}
-					echo json_encode($idpengadaan);
-					//return $idpengadaan;
-				}
-			}
+		if($this->Pengadaan_model->get_id_pengadaan($tahun)->num_rows() == 0){
+			$idpengadaan = $tahun.'-0001';
 		}else{
-
+			$idlast = $this->Pengadaan_model->get_id_pengadaan($tahun)->row('id_pengadaan');
+			$p = explode('-', $idlast);
+			$idpengadaan = $tahun.'-'.str_pad((int) $p[1]+1,4,"0",STR_PAD_LEFT);
 		}
+		
+		return $idpengadaan;
 
 	}
 

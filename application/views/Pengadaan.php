@@ -32,9 +32,9 @@ background: #D7A42B;color:white;
         
         <select id="divisiselect" class="select-m" >
           <option value="semua">semua</option>
-          <option value="BSK">BSK</option>
-          <option value="PDM">PDM</option>
-          <option value="EBK">EBK</option>
+          <?php foreach ($divisi as $dv){?>
+          <option value="<?= $dv->divisi;?>"><?= $dv->divisi;?></option>
+          <?php }?>
         </select>
         <label>Divisi</label>
       </div>
@@ -71,9 +71,9 @@ background: #D7A42B;color:white;
     <div class="col s12 l12">
       <div class="row">
         <div class="input-field col s12 l3">
-          <input name="id_pengadaan" type="text" id="id_pengadaan">
-          <label class="active" id="labelidpengadaan">Id Pengadaan</label>
-        </div>
+          <input name="tahun_pengadaan" type="number" maxlength="4" id="tahun_pengadaan" min="<?= date('Y')-2;?>" max="<?= date('Y');?>" required>
+          <label>Tahun Pengadaan</label>
+        </div>   
         <div class="input-field col s12 l3">
           <input name="tgl_surat" type="text" class="datepicker" id="tp_tahun_pengadaan" required>
           <label>Tgl. Surat</label>
@@ -82,48 +82,60 @@ background: #D7A42B;color:white;
           <input name="no_surat" type="text" required>
           <label>No. Surat</label>
         </div>
+        
         <div class="input-field col l3 s12">
-          <input type="text" name="jenis_surat">
+          <select name="jenis_surat" class="select-m" required>
+            <option value="">--pilih--</option>
+            <option value="Notin">Notin</option>
+            <option value="Memo">Memo</option>
+            <option value="Email">Email</option>
+          </select>
           <label>Jenis Surat</label>
         </div>
         <div class="input-field col l3 s12">
           <input name="tgl_disposisi" type="text" class="datepicker" id="tp_no_invoice" required>
-          <label>Tgl. Disposisi</label>
+          <label>Tgl. Disposisi Pimkel</label>
         </div>
         <div class="input-field col s12 l3">
-          <input name="tahun_pengadaan" type="number" maxlength="4" id="tahun_pengadaan" min="<?= date('Y')-2;?>" max="<?= date('Y')+2;?>" required>
-          <label>Tahun Pengadaan</label>
+          <select id="divisi" name="divisi" class="select-m" required>
+            <option value="">--pilih--</option>
+            <?php foreach ($divisi as $d){?>
+            <option value="<?= $d->divisi;?>"><?= $d->divisi;?></option>
+            <?php }?>
+          </select>
+          <label>Divisi</label>
+        </div>
+        <div class="input-field col s12 l3 kelompok hide">
+          <input name="kelompok" type="text">
+          <label>Kelompok</label>
+        </div>
+         <div class="input-field col s12 l3">
+          <select name="jenis_pengadaan" class="select-m" id="n_jenis_pengadaan" required>
+            <option value="Pembelian Langsung">Pembelian Langsung</option>
+            
+            <option value="Penunjukan Langsung">Penunjukan Langsung</option>
+            <option value="Pemilihan Langsung">Pemilihan Langsung</option>
+            <option value="Pelelangan">Pelelangan</option>
+          </select>
+          <label>Metode Pengadaan</label>
         </div>
         <div class="input-field col s12 l6">
           <input name="perihal" type="text" required>
           <label>Perihal</label>
         </div>
-        <div class="input-field col s12 l3">
+        <div class="input-field col s12 l3 usulan hide">
           <input name="no_usulan" type="text" required>
           <label>No. Usulan</label>
         </div>
-        <div class="input-field col s12 l3">
+        <div class="input-field col s12 l3 usulan hide">
           <input name="tgl_usulan" type="text" class="datepicker" required>
           <label>Tgl. Usulan</label>
         </div>
-        <div class="input-field col s12 l3">
-          <select id="divisi" name="divisi" class="select-m" required>
-            <option value="">--pilih--</option>
-            <option value="BSK">BSK</option>
-            <option value="PDM">PDM</option>
-            <option value="EBK">EBK</option>
-          </select>
-          <label>Divisi</label>
+        <div class="input-field col s12 l6">
+          <textarea name="keterangan" type="text" id="tp_nominal" class="materialize-textarea"></textarea>
+          <label>Keterangan</label>
         </div>
-        <div class="input-field col s12 l3">
-          <select name="jenis_pengadaan" class="select-m" required>
-            <option value="Pembelian Langsung">Pembelian Langsung</option>
-            <option value="Pemilihan Langsung">Pemilihan Langsung</option>
-            <option value="Penunjukan Langsung">Penunjukan Langsung</option>
-          </select>
-          <label>Jenis</label>
-        </div>
-        <div class="input-field col s12 l3">
+        <!-- <div class="input-field col s12 l3">
           <select class="select-m" name="pembuat_pekerjaan" required>
 
             <?php foreach ($select_user as $row){?>
@@ -132,12 +144,9 @@ background: #D7A42B;color:white;
           </select>
           <label>Pembuat Pekerjaan</label>
         </div>
-        <div class="input-field col s12 l6">
-          <input name="keterangan" type="text" id="tp_nominal">
-          <label>Keterangan</label>
-        </div>
+         -->
         
-        <div class="input-field col s12 l3" style="margin-top: 2rem;">
+        <div class="input-field col s12 l3 kewenangan hide" style="margin-top: 2rem;">
            <select id="kewenangan" name="kewenangan">
            </select>
           <label class='active' style=";top: -14px;">Kewenangan</label>
@@ -297,7 +306,7 @@ background: #D7A42B;color:white;
       <div class="col s12 l12" id="kolominv" style="margin-bottom: 0px;">
         <div class="row">
           <div class="input-field col s12 l3">
-            <input name="tahun_pengadaan" type="text" id="tp_tahun_pengadaan" readonly>
+            <input name="tahun_pengadaan" type="text" id="tp_tahun_pengadaan_inv" readonly>
             <label>Tahun</label>
           </div>
           <div class="input-field col l3 s12">
@@ -403,9 +412,10 @@ background: #D7A42B;color:white;
 
     $('.datepicker').datepicker({
       container: 'body',
-      format: 'yyyy-mm-dd',
+      format: 'dd-mm-yyyy',
       autoClose: true,
-
+      disableWeekends:true,
+      firstDay:1
     });
     
     $('tbody .rowitem tr td .datepicker').datepicker({
@@ -502,7 +512,22 @@ background: #D7A42B;color:white;
     
     $('#divisi').on('change', function(){
       $('#kewenangan').html('');
-      var divisi = this.value;
+      let divisi = this.value;
+
+      if(divisi == 'BSK'){
+        $('.kelompok').removeClass('hide');
+      }else{
+        $('.kelompok').addClass('hide');
+        $('.kelompok input').val('');
+      }
+
+      if(divisi == ''){
+        $(".kewenangan").addClass('hide');
+        $('.kewenangan select').find('option[value=""]').prop('selected', true);
+      }else{
+        $(".kewenangan").removeClass('hide');
+      }
+
       $.ajax({
         type: 'POST',
         url : '<?= base_url()."pengadaan/get_kewenangan";?>',
@@ -523,19 +548,7 @@ background: #D7A42B;color:white;
       })
     });
 
-    $('#tahun_pengadaan').on('change', function(){
-      var tahun = this.value;
-      $.ajax({
-        type : 'POST',
-        url : '<?= base_url()."pengadaan/get_id_pengadaan";?>',
-        data : {'tahun' : tahun},
-        success: function(response){
-          $('#id_pengadaan').val(JSON.parse(response));
-          $('#labelidpengadaan').addClass('active');
-        }
-
-      })
-    })
+    
     $("[name='table_length']").formSelect();
 
     //get detail after click in row
@@ -647,7 +660,7 @@ background: #D7A42B;color:white;
 
           if(r['jml'] > 0){
             $('#tp_no_kontrak').val(no_kontrak);
-            $('#tp_tahun_pengadaan').val(tahun);
+            $('#tp_tahun_pengadaan_inv').val(tahun);
             $('#tp_sisa').val(r['data'][0].sisapembayaran);
             $('#tps_sisa').val(r['data'][0].sisapembayaran);
             $('#tp_nilai_kontrak').val(r['data'][0].nominalkontrak);
@@ -690,15 +703,33 @@ background: #D7A42B;color:white;
         }
       })    
     })
+    $('#n_jenis_pengadaan').on('change', function(e){
+      e.preventDefault();
+      let jenis = this.value;
+      if(jenis == 'Pembelian Langsung'){
+        $('.usulan').addClass('hide');
+        $('.usulan input').value('')
+      }else{
+        $('.usulan').removeClass('hide');
+      }
+    })
 
+    
     $('#btn-prosesbaru').on('click', function(e){
       e.preventDefault();
       $.ajax({
-        'type': 'POST',
-        'url' : '<?= base_url()."pengadaan/add_data";?>',
-        'data': $('#formtambahdata').serialize(),
-        'success': function(response){
-          console.log(response);
+        type: 'POST',
+        url : '<?= base_url()."pengadaan/submit_new_data";?>',
+        data: $('#formtambahdata').serialize(),
+        success: function(response){
+          swal({
+            type: data.type,
+            text: data.pesan,
+            showConfirmButton: true,
+            allowOutsideClick: false,
+          }).then(function(){
+
+          })
         }
       })       
 
@@ -749,7 +780,7 @@ background: #D7A42B;color:white;
 
       $('.datepicker').datepicker({
         container: 'body',
-        format: 'yyyy-mm-dd',
+        format: 'dd-mm-yyyy',
         autoClose: true,
 
       });

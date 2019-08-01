@@ -156,11 +156,11 @@
 						<input name="kelompok" type="text" class="">
 						<label class="active">Kelompok</label>
 					</div>
-					<div class="input-field col s12 l6 surat hide">
+					<div class="input-field col s12 l6 beban hide">
 						<input name="anggaran" type="number" class="">
 						<label class="active">Anggaran</label>
 					</div>
-					<div class="input-field col s12 l6 surat hide">
+					<div class="input-field col s12 l6 beban hide">
 						<input name="beban" type="text" class="">
 						<label class="active">Beban Anggaran</label>
 					</div>
@@ -632,151 +632,7 @@
 			let id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
 			$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat').attr('data-id', id);
 			$('#idRegisterD, #idRegisterA, #idRegisterJ, #idRegisterP').val(id);
-			$.ajax({
-				type:'GET',
-				url: '<?= base_url()."Register/get_detail_masuk/";	?>'+id,       
-				success: function(response){
-					
-					let data = JSON.parse(response);
-					$('#d_divisi').text(strip(data.divisi));
-					$('#d_kelompok').text(strip(data.kelompok));
-					$('#d_user').text(strip(data.user));
-					$('#d_email').text(strip(data.email));
-					$('#d_tgl_email').text(tanggal_indo(data.tgl_email));
-					$('#d_tgl_t_email').text(tanggal_indo(data.tgl_terima_email));
-					$('#d_jenis_surat').html(data.jenis_surat);
-					$('#d_no_surat').text(strip(data.no_surat));
-					$('#d_perihal').text(strip(data.perihal));
-					$('#d_tgl_surat').text(tanggal_indo(data.tgl_surat));
-					$('#d_terima_surat').text(tanggal_indo(data.tgl_terima_surat));
-					$('#d_unamepembuat').text(data.username);
-					$('#d_tempat_pengadaan').text(strip(data.tempat_pengadaan));
-					if(data.email != '' && data.no_surat == ''){
-						$('.row-email').show();
-						$('.row-surat').hide();
-						$('#update_surat').show();
-					}else if(data.email == '' && data.no_surat != ''){
-						$('.row-email').hide();
-						$('.row-surat').show();
-						$('#update_surat').hide();
-					}else{
-						$('.row-surat').hide();
-						$('.row-email').hide();
-					}
-					if(data.tgl_disposisi_pimkel != '0000-00-00'){
-						$('#d_disposisi_pimkel').text(tanggal_indo(data.tgl_disposisi_pimkel));
-						$('.ddpimkel').show();
-
-					}
-					
-					if(data.tgl_disposisi_manajer != '0000-00-00'){
-						$('#d_disposisi_manager').text(tanggal_indo(data.tgl_disposisi_manajer));
-						$('.ddmanager').show();
-					}
-					if(data.tempat_pengadaan != null){
-						$('.d_tempat').show();
-					}else{
-						$('.d_tempat').hide();
-					}
-					if(data.jenis_pengadaan != null){
-						$('#d_jenis_pengadaan').parent().show();
-						$('#d_jenis_pengadaan').text(data.jenis_pengadaan);
-					}else{
-						$('#d_jenis_pengadaan').parent().hide();
-					}
-					if(data.jenis_pengadaan == 'Pembelian Langsung'){
-							$('.ddpembuat').show();
-							$('#d_pembuat').html(data.nama);
-							$('.spk').show()
-							let nospk = data.no_spk.split("<br>");
-							let idnospk = data.id_detail_register.split(",");
-							let i;
-							let no_spk = '';
-							for(i = 0;i<nospk.length;i++){
-								if(i == nospk.length - 1){
-								 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a>";
-								}else{
-								 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a><br>";
-								}
-								
-							}
-							if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
-								$('#d_no_spk').html(strip(no_spk));
-							}else{
-								$('#d_no_spk').html(strip(data.no_spk));
-							}
-							$('#d_tgl_spk').html(strip(data.tgl_spk));
-							$('#ds_vendor').html(strip(data.nm_vendor))
-						}else{
-							$('.spk').hide()
-							
-						}
-					if(strip(data.status_data) == 'Done' || '<?= $_SESSION['role'];?>' == 'user'){
-						$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
-						$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').hide();
-						
-					}else{ // jika status masih on proses
-						$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').show();
-						$('#d_status_data').text(strip(data.status_data)).css({'color':'red'});
-						$('.d_tempat').hide();
-						if(data.nama != null && '<?= $_SESSION['role'];?>' != 'user'){ //jika pembuat ada 
-							$('.ddpembuat').show();
-							$('#d_pembuat').html(data.nama);
-							$('#btn-disposisi, #btn-jenis, #btn-aanwijzing, #btn-proses').hide();
-							//$('#btn-disposisi').hide();
-							if(cek_similar(data.username, '<?= $_SESSION['username'];?>'))
-							{
-								$('#btn-ubah, #btn-disposisi, #btn-hapus, #btn-return').show();
-								if(data.tempat_pengadaan != null){
-									$('.d_tempat').show();
-									if(data.tempat_pengadaan == 'BSK'){
-										$('#btn-jenis').hide();	
-										
-										if(data.jenis_pengadaan == null){
-											$('#btn-proses').hide();
-										}else	if(data.jenis_pengadaan == 'Pembelian Langsung'){
-
-											$('#btn-proses').show();
-											$('#btn-aanwijzing').hide();
-										}else if(data.jenis_pengadaan == 'Penunjukan Langsung')
-										{
-											$('#btn-aanwijzing').show();
-											$('#btn-proses').hide();
-										}else if(data.jenis_pengadaan == 'Pemilihan Langsung')
-										{
-											$('#btn-aanwijzing').show();
-											$('#btn-proses').hide();
-										}else if(data.jenis_pengadaan == 'Pelelangan')
-										{
-											$('#btn-aanwijzing').show();
-											$('#btn-proses').hide();
-										}
-
-									}else{ // jika pengadaan nya di pfa
-										//tambahin btn memo ke pfa
-										$('#btn-proses').hide();
-									}
-								}else{ //jika tempat pengadaannya tidak diisi
-									
-									$('#btn-jenis').show();
-									$('#btn-aanwijzing').hide();
-									$('#btn-proses').hide();
-								}
-
-							}else{
-								$('.d_tempat').show();
-								$('#btn-aanwijzing').hide();
-								$('#btn-jenis').hide();
-								$('#btn-proses').hide();
-							}
-							
-						}else{
-							$('#btn-aanwijzing, #btn-proses, #btn-jenis').hide();
-						}
-					}
-
-				}
-			})
+			update_modal(id)
 			
 		}) //end tbody row click
 
@@ -878,12 +734,15 @@
 				$('.surat').addClass('hide');
 				$('.email').removeClass('hide');
 				$('.surat input').val('');
+				$('.beban').addClass('hide');
 			}else if(this.value == '' || this.value == 'Pemberitahuan'){
-				$('.surat').addClass('hide');
+				$('.surat').removeClass('hide');
 				$('.email').addClass('hide');
 				$('.email input').val('');
 				$('.surat input').val('');
+				$('.beban').addClass('hide');
 			}else{
+				$('.beban').removeClass('hide');
 				$('.email').addClass('hide');
 				$('.surat').removeClass('hide');
 				$('.email input').val('');
@@ -1287,7 +1146,154 @@
 			console.log($('#formanwijzing').serialize())
 		})
 
-
 	})
+	function update_modal(id){
+		$.ajax({
+			type:'GET',
+			url: '<?= base_url()."Register/get_detail_masuk/";	?>'+id,       
+			success: function(response){
+				
+				let data = JSON.parse(response);
+				$('#d_divisi').text(strip(data.divisi));
+				$('#d_kelompok').text(strip(data.kelompok));
+				$('#d_user').text(strip(data.user));
+				$('#d_email').text(strip(data.email));
+				$('#d_tgl_email').text(tanggal_indo(data.tgl_email));
+				$('#d_tgl_t_email').text(tanggal_indo(data.tgl_terima_email));
+				$('#d_jenis_surat').html(data.jenis_surat);
+				$('#d_no_surat').text(strip(data.no_surat));
+				$('#d_perihal').text(strip(data.perihal));
+				$('#d_tgl_surat').text(tanggal_indo(data.tgl_surat));
+				$('#d_terima_surat').text(tanggal_indo(data.tgl_terima_surat));
+				$('#d_unamepembuat').text(data.username);
+				if(strip(data.tempat_pengadaan) != '-'){
+					$('#d_tempat_pengadaan').text(strip(data.tempat_pengadaan));
+					$('.d_tempat').show();
+				}else{
+					$('.d_tempat').hide();
+				}
+				if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
+					$('#d_no_spk').html(strip(no_spk));
+				}else{
+					$('#d_no_spk').html(strip(data.no_spk));
+				}
+				if(data.email != '' && data.no_surat == ''){
+					$('.row-email').show();
+					$('.row-surat').hide();
+					$('#update_surat').show();
+				}else if(data.email == '' && data.no_surat != ''){
+					$('.row-email').hide();
+					$('.row-surat').show();
+					$('#update_surat').hide();
+				}else{
+					$('.row-surat').hide();
+					$('.row-email').hide();
+				}
+				if(data.tgl_disposisi_pimkel != '0000-00-00'){
+					$('#d_disposisi_pimkel').text(tanggal_indo(data.tgl_disposisi_pimkel));
+					$('.ddpimkel').show();
+				}
+				
+				if(data.tgl_disposisi_manajer != '0000-00-00'){
+					$('#d_disposisi_manager').text(tanggal_indo(data.tgl_disposisi_manajer));
+					$('.ddmanager').show();
+				}
+				if(data.tempat_pengadaan != null){
+					$('.d_tempat').show();
+				}else{
+					$('.d_tempat').hide();
+				}
+				if(data.jenis_pengadaan != null){
+					$('#d_jenis_pengadaan').parent().show();
+					$('#d_jenis_pengadaan').text(data.jenis_pengadaan);
+				}else{
+					$('#d_jenis_pengadaan').parent().hide();
+				}
+				if(data.jenis_pengadaan == 'Pembelian Langsung'){
+					$('.spk').show()
+					let nospk = data.no_spk.split("<br>");
+					let idnospk = data.id_detail_register.split(",");
+					let i;
+					let no_spk = '';
+					for(i = 0;i<nospk.length;i++){
+						if(i == nospk.length - 1){ 
+						 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a>";
+						}else{
+						 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a><br>";
+						}
+					}
+					$('#d_tgl_spk').html(strip(data.tgl_spk));
+					$('#ds_vendor').html(strip(data.nm_vendor))
+				}else{
+					$('.spk').hide()
+					
+				}
+				if((strip(data.status_data) == 'Done' && '<?= $_SESSION['role'];?>' == 'user') || (strip(data.status_data) == 'On Process' && '<?= $_SESSION['role'];?>' == 'user')){
+					$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
+					$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').hide();
+					
+				}else{ // jika status masih on proses
+					$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').show();
+					$('#d_status_data').text(strip(data.status_data)).css({'color':'red'});
+					
+					if(data.nama != null){ //jika pembuat ada dan bukan user yang mengakses
+						$('.ddpembuat').show();
+						$('#d_pembuat').html(data.nama);
+						$('#btn-disposisi, #btn-jenis, #btn-aanwijzing, #btn-proses').hide();
+						//$('#btn-disposisi').hide();
+						if(cek_similar(data.username, '<?= $_SESSION['username'];?>'))
+						{
+							$('#btn-ubah, #btn-disposisi, #btn-hapus, #btn-return').show();
+							if(data.tempat_pengadaan != null){ //jika tempat pengadaan sudah diisi
+								$('.d_tempat').show();
+								if(data.tempat_pengadaan == 'BSK'){
+									$('#btn-jenis').hide();	
+									
+									if(data.jenis_pengadaan == null){
+										$('#btn-proses').hide();
+									}else	if(data.jenis_pengadaan == 'Pembelian Langsung'){
+
+										$('#btn-proses').show();
+										$('#btn-aanwijzing').hide();
+									}else if(data.jenis_pengadaan == 'Penunjukan Langsung')
+									{
+										$('#btn-aanwijzing').show();
+										$('#btn-proses').hide();
+									}else if(data.jenis_pengadaan == 'Pemilihan Langsung')
+									{
+										$('#btn-aanwijzing').show();
+										$('#btn-proses').hide();
+									}else if(data.jenis_pengadaan == 'Pelelangan')
+									{
+										$('#btn-aanwijzing').show();
+										$('#btn-proses').hide();
+									}
+
+								}else{ // jika pengadaan nya di pfa
+									//tambahin btn memo ke pfa
+									$('#btn-proses').hide();
+								}
+							}else{ //jika tempat pengadaannya tidak diisi
+								
+								$('#btn-jenis').show();
+								$('#btn-aanwijzing').hide();
+								$('#btn-proses').hide();
+							}
+
+						}else{
+							$('.d_tempat').show();
+							$('#btn-aanwijzing').hide();
+							$('#btn-jenis').hide();
+							$('#btn-proses').hide();
+						}
+						
+					}else{
+						$('#btn-aanwijzing, #btn-proses, #btn-jenis').hide();
+					}
+				}
+
+			}
+		})
+	}
 
 </script>

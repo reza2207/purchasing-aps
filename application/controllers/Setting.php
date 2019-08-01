@@ -47,4 +47,8 @@ class Setting extends CI_Controller {
 	}
 
 	
+
+
+
+	
 }

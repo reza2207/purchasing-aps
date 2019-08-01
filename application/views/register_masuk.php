@@ -279,7 +279,7 @@
 		<button class="waves-blue btn-flat left teal white-text" id="btn-disposisi">Disposisi</button>
 		<?php }
 		
-		elseif($_SESSION['role'] == "superuser"){?>
+		elseif($_SESSION['role'] != "user"){?>
 		<button class="waves-blue btn-flat left teal white-text" id="update_surat">Update Surat</button>
 		<button class="waves-blue btn-flat left teal white-text" id="btn-disposisi">Disposisi</button>
 		<button class="waves-blue btn-flat left teal white-text" id="btn-jenis">Metode Pengadaan</button>
@@ -290,12 +290,14 @@
 		<button class="waves-effect green waves-green btn-flat white-text" id="btn-proses" aria-label="Proses" data-balloon-pos="up"><i class="fa fa-pencil-square-o"></i></button>
 		
 		<?php 
-		}elseif($_SESSION['role'] == "admin"){?>
+		}/*elseif($_SESSION['role'] == "admin"){?>
+				<button class="waves-blue btn-flat left teal white-text" id="update_surat">Update Surat</button>
+				<button class="waves-blue btn-flat left teal white-text" id="btn-disposisi">Disposisi</button>
 				<button class="waves-blue btn-flat left teal white-text" id="btn-jenis">Metode Pengadaan</button>
 				<button class="waves-blue btn-flat left teal white-text" id="btn-aanwijzing">Aanwijzing</button>
 				<button class="waves-effect green waves-green btn-flat white-text" id="btn-proses">Proses</button>
 		
-		<?php }
+		<?php }*/
 
 		?>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
@@ -492,7 +494,7 @@
 		<?= form_close();?>
 	</div>
 	<div class="modal-footer">
-		<button id="proses_aanwijzing" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
+		<button class="waves-effect green waves-green btn-flat white-text">PROSES</button>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
 		<button id="proses_aanwijzing" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
 	</div>
@@ -671,13 +673,18 @@
 						$('#d_disposisi_manager').text(tanggal_indo(data.tgl_disposisi_manajer));
 						$('.ddmanager').show();
 					}
-					
-					if(strip(data.status_data) == 'Done'){
-						$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
-						$('#btn-proses').hide();
-
-						if(data.jenis_pengadaan == 'Pembelian Langsung'){
-							$('.d_tempat').show();
+					if(data.tempat_pengadaan != null){
+						$('.d_tempat').show();
+					}else{
+						$('.d_tempat').hide();
+					}
+					if(data.jenis_pengadaan != null){
+						$('#d_jenis_pengadaan').parent().show();
+						$('#d_jenis_pengadaan').text(data.jenis_pengadaan);
+					}else{
+						$('#d_jenis_pengadaan').parent().hide();
+					}
+					if(data.jenis_pengadaan == 'Pembelian Langsung'){
 							$('.ddpembuat').show();
 							$('#d_pembuat').html(data.nama);
 							$('.spk').show()
@@ -700,24 +707,26 @@
 							}
 							$('#d_tgl_spk').html(strip(data.tgl_spk));
 							$('#ds_vendor').html(strip(data.nm_vendor))
-							$('#d_jenis_pengadaan').parent().show();
-							$('#d_jenis_pengadaan').text(data.jenis_pengadaan);
 						}else{
-							$('.spk, .d_tempat').hide()
+							$('.spk').hide()
 							
 						}
-					}else{ // jika status masih on proses
+					if(strip(data.status_data) == 'Done' || '<?= $_SESSION['role'];?>' == 'user'){
+						$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
+						$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').hide();
 						
+					}else{ // jika status masih on proses
+						$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').show();
 						$('#d_status_data').text(strip(data.status_data)).css({'color':'red'});
 						$('.d_tempat').hide();
-						if(data.nama != null){ //jika pembuat ada 
+						if(data.nama != null && '<?= $_SESSION['role'];?>' != 'user'){ //jika pembuat ada 
 							$('.ddpembuat').show();
 							$('#d_pembuat').html(data.nama);
-							
+							$('#btn-disposisi, #btn-jenis, #btn-aanwijzing, #btn-proses').hide();
 							//$('#btn-disposisi').hide();
 							if(cek_similar(data.username, '<?= $_SESSION['username'];?>'))
 							{
-
+								$('#btn-ubah, #btn-disposisi, #btn-hapus, #btn-return').show();
 								if(data.tempat_pengadaan != null){
 									$('.d_tempat').show();
 									if(data.tempat_pengadaan == 'BSK'){
@@ -760,21 +769,12 @@
 								$('#btn-jenis').hide();
 								$('#btn-proses').hide();
 							}
-
+							
 						}else{
-							$('#btn-aanwijzing').hide();
-							$('#btn-jenis').hide();
-							$('#btn-proses').hide();
+							$('#btn-aanwijzing, #btn-proses, #btn-jenis').hide();
 						}
 					}
 
-					if(data.status_data == 'Done' || '<?= $_SESSION['role'];?>' != 'superuser'){
-						$(' #btn-return, #btn-ubah, #btn-hapus').hide();
-					}else if(data.status_data != 'Done' && '<?= $_SESSION['role'];?>' != 'user'){
-						$('#btn-hapus, #btn-return ,#btn-ubah, #btn-disposisi').show();
-					}else{
-						$('#btn-hapus, #btn-return ,#btn-ubah, #btn-disposisi').hide();
-					}
 				}
 			})
 			
@@ -1003,7 +1003,7 @@
 				url: '<?= base_url()."Register/submit_disposisi";?>',
 				dataType: 'JSON',
 				success: function(data){
-					console.log(data);
+					
 					if(data.type == 'success' && data.pimkel != '' && data.manager == null){
 						swal({
 							type: data.type,
@@ -1179,7 +1179,7 @@
 								}
 								
 							}
-							console.log(no_spk)
+							
 							$('#d_no_spk').html(no_spk);
 							$('#d_tgl_spk').html(data.tgl);
 							$('#ds_vendor').html(data.svendor);

@@ -318,10 +318,9 @@
 						<label>Tgl. Disposisi Pimkel</label>
 					</div>
 					<div class="input-field col l12 s12 dman">
-						<input name="tgl_d_manager" type="text" class="datepicker" id="dtglDisposisiManager">
-						<label>Tgl. Disposisi Manager</label>
+						
 					</div>
-					<div class="input-field col l12 s12 dman" id="dpembuat">
+					<div class="input-field col l12 s12" id="dpembuat">
 						
 					</div>
 				</div> 
@@ -617,7 +616,7 @@
 			$('#d_disposisi_pimkel').text('');
 			$('.row-email').hide();
 
-			$('#btn-disposisi, #btn-aanwijzing, #btn-jenis, .spk, .dman, .dpim').hide();
+			$('#btn-disposisi, #btn-aanwijzing, #btn-jenis, .spk').hide();
 			 
 			$('#d_disposisi_pimkel, #d_disposisi_manager, #d_pembuat, #d_jenis_pengadaan, #d_unamepembuat, #d_jenis_surat, #d_no_surat, #d_tgl_surat, #d_terima_surat,#d_perihal, #d_tempat_pengadaan').text('');
 			$('.s-pembuat, #dpembuat').html('');
@@ -630,7 +629,7 @@
 			$('#modal_detail').modal('open');
 
 			let id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
-			$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat').attr('data-id', id);
+			$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat, #proses_disposisi, #proses_spk').attr('data-id', id);
 			$('#idRegisterD, #idRegisterA, #idRegisterJ, #idRegisterP').val(id);
 			update_modal(id)
 			
@@ -752,12 +751,13 @@
 		$('#btn-disposisi').on('click', function(e){
 			$('#modal_disposisi').modal('open')
 			$('#modal_disposisi label').addClass('active')
+			$('#dpembuat').html('');
 			let id = $(this).attr('data-id');
 			let jenis = $('#d_jenis_surat').text();
 			
 			let dpim = $('#d_disposisi_pimkel').text();
 			let dman = $('#d_disposisi_manager').text();
-			$('#dtglDisposisiPimkel, #dtglDisposisiManager').datepicker({
+			$('#dtglDisposisiPimkel').datepicker({
 				container: 'body',
 				format: 'dd-mm-yyyy',
 				autoClose: true,
@@ -765,46 +765,87 @@
 				firstDay:1
 
 			}).attr('readonly', false);
+			$('#dtglDisposisiManager').datepicker({
+				container: 'body',
+				format: 'dd-mm-yyyy',
+				autoClose: true,
+				disableWeekends:true,
+				firstDay:1
+
+			})
 			let kel = $('#d_kelompok').text();
+			let rdman = '<input name="tgl_d_manager" type="text" class="datepicker" id="dtglDisposisiManager">'+
+						'<label>Tgl. Disposisi Manager</label>';
 			if(kel == 'STL' || kel == 'stl'){
-				if(dman ==''){//second
+				if(dman ==''){//second //jika  dp manager kosong
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('.dpim').hide();
 					$('.dman').show();
+					$('#dpembuat').hide();
+					$('.dman').html(rdman);
+					$('#dtglDisposisiManager').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+
+					}).attr('readonly', false);
 					$('#tmbhrowpembuat').show();
 				}else if(dman !=''){//tri
 					$('.dpim').hide();
 					$('.dman').show();
+					$('#dpembuat').show();
+					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
+					$('.dman').html(rdman);
+					$('#dpembuat').show();
 					$('#tmbhrowpembuat').show();
 
 				}else{
 					$('.dpim').hide();
+					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
+					$('.dman').html(rdman);
+					$('#dpembuat').hide();
 					$('#tmbhrowpembuat').hide();
 				}
 			}else{
 				if(dpim == '' && dpim == ''){//awal
 					$('.dpim').show();
-					$('.dman').hide();
-					$('.dman input').val('');
+					$('.dman').children().remove();
+					//$('.dman input').val('');
 					$('#dtglDisposisiPimkel').val('');
 					$('#tmbhrowpembuat').hide();
 
 				}else if(dpim != '' && dman ==''){//second
 					$('.dpim').show();
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
-					$('.dman').show();
+
+					$('.dman').html(rdman);
+					$('#dtglDisposisiManager').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+
+					}).attr('readonly', false);
+					//$('.dman').show();
 					$('#tmbhrowpembuat').show();
 				}else if(dpim != '' && dman !=''){//tri
+
+					$('.dman').html(rdman);
 					$('.dpim').show();
-					$('.dman').show();
+					$('.dman label').addClass('active')
+					//$('.dman').show();
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
-					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
+					$('#dtglDisposisiManager').val(dman).attr('readonly', true);
 					$('#tmbhrowpembuat').show();
 
 				}else{
 					$('.dpim').show();
+					$('.dman').html(rdman);
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
 					$('#tmbhrowpembuat').hide();
@@ -855,6 +896,7 @@
 
 		$('#proses_disposisi').on('click', function(e){
 			e.preventDefault();			
+			let id = $(this).attr('data-id');
 			$('#s-pembuat').formSelect();
 			 $.ajax({
 				type: 'POST',
@@ -871,10 +913,11 @@
 							allowOutsideClick: false,
 						}).then(function(){
 							$('#modal_disposisi').modal('close')
-							$('.ddpimkel').show();
-							$('#d_disposisi_pimkel').text(data.pimkel);
+							//$('.ddpimkel').show();
+							//$('#d_disposisi_pimkel').text(data.pimkel);
 							$('#table').DataTable().ajax.reload();
-							$('#dpembuat').html('');
+							//$('#dpembuat').html('');
+							update_modal(id);
 						})
 					}else if(data.type == 'success' && data.manager != '' && data.pimkel != '' && data.pembuat == null){
 						swal({
@@ -885,10 +928,11 @@
 						}).then(function(){
 
 							$('#modal_disposisi').modal('close')
-							$('#d_disposisi_pimkel').text(data.pimkel)
+							//$('#d_disposisi_pimkel').text(data.pimkel)
 							$('.ddmanager').show();
-							$('#d_disposisi_manager').text(data.manager);
+							//$('#d_disposisi_manager').text(data.manager);
 							$('#table').DataTable().ajax.reload();
+							update_modal(id);
 						})
 						//	$('#btn-disposisi').hide();
 						
@@ -900,21 +944,22 @@
 							allowOutsideClick: false,
 						}).then(function(){
 							$('#modal_disposisi').modal('close')
-							$('#d_disposisi_pimkel').text(data.pimkel);
+							//$('#d_disposisi_pimkel').text(data.pimkel);
 							$('.ddmanager').show();
-							$('#d_disposisi_manager').text(data.manager);
+							//$('#d_disposisi_manager').text(data.manager);
 							$('.ddpembuat').show();
-							$('#d_pembuat').text(data.pembuat);
+							//$('#d_pembuat').text(data.pembuat);
 							$('#table').DataTable().ajax.reload();
 							$('#btn-disposisi').hide();
 
 							if(cek_similar(data.unamepembuat, '<?= $_SESSION['username'];?>')){
-								$('#d_unamepembuat').text(data.unamepembuat);
+								//$('#d_unamepembuat').text(data.unamepembuat);
 								$('#btn-jenis').show();
-								
+								update_modal(id);
 							}else{
 								
 								$('#btn-jenis').hide();
+								update_modal(id);
 							}
 
 							//$('#btn-proses').show();
@@ -929,8 +974,9 @@
 						}).then(function(){
 							$('#modal_disposisi').modal('close');
 							$('.ddmanager').show();
-							$('#d_disposisi_manager').text(data.manager);
+							//$('#d_disposisi_manager').text(data.manager);
 							$('#table').DataTable().ajax.reload();
+							update_modal(id);
 						})
 					}else if(data.type == 'error'){
 						swal({
@@ -938,6 +984,8 @@
 							text: data.pesan,
 							showConfirmButton: true,
 							allowOutsideClick: false,
+						}).then(function(){
+							update_modal(id);
 						})
 					}
 				} //end
@@ -1012,6 +1060,7 @@
 
 
 		$('#proses_spk').on('click', function(e){
+			let id = $(this).attr('data-id');
 			$.ajax({
 				type: 'POST',
 				data: $('#formprosesSPK').serialize(),
@@ -1025,9 +1074,10 @@
 							showConfirmButton: true,
 							allowOutsideClick: false,
 						}).then(function(){
-							$('.spk').show();
+							//$('.spk').show();
 							$('#modal_prosesSPK').modal('close');
-							let nospk = data.nospk.split("<br>");
+							update_modal(id);
+							/*let nospk = data.nospk.split("<br>");
 							let idspk = data.idspk.split("<br>");
 							let no_spk = '';
 							for(i = 0;i<nospk.length;i++){
@@ -1037,16 +1087,16 @@
 								 	no_spk += "<a href='#' data-id='"+idspk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a><br>";
 								}
 								
-							}
+							}*/
 							
-							$('#d_no_spk').html(no_spk);
+							/*$('#d_no_spk').html(no_spk);
 							$('#d_tgl_spk').html(data.tgl);
 							$('#ds_vendor').html(data.svendor);
 							$('#d_status_data').text(data.status);
 							
-							$('#btn-proses').hide();
+							$('#btn-proses').hide();*/
 							$('#table').DataTable().ajax.reload();
-							$('#formprosesSPK input').val('');
+							//$('#formprosesSPK input').val('');
 						})
 					
 					}else{
@@ -1158,25 +1208,22 @@
 				$('#d_kelompok').text(strip(data.kelompok));
 				$('#d_user').text(strip(data.user));
 				$('#d_email').text(strip(data.email));
-				$('#d_tgl_email').text(tanggal_indo(data.tgl_email));
-				$('#d_tgl_t_email').text(tanggal_indo(data.tgl_terima_email));
+				$('#d_tgl_email').text(tanggal(data.tgl_email));
+				$('#d_tgl_t_email').text(tanggal(data.tgl_terima_email));
 				$('#d_jenis_surat').html(data.jenis_surat);
 				$('#d_no_surat').text(strip(data.no_surat));
 				$('#d_perihal').text(strip(data.perihal));
-				$('#d_tgl_surat').text(tanggal_indo(data.tgl_surat));
-				$('#d_terima_surat').text(tanggal_indo(data.tgl_terima_surat));
+				$('#d_tgl_surat').text(tanggal(data.tgl_surat));
+				$('#d_terima_surat').text(tanggal(data.tgl_terima_surat));
 				$('#d_unamepembuat').text(data.username);
-				if(strip(data.tempat_pengadaan) != '-'){
+				if(data.tempat_pengadaan === null){
+					
+					$('.d_tempat').hide();
+				}else{
 					$('#d_tempat_pengadaan').text(strip(data.tempat_pengadaan));
 					$('.d_tempat').show();
-				}else{
-					$('.d_tempat').hide();
 				}
-				if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
-					$('#d_no_spk').html(strip(no_spk));
-				}else{
-					$('#d_no_spk').html(strip(data.no_spk));
-				}
+				
 				if(data.email != '' && data.no_surat == ''){
 					$('.row-email').show();
 					$('.row-surat').hide();
@@ -1190,18 +1237,13 @@
 					$('.row-email').hide();
 				}
 				if(data.tgl_disposisi_pimkel != '0000-00-00'){
-					$('#d_disposisi_pimkel').text(tanggal_indo(data.tgl_disposisi_pimkel));
+					$('#d_disposisi_pimkel').text(tanggal(data.tgl_disposisi_pimkel));
 					$('.ddpimkel').show();
 				}
 				
 				if(data.tgl_disposisi_manajer != '0000-00-00'){
-					$('#d_disposisi_manager').text(tanggal_indo(data.tgl_disposisi_manajer));
+					$('#d_disposisi_manager').text(tanggal(data.tgl_disposisi_manajer));
 					$('.ddmanager').show();
-				}
-				if(data.tempat_pengadaan != null){
-					$('.d_tempat').show();
-				}else{
-					$('.d_tempat').hide();
 				}
 				if(data.jenis_pengadaan != null){
 					$('#d_jenis_pengadaan').parent().show();
@@ -1222,6 +1264,12 @@
 						 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a><br>";
 						}
 					}
+				if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
+					$('#d_no_spk').html(strip(no_spk));
+				}else{
+					$('#d_no_spk').html(strip(data.no_spk));
+				}
+
 					$('#d_tgl_spk').html(strip(data.tgl_spk));
 					$('#ds_vendor').html(strip(data.nm_vendor))
 				}else{
@@ -1243,9 +1291,9 @@
 						//$('#btn-disposisi').hide();
 						if(cek_similar(data.username, '<?= $_SESSION['username'];?>'))
 						{
-							$('#btn-ubah, #btn-disposisi, #btn-hapus, #btn-return').show();
-							if(data.tempat_pengadaan != null){ //jika tempat pengadaan sudah diisi
-								$('.d_tempat').show();
+							$('#btn-ubah, #btn-hapus, #btn-return').show();
+							if(data.tempat_pengadaan !== null){ //jika tempat pengadaan sudah diisi
+								
 								if(data.tempat_pengadaan == 'BSK'){
 									$('#btn-jenis').hide();	
 									
@@ -1281,7 +1329,7 @@
 							}
 
 						}else{
-							$('.d_tempat').show();
+							
 							$('#btn-aanwijzing').hide();
 							$('#btn-jenis').hide();
 							$('#btn-proses').hide();

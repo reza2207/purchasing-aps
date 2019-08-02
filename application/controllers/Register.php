@@ -223,68 +223,106 @@ class Register extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
 			if($this->input->post(null)){
-
+				
 				$idregister = $this->input->post('id_register');
-				$tgldpimkel = tanggal1($this->input->post('tgl_d_pimkel'));
-				$tgldmanager = tanggal1($this->input->post('tgl_d_manager'));
-				$pembuat = $this->input->post('pembuat');
-				$no = 0;
 
-				if($tgldmanager == '' && $pembuat == null ){
-					if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel,NULL)){
+				if($this->input->post('tgl_d_manager') === null && $this->input->post('pembuat') === null ){
+					$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
+
+					if ($this->form_validation->run() == false) {
 						$data = new stdClass();
-						$data->type = 'success';
-			            $data->pesan = 'Berhasil';
-			            $data->pimkel = $this->input->post('tgl_d_pimkel');
+						$errors = validation_errors();
+						$data->type = 'error';
+			            $data->pesan = $errors;
 			            echo json_encode($data);
 					}else{
+
+						$tgldpimkel = tanggal1($this->input->post('tgl_d_pimkel'));
+
+						if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel,NULL)){
+							$data = new stdClass();
+							$data->type = 'success';
+				            $data->pesan = 'Berhasil';
+				            $data->pimkel = $this->input->post('tgl_d_pimkel');
+				            echo json_encode($data);
+						}else{
+							$data = new stdClass();
+							$data->type = 'error';
+				            $data->pesan = 'Failed';
+				            echo json_encode($data);	
+						}
+					}
+				}elseif($this->input->post('tgl_d_manager') !== null && $this->input->post('pembuat') === NULL)
+				{
+
+					$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
+					$this->form_validation->set_rules('tgl_d_manager', 'Tgl. Disposisi Manager', 'required');
+
+					if ($this->form_validation->run() == false) {
 						$data = new stdClass();
+						$errors = validation_errors();
 						$data->type = 'error';
-			            $data->pesan = 'Failed';
-			            echo json_encode($data);	
+			            $data->pesan = $errors;
+			            echo json_encode($data);
+					}else{
+						$tgldmanager = tanggal1($this->input->post('tgl_d_manager'));
+						$tgldpimkel = tanggal1($this->input->post('tgl_d_pimkel'));
+						if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel, $tgldmanager)){
+							$data = new stdClass();
+							$data->type = 'success';
+				            $data->pesan = 'Berhasil';
+				            $data->pimkel = $this->input->post('tgl_d_pimkel');
+			            	$data->manager = $this->input->post('tgl_d_manager');
+				            echo json_encode($data);
+						}else{
+							$data = new stdClass();
+							$data->type = 'error';
+				            $data->pesan = 'Failed';
+				            echo json_encode($data);	
+						}
 					}
 					
-				}elseif($tgldmanager != '0000-00-00' && $pembuat == NULL){
-					if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel, $tgldmanager)){
-						$data = new stdClass();
-						$data->type = 'success';
-			            $data->pesan = 'Berhasil';
-			            $data->pimkel = $this->input->post('tgl_d_pimkel');
-		            	$data->manager = $this->input->post('tgl_d_manager');
-			            echo json_encode($data);
-					}else{
-						$data = new stdClass();
-						$data->type = 'error';
-			            $data->pesan = 'Failed';
-			            echo json_encode($data);	
-					}
 				}else{
+					$no = 0;
 					
-					foreach($pembuat AS $p){
-						$no++;
-						$res[] = array(
-							'id_pembuat'=> $idregister.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT),
-							'id_register'=>$idregister,
-							'username'=>$p
-						);
-					}
-
-					if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel ,$tgldmanager) && $this->db->insert_batch('pembuat_pekerjaan', $res)){
+					$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
+					$this->form_validation->set_rules('tgl_d_manager', 'Tgl. Disposisi Manager', 'required');
+					$this->form_validation->set_rules('pembuat[]', 'Pembuat Pekerjaan', 'required');
+					if ($this->form_validation->run() == false) {
 						$data = new stdClass();
-						$data->type = 'success';
-			            $data->pesan = 'Berhasil';
-			            $data->manager = $this->input->post('tgl_d_manager');
-			            $data->pembuat = $this->_get_name($pembuat);
-			            $data->unamepembuat = implode(',',$pembuat);
+						$errors = validation_errors();
+						$data->type = 'error';
+			            $data->pesan = $errors;
 			            echo json_encode($data);
 					}else{
-						$data = new stdClass();
-						$data->type = 'error';
-			            $data->pesan = 'Failed';
-			            echo json_encode($data);
+						$pembuat = $this->input->post('pembuat');
+						$tgldpimkel = tanggal1($this->input->post('tgl_d_pimkel'));
+						$tgldmanager = tanggal1($this->input->post('tgl_d_manager'));
+						foreach($pembuat AS $p){
+							$no++;
+							$res[] = array(
+								'id_pembuat'=> $idregister.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT),
+								'id_register'=>$idregister,
+								'username'=>$p
+							);
+						}
+
+						if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel ,$tgldmanager) && $this->db->insert_batch('pembuat_pekerjaan', $res)){
+							$data = new stdClass();
+							$data->type = 'success';
+				            $data->pesan = 'Berhasil';
+				            $data->manager = $this->input->post('tgl_d_manager');
+				            $data->pembuat = $this->_get_name($pembuat);
+				            $data->unamepembuat = implode(',',$pembuat);
+				            echo json_encode($data);
+						}else{
+							$data = new stdClass();
+							$data->type = 'error';
+				            $data->pesan = 'Failed';
+				            echo json_encode($data);
+						}
 					}
 				}
-;
 			}else{
 				show_404();
 			}
@@ -381,7 +419,7 @@ class Register extends CI_Controller {
 						$idno[] = $id.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT);
 						$nama[] = $this->_get_nama_vendor($idvendor[$key]);
 					}//pending
-					
+
 					if($this->db->insert_batch('detail_register_masuk', $res) && $this->Register_masuk_model->update_status($id)){
 						$data = new stdClass();
 						$data->type = 'success';
@@ -406,7 +444,7 @@ class Register extends CI_Controller {
 	}
 
 	public function get_user(){
-		echo json_encode($this->User_model->select_user(array('amgr','asst')));
+		echo json_encode($this->User_model->select_user(array('amgr','asst'))->result());
 	}
 
 	protected function _get_name($username){

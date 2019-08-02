@@ -141,6 +141,11 @@ class Pengadaan_model extends CI_Model {
 
 	}
 
+	public function add_new(){
+		
+	}
+
+
 	public function get_nominal($id){
 		$this->db->select('SUM(realisasi_nego_rp*realisasi_qty_unit) AS nominalkontrak');
 		$this->db->from('detail_item_pengadaan');

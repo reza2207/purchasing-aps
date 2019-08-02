@@ -122,7 +122,7 @@ class User_model extends CI_Model {
 		$this->db->where('status', 'aktif');
 		$this->db->where('username !=', 'admin');
 		if($role != NULL){
-		$this->db->where_in('jabatan',$role);	
+			$this->db->where_in('jabatan',$role);	
 		}
 
 		return $this->db->get();

@@ -94,132 +94,125 @@ class Pengadaan extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
 			if($this->input->post(null)){
-				$this->form_validation->set_rules('tgl_surat', 'Tanggal Surat', 'required');
-				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
-				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');
-				$this->form_validation->set_rules('perihal', 'Perihal', 'required');
+				$this->load->library('form_validation');
 
-				$this->form_validation->set_rules('kelompok', 'Kelompok', 'required');
-				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');//
+				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');//
+				$this->form_validation->set_rules('tgl_disposisi', 'Tgl. Disposisi', 'required');
+				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');//
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required');//
+				
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');//
+				if($this->form_validation->set_rules('divisi', 'Divisi', 'required') == 'BSK'){
+					$this->form_validation->set_rules('kelompok', 'Kelompok', 'required');//
+				}
+				$this->form_validation->set_rules('jenis_surat', 'Jenis Surat', 'required');//
 				$this->form_validation->set_rules('jenis_pengadaan', 'Jenis Pengadaan', 'required');
 				
-				if(($this->input->post('jenis_pengadaan')!= 'Pembelian Langsung') || ($this->input->post('jenis_pengadaan')!= ''){
-					$this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');
-					$this->form_validation->set_rules('tgl_usulan', 'Tgl. Usulan', 'required');
-				}
-				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
-				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
-				$jenispengadaan = $this->input->post('jenis_pengadaan');
-				$tglsurat = tanggal1($this->input->post('tgl_surat'));
-				$nosurat =  $this->input->post('no_surat');
-				$jenissurat = $this->input->post('jenis_surat');
-				$tgldisposisi = tanggal1($this->input->post('tgl_disposisi'));
-				$tahun = $this->input->post('tahun_pengadaan');
-				$perihal = $this->input->post('perihal');
-				$nousulan = $this->input->post('no_usulan');
-				
-				$tglusulan = tanggal1($this->input->post('tgl_usulan'));
-				$divisi = $this->input->post('divisi');
-				$kelompok = $this->input->post('kelompok');
-				//$pembuat = $this->input->post('pembuat_pekerjaan');
-				$keterangan = $this->input->post('keterangan');
-				$kewenangan = $this->input->post('kewenangan');
-				$id = $this->_get_id_pengadaan($tahun);
-				//array
-				$item = $this->input->post('item');
-				$ukuran = $this->input->post('ukuran');
-				$bahan = $this->input->post('bahan');
-				$jumlah = $this->input->post('jumlah');
-				$satuan = $this->input->post('satuan');
-				$hpsusd = $this->input->post('hpsusd');
-				$hpsidr = $this->input->post('hpsidr');
-				$hpssatuan = $this->input->post('hpssatuan');
-				$penawaran = $this->input->post('penawaran');
-				$realisasiusd = $this->input->post('realisasiusd');
-				$realisasirp = $this->input->post('realisasirp');
-				$realisasiqty = $this->input->post('realisasiqty');
-				$nokontrak = $this->input->post('nokontrak');
-				$tglkontrak = tanggal1($this->input->post('tglkontrak'));
-				$vendor = $this->input->post('vendor');
+				if(($this->input->post('jenis_pengadaan')!= 'Pembelian Langsung') || ($this->input->post('jenis_pengadaan')!= '')){
+					$this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');//
+					$this->form_validation->set_rules('tgl_usulan', 'Tgl. Usulan', 'required');//
+				}//
+				$this->form_validation->set_rules('kewenangan', 'Kewenangan', 'required');
+				//validate array
+				$this->form_validation->set_rules('item[]', 'Item', 'required');
+				$this->form_validation->set_rules('ukuran[]', 'Ukuran', 'required');
+				$this->form_validation->set_rules('bahan[]', 'Bahan', 'required');
+				$this->form_validation->set_rules('jumlah[]', 'Jumlah', 'required');
+				$this->form_validation->set_rules('satuan[]', 'Satuan', 'required');
+				$this->form_validation->set_rules('hpssatuan[]', 'Hps Satuan', 'required');
+				$this->form_validation->set_rules('penawaran[]', 'Harga Penawaran', 'required');
+				$this->form_validation->set_rules('hpsidr[]', 'Hps', 'required');
+				$this->form_validation->set_rules('realisasirp[]', 'Harga Realisasi', 'required');
+				$this->form_validation->set_rules('realisasiqty[]', 'Qty Realisasi', 'required');
+				$this->form_validation->set_rules('nokontrak[]', 'No. Kontrak', 'required');
+				$this->form_validation->set_rules('tglkontrak[]', 'Tgl. Kontrak', 'required');
+				$this->form_validation->set_rules('vendor[]', 'Vendor', 'required');
 
-				$result[] = array();
-				foreach($item AS $key => $val){
-					$result[] = array(
-						"id_pengadaan" => $id,
-						"id_pengadaan_uniq" => $id.'-'.str_pad($key,3,"0",STR_PAD_LEFT),
-						"item" =>$item[$key],
-						"ukuran" =>$ukuran[$key],
-						"bahan" => $bahan[$key],
-						"jumlah" => $jumlah[$key],
-						"satuan" => $satuan[$key],
-						"hps_usd" =>$hpsusd[$key],
-						"hps_idr" =>$hpsidr[$key],
-						"hps_satuan"=> $hpssatuan[$key],
-						"penawaran" => $penawaran[$key],
-						"realisasi_nego_usd" => $realisasiusd[$key],
-						"realisasi_nego_rp" => $realisasirp[$key],
-						"realisasi_qty_unit"=>$realisasiqty[$key],
-						"no_kontrak" => $nokontrak[$key],
-						"tgl_kontrak"=> $tglkontrak[$key],
-						"id_vendor" => $vendor[$key]
-					);
+				if ($this->form_validation->run() == false) {
+					$data = new stdClass();
+					$data->type = 'error';
+		            $data->pesan = $errors;
+		            echo json_encode($data);
+					
+				}else{
+
+					$jenispengadaan = $this->input->post('jenis_pengadaan');//
+					$tglsurat = tanggal1($this->input->post('tgl_surat'));//
+					$nosurat =  $this->input->post('no_surat');//
+					$jenissurat = $this->input->post('jenis_surat');//
+					$tgldisposisi = tanggal1($this->input->post('tgl_disposisi'));//
+					$tahun = $this->input->post('tahun_pengadaan');//
+					$perihal = $this->input->post('perihal');//
+					$nousulan = $this->input->post('no_usulan');//
+					
+					$tglusulan = tanggal1($this->input->post('tgl_usulan'));//
+					$divisi = $this->input->post('divisi');//
+					$kelompok = $this->input->post('kelompok');//
+					//$pembuat = $this->input->post('pembuat_pekerjaan');
+					$keterangan = $this->input->post('keterangan');
+					$kewenangan = $this->input->post('kewenangan');
+					$id = $this->_get_id_pengadaan($tahun);
+					add_new()
+					//array
+					$item = $this->input->post('item');
+					$ukuran = $this->input->post('ukuran');
+					$bahan = $this->input->post('bahan');
+					$jumlah = $this->input->post('jumlah');
+					$satuan = $this->input->post('satuan');
+					$hpsusd = $this->input->post('hpsusd');
+					$hpsidr = $this->input->post('hpsidr');
+					$hpssatuan = $this->input->post('hpssatuan');
+					$penawaran = $this->input->post('penawaran');
+					$realisasiusd = $this->input->post('realisasiusd');
+					$realisasirp = $this->input->post('realisasirp');
+					$realisasiqty = $this->input->post('realisasiqty');
+					$nokontrak = $this->input->post('nokontrak');
+					$tglkontrak = tanggal1($this->input->post('tglkontrak'));
+					$vendor = $this->input->post('vendor');
+
+					foreach($item AS $key => $val){
+						$result[] = array(
+							"id_pengadaan" => $id,
+							"id_pengadaan_uniq" => $id.'-'.str_pad($key,3,"0",STR_PAD_LEFT),
+							"item" =>$item[$key],
+							"ukuran" =>$ukuran[$key],
+							"bahan" => $bahan[$key],
+							"jumlah" => $jumlah[$key],
+							"satuan" => $satuan[$key],
+							"hps_usd" =>$hpsusd[$key],
+							"hps_idr" =>$hpsidr[$key],
+							"hps_satuan"=> $hpssatuan[$key],
+							"penawaran" => $penawaran[$key],
+							"realisasi_nego_usd" => $realisasiusd[$key],
+							"realisasi_nego_rp" => $realisasirp[$key],
+							"realisasi_qty_unit"=>$realisasiqty[$key],
+							"no_kontrak" => $nokontrak[$key],
+							"tgl_kontrak"=> $tglkontrak[$key],
+							"id_vendor" => $vendor[$key]
+						);
+					}
+       
+
+					if($this->Pengadaan_model->add_new())
+					{
+						
+						$data->type = 'success';
+						$data->message = 'Success';
+						echo json_encode($data);
+						
+					}else{
+						$data->type = 'error';
+						$data->message = 'Failed';
+						echo json_encode($data);
+
+					}
 				}
 			}
-			//echo json_encode($result);
 
 		}
 
-			/*$data = new stdClass();
-			//$data = $this->input->post();
 			
-			$this->load->library('form_validation');
-			$this->load->library('encryption');
-			
-			//validasi
-			$this->form_validation->set_rules('no_srt_penunjukan', 'No. Penunjukan', 'required|is_unique[Pengadaan.no_srt_pelaksana]',
-	        array(
-	                'required'      => 'You have not provided %s.',
-	                'is_unique'     => 'This %s already exists.'
-	        ));
-	        $this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');
-	        $this->form_validation->set_rules('perihal', 'Perihal', 'required');
-	        $this->form_validation->set_rules('nominal_rp', 'Nominal Pengadaan', 'required');
-	        
-	        if ($this->form_validation->run() == FALSE){
-
-	        	$errors = validation_errors();
-	            $respons_ajax['type'] = 'error';
-	            $respons_ajax['message'] = $errors;
-	            echo json_encode($respons_ajax);
-
-	        }else{
-
-				$nopenunjukan = $this->input->post('no_srt_penunjukan');
-				$tglminta = $this->input->post('tgl_minta');
-				$nousulan = $this->input->post('no_usulan');
-				$idtdr = $this->input->post('id_tdr');
-				$perihal = $this->input->post('perihal');
-				$tglawal = $this->input->post('tgl_awal');
-				$tglakhir = $this->input->post('tgl_akhir');
-				$nominalrp = $this->input->post('nominal_rp');
-				$nominalusd = $this->input->post('nominal_usd');
-				$bankgaransi = $this->input->post('bank_garansi');
-			
-
-				if($this->Pengadaan_model->save_Pengadaan($nopenunjukan, $tglminta, $nousulan, $idtdr, $perihal, $tglawal, $tglakhir, $nominalrp, $nominalusd, $bankgaransi))
-				{
-					
-					$data->type = 'success';
-					$data->message = 'Success!';
-					
-				}else{
-					$data->type = 'failed';
-					$data->message = 'Failed!';
-
-				}
-			
-			echo json_encode($data);
-			}
 		}else{
 			$this->load->helper('form');
 			$this->load->view('login');

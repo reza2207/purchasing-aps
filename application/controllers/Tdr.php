@@ -26,6 +26,7 @@ class Tdr extends CI_Controller {
 		$this->load->helper('terbilang_helper');
 		$this->load->helper('tanggal_helper');
 		$this->load->model('Pks_model');
+		date_default_timezone_set("Asia/Bangkok");
 	}	
 	public function index()
 	{
@@ -102,8 +103,9 @@ class Tdr extends CI_Controller {
 	{
 		$id = $_GET['id'];
 		$file = $this->get_dir($id);
-		$pdf = file_get_contents($file);
+		
 		if(file_exists($file)){
+			$pdf = file_get_contents($file);
 	       	header('Content-Type: application/pdf');
 	       	header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
 	       header('Pragma: public');
@@ -115,7 +117,7 @@ class Tdr extends CI_Controller {
 	       flush(); 
 	       echo $pdf;
 	   	}else{
-	   		echo $this->get_dir($id);
+	   		echo "Sorry file doesn't exist... :(";
 	   	}
 	}
 

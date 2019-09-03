@@ -47,7 +47,7 @@
           </div>
           <div class="row">
             <div class="input-field col l8 push-l4">
-              <a href="#">Lupa Password?</a>
+              <a href="<?= base_url().'user/forgot_password';?>">Lupa Password?</a>
               <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
               <button class="waves-effect waves-light btn" type="submit" id="login">Login</button>
             </div>

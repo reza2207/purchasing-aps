@@ -39,8 +39,7 @@
 	
 </style>
 <div class="row first">
-	
-	<!-- <div class="col s12"> -->
+
 	<div class="col push-l3 l9">
 		<div class="row hide" id="filter">
 			<div class="col l2">
@@ -76,7 +75,7 @@
 	<div class="col push-l3 l9" id="row-first">
 		
 		<!-- <button id="" class="btn btn-sm">[+]Add Data</button> -->
-		<table class="table display"  id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px">
+		<table class="table display"  id="table">
 			<thead class="teal white-text">
 				<tr class="rowhead">
 					<th class="center align-middle">#</th>
@@ -172,8 +171,7 @@
 	<div class="modal-footer">
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
 		<button id="submit_new" class="waves-effect light-blue accent-4 waves-green btn-flat white-text"><i class="fa fa-save"></i></button>
-	</div>
-	
+	</div>	
 </div>
 <!-- end modal add-->
 
@@ -535,7 +533,6 @@
 								data.divisi = $('#divisi-select').val();
 								data.tahun = $('#year-select').val();
 								data.my_task = $('#my_task').val();
-								
 				}
 
 			},
@@ -599,7 +596,7 @@
 		$('#table_filter label').html(html)
 		
 		$('#btn-filter').on('click', function(e){
-			$('#filter').toggleClass('hide')
+			$('#filter').toggleClass('hide');
 		})
 		$('#searchnew').on('keyup change', function(){
 				table
@@ -1077,26 +1074,8 @@
 							//$('.spk').show();
 							$('#modal_prosesSPK').modal('close');
 							update_modal(id);
-							/*let nospk = data.nospk.split("<br>");
-							let idspk = data.idspk.split("<br>");
-							let no_spk = '';
-							for(i = 0;i<nospk.length;i++){
-								if(i == nospk.length - 1){
-								 	no_spk += "<a href='#' data-id='"+idspk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a>";
-								}else{
-								 	no_spk += "<a href='#' data-id='"+idspk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a><br>";
-								}
-								
-							}*/
 							
-							/*$('#d_no_spk').html(no_spk);
-							$('#d_tgl_spk').html(data.tgl);
-							$('#ds_vendor').html(data.svendor);
-							$('#d_status_data').text(data.status);
-							
-							$('#btn-proses').hide();*/
 							$('#table').DataTable().ajax.reload();
-							//$('#formprosesSPK input').val('');
 						})
 					
 					}else{
@@ -1117,48 +1096,45 @@
 		$('#btntmbhitem').on('click', function(e){
 			e.preventDefault()
 			let html = '<div class="input-field col l4 s12">'+
-								 '<input name="no_spk[]" type="text">'+
-								 '<label>Item</label>'+
-								 '</div>'+
-								 '<div class="input-field col l2 s12">'+
-							   '<input name="no_spk[]" type="text">'+
-								 '<label>qty</label>'+
-								 '</div>'+
-								 '<div class="input-field col l2 s12">'+
-								 '<input name="no_spk[]" type="text">'+
-								 '<label>hps</label>'+
-								 '</div>'+
-								 '<div class="input-field col l2 s12">'+
-								 '<input name="no_spk[]" type="text">'+
-								 '<label>penawaran</label>'+
-								 '</div>'+
-								 '<div class="input-field col l2 s12">'+
-								 '<input name="no_spk[]" type="text">'+
-								 '<label>nego</label>'+
-								 '</div>';
+						 '<input name="no_spk[]" type="text">'+
+						 '<label>Item</label>'+
+						 '</div>'+
+						 '<div class="input-field col l2 s12">'+
+					   	 '<input name="no_spk[]" type="text">'+
+						 '<label>qty</label>'+
+						 '</div>'+
+						 '<div class="input-field col l2 s12">'+
+						 '<input name="no_spk[]" type="text">'+
+						 '<label>hps</label>'+
+						 '</div>'+
+						 '<div class="input-field col l2 s12">'+
+						 '<input name="no_spk[]" type="text">'+
+						 '<label>penawaran</label>'+
+						 '</div>'+
+						 '<div class="input-field col l2 s12">'+
+						 '<input name="no_spk[]" type="text">'+
+						 '<label>nego</label>'+
+						 '</div>';
 			$('#ddetail').append(html);
 		})
 		var no = 0;
 		$('#btntmbhvendor').on('click', function(e){
 			no++;
 			let html = 	'<div class="input-field col l4 s12">'+
-									'<select name="id_vendor[]" type="text" class="select2" id="selectvendor'+no+'" style="">'+
-										'<option value="">--select--</option>'+
-									'</select>'+
-									'<label class="active" style="top: -14px;">Nama Vendor</label>'+
-								'</div>'+
-								'<div class="input-field col l4 s12">'+
-									'<input class="datepicker" name="tgl_spk[]" type="text"  id="tglspk'+no+'">'+
-									'<label>Tgl. SPK</label>'+
-								'</div>'+
-								'<div class="input-field col l4 s12">'+
-									'<input name="no_spk[]" type="text">'+
-									'<label>No. SPK</label>'+
-								'</div>';
-
-			
+						'<select name="id_vendor[]" type="text" class="select2" id="selectvendor'+no+'" style="">'+
+						'<option value="">--select--</option>'+
+						'</select>'+
+						'<label class="active" style="top: -14px;">Nama Vendor</label>'+
+						'</div>'+
+						'<div class="input-field col l4 s12">'+
+						'<input class="datepicker" name="tgl_spk[]" type="text"  id="tglspk'+no+'">'+
+						'<label>Tgl. SPK</label>'+
+						'</div>'+
+						'<div class="input-field col l4 s12">'+
+						'<input name="no_spk[]" type="text">'+
+						'<label>No. SPK</label>'+
+						'</div>';
 			$('#dspk').append(html);
-			
 			$('.datepicker').datepicker({
 				container: 'body',
 				format: 'dd-mm-yyyy',
@@ -1167,20 +1143,15 @@
 				firstDay:1
 			});
 			$.post("<?= base_url()."tdr/get_tdr";?>", function(result){
-        let idoption = '#selectvendor'+no;
-        var options = $(idoption);
-
-        $.each(JSON.parse(result), function() {
-              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
-        });
-        $(".select2").select2({
-					placeholder: 'Select an option',
-					//theme: 'material'
-
-				},$('select').css('width','100%'));
-		
-
-      });
+		        let idoption = '#selectvendor'+no;
+		        var options = $(idoption);
+		        $.each(JSON.parse(result), function() {
+		              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+		        });
+	        $(".select2").select2({
+				placeholder: 'Select an option',
+			},$('select').css('width','100%'));
+	      	});
 		})
 
 
@@ -1188,14 +1159,12 @@
 			e.preventDefault();
 			let id = $(this).attr('data-id');
 			$('#modal_aanwijzing').modal('open');
-			//formanwijzing
 		})
 
 		$('#proses_aanwijzing').on('click', function(e){
 			e.preventDefault();
 			console.log($('#formanwijzing').serialize())
 		})
-
 	})
 	function update_modal(id){
 		$.ajax({
@@ -1208,13 +1177,13 @@
 				$('#d_kelompok').text(strip(data.kelompok));
 				$('#d_user').text(strip(data.user));
 				$('#d_email').text(strip(data.email));
-				$('#d_tgl_email').text(tanggal(data.tgl_email));
-				$('#d_tgl_t_email').text(tanggal(data.tgl_terima_email));
+				$('#d_tgl_email').text(tanggal_indo(data.tgl_email));
+				$('#d_tgl_t_email').text(tanggal_indo(data.tgl_terima_email));
 				$('#d_jenis_surat').html(data.jenis_surat);
 				$('#d_no_surat').text(strip(data.no_surat));
 				$('#d_perihal').text(strip(data.perihal));
-				$('#d_tgl_surat').text(tanggal(data.tgl_surat));
-				$('#d_terima_surat').text(tanggal(data.tgl_terima_surat));
+				$('#d_tgl_surat').text(tanggal_indo(data.tgl_surat));
+				$('#d_terima_surat').text(tanggal_indo(data.tgl_terima_surat));
 				$('#d_unamepembuat').text(data.username);
 				if(data.tempat_pengadaan === null){
 					

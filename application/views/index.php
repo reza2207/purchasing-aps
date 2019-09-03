@@ -1,59 +1,59 @@
 <!-- loader -->
-   <div class="waiting">
-      <div class="warning-alert">
-        <div class="loader">
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
+    <div class="waiting">
+        <div class="warning-alert">
+          <div class="loader">
+            <div class="preloader-wrapper big active">
+              <div class="spinner-layer spinner-blue">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                  <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
               </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
 
-            <div class="spinner-layer spinner-red">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
+              <div class="spinner-layer spinner-red">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                  <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
               </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
 
-            <div class="spinner-layer spinner-yellow">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
+              <div class="spinner-layer spinner-yellow">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                  <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
               </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
 
-            <div class="spinner-layer spinner-green">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
+              <div class="spinner-layer spinner-green">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                  <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
               </div>
             </div>
           </div>
+          <div class="warning-text">Please Wait...<i class='fa fa-smile-o'></i></div>
         </div>
-        <div class="warning-text">Please Wait...<i class='fa fa-smile-o'></i></div>
-      </div>
     </div>
   <!-- Page Layout here -->
     <div class="row first">
@@ -151,46 +151,16 @@
       <div class="col push-s3 s9">
       </div>
       <div class="col push-s3 s9">
-        <div class="carousel">
-
-          <a class="carousel-item" href="#one!">
-      <img src="<?= base_url().'gambar/Untitled-1.png';?>"></a>
-          <a class="carousel-item" href="#two!"><img src="<?= base_url().'gambar/logo_purch.png';?>"></a>
-          <a class="carousel-item" href="#three!"><img src="<?= base_url().'gambar/logo_purch_old.png';?>"></a>
-          <a class="carousel-item" href="#four!"><img src="<?= base_url().'gambar/profile/avatar.jpg';?>"></a>
+        <div class="collection with-header">
+          <li class="collection-header"><h4>Pengumuman</h4></li>
+          <a href="#!" class="collection-item">tes</a>
+          <a href="#!" class="collection-item">tes</a>
+          <a href="#!" class="collection-item">tes</a>
+          <a href="#!" class="collection-item">tes</a>
+          <a href="#!" class="collection-item">tes</a>
+          <li class="collection-item"></a>
         </div>
-
-        <!-- <div class="slider">
-          <ul class="slides">
-            <li>
-              <div class="caption center-align">
-                <img src="<?= base_url().'gambar/Untitled-1.png';?>" width="10cm" height="10px">
-                <h3>This is our big Tagline!</h3>
-                <h5 class="">Here's our small slogan.</h5>
-
-              </div>
-            </li>
-            <li>
-              <div class="caption left-align">
-                <h3>Left Aligned Caption</h3>
-                <h5 class="">Here's our small slogan.</h5>
-              </div>
-            </li>
-            <li>
-              <div class="caption right-align">
-                <h3>Right Aligned Caption</h3>
-                <h5 class="">Here's our small slogan.</h5>
-              </div>
-            </li>
-            <li>
-              <div class="caption center-align">
-                <h3>This is our big Tagline!</h3>
-                <h5 class="">Here's our small slogan.</h5>
-              </div>
-            </li>
-          </ul>
-        </div> -->
-      
+            
       </div>
 
     </div>

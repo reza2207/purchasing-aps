@@ -22,9 +22,10 @@ class User extends CI_Controller {
 	public function __construct(){
 
 		parent::__construct();
-		$this->load->model('user_model');
+		$this->load->model('User_model');
 		$this->load->helper(array('form', 'url'));
 		$this->load->model('Pks_model');
+		date_default_timezone_set("Asia/Bangkok");
 	}	
 
 
@@ -97,9 +98,9 @@ class User extends CI_Controller {
 				$username = $this->input->post('username');
 				$password = $this->input->post('password');
 				
-				if ($this->user_model->resolve_user_login($username, $password)) {
+				if ($this->User_model->resolve_user_login($username, $password)) {
 					
-					$user  = $this->user_model->get_user($username);
+					$user  = $this->User_model->get_user($username);
 					
 					// set session user datas
 					$_SESSION['username']     = (string)$user->username;
@@ -169,12 +170,7 @@ class User extends CI_Controller {
 	        $this->form_validation->set_rules('recovery_answer', 'Recovery Answer', 'required|trim');
 	        $this->form_validation->set_rules('role', 'Role', 'required');
 
-			$username = $this->input->post('username',TRUE);
-			$password = $this->input->post('password');
-			$fullname = $this->input->post('full_name',TRUE);
-			$recovery = $this->input->post('recovery', TRUE);
-			$answer = $this->input->post('recovery_answer', TRUE);
-			$role = $this->input->post('role');
+			
 	        
 	        if ($this->form_validation->run() == FALSE){
 
@@ -185,7 +181,14 @@ class User extends CI_Controller {
 
 	        }
 			else{
-				$this->user_model->create_user($username, $password, $fullname, $recovery, $answer, $role);
+				$username = $this->input->post('username',TRUE);
+				$password = $this->input->post('password');
+				$fullname = $this->input->post('full_name',TRUE);
+				$recovery = $this->input->post('recovery', TRUE);
+				$answer = $this->input->post('recovery_answer', TRUE);
+				$role = $this->input->post('role');
+
+				$this->User_model->create_user($username, $password, $fullname, $recovery, $answer, $role);
 				$respons_ajax['status'] = 'success';
 				$respons_ajax['pesan'] = 'Register Success';
 				echo json_encode($respons_ajax);		
@@ -200,10 +203,150 @@ class User extends CI_Controller {
 
 	public function forgot_password(){
 
-		$data = new stdClass();
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
-		$this->load->view('header');
-		$this->load->view('footer');
+			show_404();
+		}else{
+
+			$data = new stdClass();
+			$this->load->view('forgot_password');
+		}
+	}
+
+	public function check_user(){
+		if($this->input->post(null)){
+			$username = $this->input->post('username');
+
+			if($this->User_model->get_detail($username)->num_rows() == 0)
+			{
+				$data = new stdClass();
+				$data->type = 'error';
+				$data->message = 'Username Not Found';
+				echo json_encode($data);
+			}else{
+				$data = new stdClass();
+				$data->type = 'success';
+				$data->message = $this->User_model->get_detail($username)->row('recovery_q');
+				echo json_encode($data);
+			}
+
+		}
+	}
+
+	public function submit_answer()
+	{
+		if($this->input->post(null)){
+			$username = $this->input->post('username');
+			$question = $this->input->post('question');
+			$answer = $this->input->post('answer');
+
+			if($this->_check_answer($username, $question, $answer)){
+				$data = new stdClass();
+				$data->type = 'success';
+				echo json_encode($data);
+			}else{
+				$data = new stdClass();
+				$data->type = 'error';
+				$data->message = 'Sorry, your answer is wrong';
+				echo json_encode($data);
+			}
+		}else{
+
+			show_404();
+		}
+	}
+
+	protected function _check_answer($username, $question, $answer){
+
+		if($this->User_model->check_answer($username, $question, $answer)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public function submit_new_password()
+	{
+		if($this->input->post(null))
+		{
+
+			$this->load->library('form_validation');
+			
+			$this->form_validation->set_rules('password', 'Password', 'required|min_length[6]',
+	                array('required' => 'You must provide a %s.')
+	        );
+ 			if ($this->form_validation->run() == FALSE){
+
+	            $errors = validation_errors();
+	            $respons_ajax['status'] = 'error';
+	            $respons_ajax['pesan'] = $errors;
+	            echo json_encode($respons_ajax);
+
+	        }else{
+				$username = $this->input->post('username');
+				$newpassword = $this->input->post('password');
+				if($this->User_model->submit_new_pass($username, $newpassword))
+				{
+					$data = new stdClass();
+					$data->type = 'success';
+					$data->message = 'Your password is updated!';
+					echo json_encode($data);
+
+				}else{
+					$data = new stdClass();
+					$data->type = 'error';
+					$data->message = 'Failed to update';
+					echo json_encode($data);
+				}
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function change_profile()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				$this->load->library('form_validation');
+				$this->form_validation->set_rules('password', 'Password', 'required|min_length[6]');
+				/*$this->form_validation->set_rules('question', 'Recovery Question', 'required|trim|min_length[10]');
+	        	$this->form_validation->set_rules('answer', 'Recovery Answer', 'required|trim');*/
+
+				if ($this->form_validation->run() == FALSE){
+
+				}else{
+					$username = $_SESSION['username'];
+					$newpassword = $this->input->post('newpassword');
+					//$question = $this->input->post('question');
+					//$answer = $this->input->post('answer');
+
+					//if($this->User_model->update_profil($username, $newpassword, $question, $answer))
+					if($this->User_model->update_profil($username, $newpassword))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->message = 'Your password is updated!';
+						echo json_encode($data);
+
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->message = 'Failed to update';
+						echo json_encode($data);
+					}
+
+				}
+				
+
+			}else{
+				show_404();
+			}
+
+		}else{
+			show_404();
+		}
 	}
 
 	

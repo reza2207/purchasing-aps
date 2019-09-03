@@ -12,32 +12,32 @@
       <link href="<?= base_url().'assets/css/balloon.css';?>" rel="stylesheet">
       
       <link href="<?= base_url().'assets/css/reza.css';?>" rel="stylesheet">
+      <!-- Include Editor style. -->
+      
 
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <link rel="icon" href="<?= base_url().'gambar/logo_purch.png';?>">
     </head>
     <title><?= $title == "" ? "" : $title;?></title>
-    <style>
-    .collapsible-header, .collapsible-body{padding-left: 30px !important;}
     
-    </style>
-   
     <body class="red lighten-5">
       <div class="navbar-fixed">
         <div class="navbar"  style="width: calc(100%-50%);left:300px;">
-          <nav class="nav-wrapper amber darken-4 header" style="">
+          <nav class="nav-wrapper amber darken-4 header">
            
-              <a href="#" class="brand-logo show-on-small hide-on-large-only brand-logo "  data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
+              <a href="#" class="brand-logo show-on-small hide-on-large-only brand-logo " data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
               <a href="<?= base_url();?>" id="brand-logo" class="show-on-large hide-on-med-and-down brand-logo center" for='dekstop'>Purchasing System</a>
               
               <a href="#" data-target="slide-out" class="sidenav-trigger show-on-small hide-on-up center" style="font-size: 16px"><i class='fa fa-bars'></i></a>
 
               <ul class="right hide-on-med-and-down">
                 <?php if ($_SESSION['role'] == "superuser" ){?>
-                <li><a href="<?= base_url().'user/add_user';?>">Add User</a></li>
+                <li><a href="<?= base_url().'user/add_user';?>" class="waves-effect">Add User</a></li>
                 <?php } ?>
+                <?php if ($_SESSION['role'] != "user" ){?>
                 <li><a href="<?= base_url('setting');?>">Setting</a></li>
+                <?php }?>
                 <li><a href="<?= base_url('user/logout');?>">Logout</a></li>
               </ul>
             </div>
@@ -47,34 +47,28 @@
       <ul id="slide-out" class="sidenav sidenav-fixed orange lighten-2" style=";overflow-y: hidden;">
         <!-- <ul id="slide-out" class="sidenav sidenav-fixed indigo lighten-5"> -->
         <li>
-          <div class="user-view" style="display: block;padding-left: 10px">
+          <div class="user-view">
             <div class="background"> 
               <img src="<?= base_url().'gambar/background.jpg';?>" width="100%" height="100%">
             </div>
-            <img id="img-user" class="circle responsive-img tooltip-red" src="<?= base_url().$_SESSION['icon'];?>" style="text-transform: capitalize;display: inline-block;border-style:solid;border-color:#d4e157;height: 100px;width: 100px;filter:grayscale(100%);" aria-label="I am red!">
+            <img id="img-user" class="circle responsive-img tooltip-red" src="<?= base_url().$_SESSION['icon'];?>">
             
-            <span class="name" style="text-transform: capitalize;display: inline-block;position: absolute;padding-left: 10px;font-family: happySchool;letter-spacing: 2px;color:#00b0ff;text-shadow: 3px 2px 2px white;margin-top: 0px;">Hi, <b><?= $_SESSION['nama'];?>!</b></span>
+            <span class="name" id="sayhi">Hi, <b><?= $_SESSION['nama'];?>!</b></span>
             
           </div>
 
         </li>
-        <style>
-          .collapsible-header:hover , .bold a:hover{
-            border-left: 6px solid #FF4500;
-            
-          }
-        </style>
         <ul class="collapsible">
           <li class="">
-            <div class="collapsible-header">PKS<span class="new badge red" data-badge-caption=""><?= $pks->num_rows();?></span></div>
+            <div class="collapsible-header waves-effect">PKS<span class="new badge red" data-badge-caption=""><?= $pks->num_rows();?></span></div>
             <div class="collapsible-body">
               <ul>
                 <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
               </ul>
             </div>
           </li>
-          <li class="">
-            <div class="collapsible-header">Pengadaan</div>
+          <li>
+            <div class="collapsible-header waves-effect">Pengadaan</div>
             <div class="collapsible-body">
               <ul>
                 <li><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
@@ -82,7 +76,7 @@
             </div>
           </li>
           <li>
-            <div class="collapsible-header"> Register</div>
+            <div class="collapsible-header waves-effect"> Register</div>
             <div class="collapsible-body">
               <ul>
                 <li><a href="<?= base_url().'register/masuk';?>">Surat Masuk</a></li>
@@ -125,6 +119,10 @@
 <script src="<?= base_url().'assets/js/reza.js';?>"></script>
 <script src="<?= base_url().'assets/js/tooltip.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/popper.min.js';?>"></script>
+
+<script src="<?= base_url().'assets/ckeditor/ckeditor.js';?>"></script>
+<!-- <script src="<?= base_url().'assets/ckeditor5-build-classic/ckeditor.js';?>"></script>
+<script src="<?= base_url().'assets/ckeditor5-ckfinder-master/src/ckfinder.js';?>"></script> -->
 <script>
   
   $(document).ready(function(){/*

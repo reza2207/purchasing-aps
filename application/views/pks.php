@@ -3,10 +3,21 @@
 {
 background: #D7A42B;color:white;
 }
-#modal_ubah label{color:white;
+#table-detail tr td {
+     padding-top:0px;padding-bottom:0px;font-size: 12px
+  }
 
+#table-detail td:first-of-type{
+  width: 270px;font-weight: bolder;
+}
+#table-detail tr:first-of-type{
+  background-color: #D7A42B;color:white;
+}
+#modal_ubah label{
+  color:white;
 }
 </style>
+
 <div class="row first">
 
   <!-- <div class="col s12"> -->
@@ -34,6 +45,8 @@ background: #D7A42B;color:white;
   </div>
 </div>
 
+
+
 <!-- Modal Structure add-->
 <div id="modal_tambah" class="modal modal-fixed-footer">
   <div class="modal-content">
@@ -47,7 +60,7 @@ background: #D7A42B;color:white;
             <label class="active">No. Surat Penunjukan</label>
           </div>  
           <div class="input-field col s12 l6">
-            <input name="tgl_minta" type="text" class="validate datepicker" value="<?= date('Y-m-d');?>" required>
+            <input name="tgl_minta" type="text" class="validate datepicker" value="<?= date('d-m-Y');?>" required>
             <label class="active">Tanggal Permintaan</label>
           </div>
           <div class="input-field col s12 l6">
@@ -99,23 +112,18 @@ background: #D7A42B;color:white;
   </div>
 </div>
 <!-- end modal add-->
-<style>
-  #table-detail tr td {
-     padding-top:0px;padding-bottom:0px;font-size: 12px
-  }
-
-  #table-detail td:first-of-type{
-    width: 270px;font-weight: bolder
-  }
-</style>
 <!-- Modal Structure detail-->
 <div id="modal_detail" class="modal modal-fixed-footer">
   <div class="modal-content">
-    <h6 id="title-modal"></h6>
-    
+       
     <div class="col s12 l12">
       <div class="row">
         <table id="table-detail">
+          <tr>
+            <td>Perihal</td>
+            <td>:</td>
+            <td id="d_perihal" style="font-weight: bolder"></td>
+          </tr>
           <tr>
             <td>Surat Penunjukan</td>
             <td>:</td>
@@ -125,11 +133,6 @@ background: #D7A42B;color:white;
             <td>Vendor</td>
             <td>:</td>
             <td id="d_vendor"></td>
-          </tr>
-          <tr>
-            <td>Perihal</td>
-            <td>:</td>
-            <td id="d_perihal"></td>
           </tr>
           <tr>
             <td>Tgl. Pekerjaan</td>
@@ -215,7 +218,11 @@ background: #D7A42B;color:white;
   
   </div>
   <div class="modal-footer">
+    <?php 
+    if($_SESSION['role'] != "user"){?>
     <button class="waves-blue btn-flat left teal white-text" id="btn-comment" aria-label="Tambah Comment" data-balloon-pos="right"><i class='fa fa-pencil-square-o'></i></button>
+    <button class="waves-blue btn-flat left orange white-text" id="btn-reminder" aria-label="Reminder Jatuh Tempo PKS" data-balloon-pos="right"><i class='fa fa-mail-forward'></i></button>
+    <?php }?>
     
     <?php 
     if(isset($_SESSION['role'])){
@@ -339,7 +346,7 @@ background: #D7A42B;color:white;
         <div class="row">
           <div class="input-field col l3 s12">
             <input type="text" class="hide" name="id" id="pid_pks" required>
-            <input type="text" class="" id="ps_penunjukan" required>
+            <input type="text" class="" id="ps_penunjukan" name="no_penunjukan" required>
             <label>No. Surat Penunjukan</label>
           </div>
           <div class="input-field col s12 l9">
@@ -406,13 +413,15 @@ background: #D7A42B;color:white;
     //$('.select2-selection__arrow').addClass("fa fa-spin");
     $('.datepicker').datepicker({
       container: 'body',
-      format: 'yyyy-mm-dd',
+      format: 'dd-mm-yyyy',
       autoClose: true,
+      disableWeekends:true,
+      firstDay:1
 
     });
     $('.modal').modal();
     $('.bg').hide();
-    var table = $('#table').DataTable({
+    let table = $('#table').DataTable({
       "lengthMenu": [[5,10,25, 50, -1],[5,10,25,50, "All"]],
       "stateSave": false,
       "processing" : true,
@@ -476,10 +485,10 @@ background: #D7A42B;color:white;
     })
     $('#table_filter input ').attr('placeholder', 'Search here...');
     //$('#table_filter label').hide();
-    var html = "<div class='input-field'><label class='active'>Search</label>"+
-    "<input type='text' class='validate' id='searchnew'>"+
+    let tagsearch = "<div class='input-field'><label class='active'>Search</label>"+
+    "<input type='text' class='validate' id='searchnew' style='margin-left: 0;'>"+
     "</div>";
-    $('#table_filter label').html(html)
+    $('#table_filter label').html(tagsearch);
 
     
     $('#searchnew').on('keyup change', function(){
@@ -500,28 +509,404 @@ background: #D7A42B;color:white;
       });
       $('#modal_detail').modal('open');
 
-      var id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
+      let id = $(this).attr('data-id');
+
+      //table.row($(this).parents('tr')).data();
       $('#btn-ubah').attr('data-id', id);
       $('#btn-hapus').attr('data-id', id);
       $('#btn-comment').attr('data-id', id);
       $('#proses').attr('data-id', id);
+      $('#update').attr('data-id', id);
+      $('#prosespks').attr('data-id', id);
+      detail_pks(id);
+      get_comment(id)
+    }) //end tbody row click
+
+    $('#proses').on('click', function(){ //proses 
+      $('#modal_proses').modal('open');
+      $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('');
+      $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+            });
+      let id = $('#proses').attr('data-id');
+      $.ajax({
+        type: 'POST',
+        url: '<?= base_url()."pks/get_detail";?>',
+        data: {id:id,ubah:id},
+        success: function(response){
+          let data = JSON.parse(response);
+          $('#formproses label').addClass('active');
+          $('#pid_pks').val(id);
+          $('#ps_penunjukan').val(data.no_srt_pelaksana).attr('readonly', true);
+          $('#pperihal').val(data.perihal).attr('readonly', true);
+          let tgl1 = data.tgl_ke_legal;
+          let tgl2 =  data.tgl_draft_ke_user;
+          let tgl3 = data.tgl_draft_ke_vendor;
+          let tgl4 = data.tgl_review_send_to_legal;
+          let tgl5 = data.tgl_ke_vendor;
+          let tgl6 = data.tgl_blk_dr_vendor_ke_legal;
+          let tgl7 = data.tgl_ke_vendor_kedua;
+          let tgl8 = data.tgl_pks;
+          let nopks = data.no_pks;
+          if(tgl1 == '0000-00-00'){
+
+            $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+            
+          }else if(tgl2 == '0000-00-00' || tgl3 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal').datepicker('destroy');
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly',false);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly',false);
+            $('#pdraft_ke_user, #pdraft_ke_vendor').parent().show();
+            
+            $('#preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+            
+          }else if(tgl4 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal ').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
+
+            $('#preview_ke_legal').parent().show();
+            
+            $('#pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+
+          }else if(tgl5 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker('destroy');
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
+            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
+
+            $('#pttd_ke_vendor').parent().show();
+
+            $('#pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+
+          }else if(tgl6 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
+            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
+
+            $('#pttd_ke_pemimpin').parent().show();
+
+            $('#p_serahterima, #pno_pks, #ptgl_pks').parent().css('display','none');
+
+          }else if(tgl7 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
+            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
+            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
+
+            $('#p_serahterima,#pno_pks, #ptgl_pks').parent().show();
+          
+          }else if((tgl7 != '0000-00-00') && (tgl8 == '0000-00-00' || nopks == '')){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+
+            });
+
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
+            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
+            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
+            $('#p_serahterima').val(tgl7).attr('readonly', true);
+
+          }else{
+            
+             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin,#p_serahterima,#ptgl_pks').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
+            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
+            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
+            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
+            $('#p_serahterima').val(tgl7).attr('readonly', true);
+            $('#ptgl_pks').val(tgl8).attr('readonly', true);
+            $('#pno_pks').val(nopks).attr('readonly', true);
+
+            $('#btncancel').text('CLOSE');
+            $('#prosespks').hide();
+          }
+        }
+      })
+    })
+
+    $('#input-comment').hide();
+    $('#btn-comment').on('click', function(){
+      $('#input-comment').toggle('slow')
+    })
+    $('#input-comment').keypress(function(event) {
+        //event.preventDefault();
+      if(event.key == "Enter"){/* Act on the event */
+        let komen = this.value;
+        let id = $('#btn-comment').attr('data-id');
+
+        $.ajax({
+          type : 'POST',
+          url : '<?= base_url()."pks/add_comment";?>',
+          data: {id:id, comment:komen},
+          success: function(response){
+            let data = JSON.parse(response);
+            $('#input-comment').val('');
+            if(data.type == 'success'){
+              $('#input-comment').val('');
+              swal({
+                  type: data.type,
+                  text: data.message,
+                  showConfirmButton: true,
+              }).then(function(){
+                let col = '<a class="collection-item"><span class="new badge" data-badge-caption="'+data.comment_date+'">'+data.name+' on </span>'+data.comment+'</a>';
+                ('.collection').prepend(col);
+
+              })//ini
+            }else{
+              swal({
+                  type: data.type,
+                  text: data.message,
+                  showConfirmButton: true,
+              })
+            }
+          }
+        })
+      }
+    });
+    $('#reminder').on('click', function(e){
+      table.search('segera').draw();
+    })
+    //start hapus
+    $('#btn-hapus').on('click', function(){
+      let id =  $('#btn-hapus').attr('data-id');
+      swal({
+        type: 'warning',
+        text: 'Are you sure to delete this data?',
+        showCancelButton: true,
+      }).then(function(){
+        $.ajax({
+          type: 'POST',
+          url: '<?= base_url()."pks/delete_pks";?>',
+          data: {id:id},
+          success: function(response){
+            let data = JSON.parse(response);
+            swal({
+              type: data.type,
+              text: data.message,
+            }).then(function(){
+              $('#modal_detail').modal('close');
+              $('#table').DataTable().ajax.reload();
+            })
+          }
+        }) 
+      })
+    })
+    //end start hapus
+    $('#prosespks').on('click', function(e){
+      let id = $(this).attr('data-id');
+      $.ajax({
+        type: 'POST',
+        url:'<?= base_url()."pks/proses_pks";?>',
+        data: $('#formproses').serialize(),
+        success: function(response){
+          let data = JSON.parse(response);
+          swal({
+            type: data.type,
+            text: data.message,
+            showConfirmButton: true,
+          }).then(function(){
+            $('#modal_proses').modal('close');
+            //$('#modal_detail').modal('close');
+            detail_pks(id);
+            $('#table').DataTable().ajax.reload();
+          })
+        }
+      })
+    })
+    //btn update
+    $('#btn-ubah').on('click', function(e){
+      $('#modal_ubah').modal('open');
+      e.preventDefault();
+      let id = $('#btn-ubah').attr('data-id');      
+      $.ajax({
+        type: 'POST',
+        url: '<?= base_url()."pks/get_detail";?>',
+        data: {id:id,ubah:id},
+        success: function(response){
+          let data = JSON.parse(response);
+
+          $('#eid_tdr').select2().val(data.id_vendor).trigger('change.select2')
+          $('#eid_pks').val(id);
+          $("#modal_ubah label").addClass('active');
+          $('#eno_penunjukan').val(data.no_srt_pelaksana);
+          $('#etgl_minta').val(cektgl(data.tgl_minta));
+          $('#eno_usulan').val(data.no_notin);
+          $('#eperihal').val(data.perihal);
+          $('#etgl_awal').val(cektgl(data.tgl_krj_awal));
+          $('#etgl_akhir').val(cektgl(data.tgl_krj_akhir));
+          $('#enominal_rp').val(data.nominal_rp);
+          $('#enominal_usd').val(data.nominal_usd);
+          $('#enominal_bg').val(data.bg_rp);
+          $('#edraft_dr_legal').val(cektgl(data.tgl_ke_legal));
+          $('#edraft_ke_user').val(cektgl(data.tgl_draft_ke_user));
+          $('#edraft_ke_vendor').val(cektgl(data.tgl_draft_ke_vendor));
+          $('#ereview_ke_legal').val(cektgl(data.tgl_review_send_to_legal));
+          $('#ettd_ke_vendor').val(cektgl(data.tgl_ke_vendor));
+          $('#ettd_ke_pemimpin').val(cektgl(data.tgl_blk_dr_vendor_ke_legal));
+          $('#e_serahterima').val(cektgl(data.tgl_ke_vendor_kedua));
+          $('#eno_pks').val(data.no_pks);
+          $('#etgl_pks').val(cektgl(data.tgl_pks));
+
+          if($('#enominal_rp').val() > 100000000){
+            $('.ebg').show();
+          }else{
+            $('.ebg').hide();
+          }
+          $('#enominal_rp').on('change', function(){
+            let nom = this.value;
+            if(nom > 100000000){
+              let bg = Math.ceil(nom / 100*5);
+              $('.ebg').show();
+              $('#enominal_bg').val(bg);
+              
+            } else {
+              $('.ebg').hide()
+              $('#enominal_bg').val('');
+            }
+          })          
+        }
+      })
+    }) 
+    //end btn 
+    $('#update').on('click', function(){
+      let id = $(this).attr('data-id');
+      $.ajax({
+        type: 'POST',
+        url: '<?= base_url()."pks/update_pks";?>',
+        data: $('#formedit').serialize(),
+        success: function(response){
+          let data = JSON.parse(response);
+          swal({
+              type: data.type,
+              text: data.message,
+              showConfirmButton: true,
+          }).then(function(){
+            $('#modal_ubah').modal('close');
+            detail_pks(id)
+            $('#table').DataTable().ajax.reload();
+          })
+        }
+      })
+    })
+
+    $("#add_data").on('click', function(){
+      $('#modal_tambah').modal('open');
+      $('#nominal_rp').on('change', function(){
+        let nom = this.value;
+        if(nom >= 100000000){
+          let bg = Math.ceil(nom / 100*5);
+          $('.bg').show();
+          $('#nominal_bg').val(bg);
+          $('#labelnom').addClass('active');
+        } else {
+          $('.bg').hide()
+          $('#nominal_bg').val('');
+        }
+      })
+      
+    })
+    $('#save').on('click', function(){
+        
+      $.ajax({
+        type: 'POST',
+        url : '<?= base_url()."pks/add_data";?>',
+        data: $('#formtambah').serialize(),
+        success: function(response){
+          let data = JSON.parse(response);
+          swal({
+            type: data.type,
+            text: data.message,
+            showConfirmButton: true,
+          }).then(function(){
+            $('#formtambah input').val('');
+            $('#modal_tambah').modal('close');
+            $('#table').DataTable().ajax.reload();
+          })
+        }
+      })
+    })
+
+    function detail_pks(id)
+    {
       $.ajax({
         type:'POST',
         url: '<?= base_url()."pks/get_detail";?>',
         data: {id:id},
         success: function(response){
           
-          var data = JSON.parse(response);
-          var pks = data.pks;
-          var comment = data.comment;
-          var html = "";
+          let pks = JSON.parse(response);
+          let html = "";
           
           $('#d_srt_pen').text(pks.no_srt_pelaksana);
           $('#d_vendor').text(pks.nm_vendor);
           $('#d_perihal').text(pks.perihal);
           $('#d_pekerjaan').text(tanggal_indo(pks.tgl_krj_awal)+' s/d '+tanggal_indo(pks.tgl_krj_akhir));
           $('#d_nominalrp').text(formatNumber(pks.nominal_rp));
-          $('#d_bgrp').text(formatNumber(pks.bg_rp));
+          if(pks.bg_rp == 0){
+            $('#d_bgrp').parent().hide();
+          }else{
+            $('#d_bgrp').text(formatNumber(pks.bg_rp));
+          }
           $('#d_usulanp').text(pks.no_notin);
           $('#d_minta').text(tanggal_indo(pks.tgl_minta));
           if(tanggal_indo(pks.tgl_ke_legal) == '-'){
@@ -578,378 +963,39 @@ background: #D7A42B;color:white;
             $('#d_tglpks').parent().show();
             $('#d_nopks').text(tanggal_indo(pks.tgl_pks));
           }
-          $('#d_status').text(pks.status+ ' '+pks.segera);
+          let statusexp = pks.segera == '' ? '' : '('+pks.segera+')';
+          let segera = "<i style='color:red'>"+statusexp+"</i>";
+          $('#d_status').html(pks.status+' '+segera);
           
-          if(comment.length > 0){
-            for(i = 0;i < comment.length;i++){
-            html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+comment[i].comment_date+'">'+comment[i].nama+' on </span>'+comment[i].comment+'</a>';
+        }
+      })
+    }//end function detail table
+
+    function get_comment(id)
+    {
+      $.ajax({
+        type:'POST',
+        url: '<?= base_url()."pks/get_comment";?>',
+        data: {id:id},
+        success: function(response){
+          let data = JSON.parse(response);
+          let html = '';
+          if(data.length > 0){
+            for(i = 0;i < data.length;i++){
+              if(i == 0){
+                html += '<a class="collection-item green white-text"><span class="new badge" data-badge-caption="'+data[i].comment_date+'">'+data[i].nama+' on </span>'+data[i].comment+'</a>';
+              }else{
+                html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+data[i].comment_date+'">'+data[i].nama+' on </span>'+data[i].comment+'</a>';
+              }
             
             }
             $('#comment').html(html);
           }else{
             $('#comment').html('');
           }
-          //
         }
       })
-      
-    }) //end tbody row click
-
-    $('#proses').on('click', function(){ //proses 
-      $('#modal_proses').modal('open');
-      $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('');
-      $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-            });
-      var id = $('#proses').attr('data-id');
-      $.ajax({
-        type: 'POST',
-        url: '<?= base_url()."pks/get_detail";?>',
-        data: {id:id,ubah:id},
-        success: function(response){
-          var data = JSON.parse(response);
-          $('#formproses label').addClass('active');
-          $('#pid_pks').val(id);
-          $('#ps_penunjukan').val(data.no_srt_pelaksana).attr('readonly', true);
-          $('#pperihal').val(data.perihal).attr('readonly', true);
-          var tgl1 = data.tgl_ke_legal;
-          var tgl2 =  data.tgl_draft_ke_user;
-          var tgl3 = data.tgl_draft_ke_vendor;
-          var tgl4 = data.tgl_review_send_to_legal;
-          var tgl5 = data.tgl_ke_vendor;
-          var tgl6 = data.tgl_blk_dr_vendor_ke_legal;
-          var tgl7 = data.tgl_ke_vendor_kedua;
-          var tgl8 = data.tgl_pks;
-          var nopks = data.no_pks;
-
-          if(tgl1 == '0000-00-00'){
-
-            $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-            
-          }else if(tgl2 == '0000-00-00' || tgl3 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal').datepicker('destroy');
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user, #pdraft_ke_vendor').parent().show();
-            
-            $('#preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-            
-          }else if(tgl4 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal ').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-
-            $('#preview_ke_legal').parent().show();
-            
-            $('#pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-
-          }else if(tgl5 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker('destroy');
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-
-            $('#pttd_ke_vendor').parent().show();
-
-            $('#pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-
-          }else if(tgl6 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-
-            $('#pttd_ke_pemimpin').parent().show();
-
-            $('#p_serahterima, #pno_pks, #ptgl_pks').parent().css('display','none');
-
-          }else if(tgl7 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
-
-            $('#p_serahterima,#pno_pks, #ptgl_pks').parent().show();
-          
-          }else if((tgl7 != '0000-00-00') && (tgl8 == '0000-00-00' || nopks == '')){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-
-            });
-
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
-            $('#p_serahterima').val(tgl7).attr('readonly', true);
-
-          }else{
-            
-             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin,#p_serahterima,#ptgl_pks').datepicker({
-              container: 'body',
-              format: 'yyyy-mm-dd',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
-            $('#p_serahterima').val(tgl7).attr('readonly', true);
-            $('#ptgl_pks').val(tgl8).attr('readonly', true);
-            $('#pno_pks').val(nopks).attr('readonly', true);
-
-            $('#btncancel').text('CLOSE');
-            $('#prosespks').hide();
-          }
-        }
-      })
-    })
-
-    $('#input-comment').hide();
-    $('#btn-comment').on('click', function(){
-      $('#input-comment').toggle('slow')
-      $('#input-comment').keypress(function(event) {
-        //event.preventDefault();
-        if(event.key == "Enter"){/* Act on the event */
-          var komen = this.value;
-          var id = $('#btn-comment').attr('data-id');
-          $.ajax({
-            type : 'POST',
-            url : '<?= base_url()."pks/add_comment";?>',
-            data: {id:id, comment:komen},
-            success: function(response){
-              var data = JSON.parse(response);
-              if(data.type == 'success'){
-                swal({
-                    type: data.type,
-                    text: data.message,
-                    showConfirmButton: true,
-                }).then(function(){
-                  var col = '<a class="collection-item"><span class="new badge" data-badge-caption="'+data.comment_date+'">'+data.name+' on </span>'+data.comment+'</a>';
-                  ('.collection').prepend(col);
-                })//ini
-              }else{
-                swal({
-                    type: data.type,
-                    text: data.message,
-                    showConfirmButton: true,
-                })
-              }
-            }
-          })
-        }
-      });
-    })
-    $('#reminder').on('click', function(e){
-      table.search('segera').draw();
-    })
-    //start hapus
-    $('#btn-hapus').on('click', function(){
-      var id =  $('#btn-hapus').attr('data-id');
-      swal({
-        type: 'warning',
-        text: 'Are you sure to delete this data?',
-        showCancelButton: true,
-      }).then(function(){
-        $.ajax({
-          type: 'POST',
-          url: '<?= base_url()."pks/delete_pks";?>',
-          data: {id:id},
-          success: function(response){
-            var data = JSON.parse(response);
-            swal({
-              type: data.type,
-              text: data.message,
-            }).then(function(){
-              $('#modal_detail').modal('close');
-              $('#table').DataTable().ajax.reload();
-            })
-          }
-        }) 
-      })
-    })
-    //end start hapus
-    $('#prosespks').on('click', function(e){
-      $.ajax({
-        type: 'POST',
-        url:'<?= base_url()."pks/proses_pks";?>',
-        data: $('#formproses').serialize(),
-        success: function(response){
-          var data = JSON.parse(response);
-          swal({
-            type: data.type,
-            text: data.message,
-            showConfirmButton: true,
-          }).then(function(){
-            $('#modal_proses').modal('close');
-            $('#modal_detail').modal('close');
-            $('#table').DataTable().ajax.reload();
-          })
-        }
-      })
-    })
-    //btn update
-    $('#btn-ubah').on('click', function(e){
-      $('#modal_ubah').modal('open');
-      e.preventDefault();
-      var id = $('#btn-ubah').attr('data-id');      
-      $.ajax({
-        type: 'POST',
-        url: '<?= base_url()."pks/get_detail";?>',
-        data: {id:id,ubah:id},
-        success: function(response){
-          var data = JSON.parse(response);
-
-          $('#eid_tdr').select2().val(data.id_vendor).trigger('change.select2')
-          $('#eid_pks').val(id);
-          $("#modal_ubah label").addClass('active');
-          $('#eno_penunjukan').val(data.no_srt_pelaksana);
-          $('#etgl_minta').val(cektgl(data.tgl_minta));
-          $('#eno_usulan').val(data.no_notin);
-          $('#eperihal').val(data.perihal);
-          $('#etgl_awal').val(cektgl(data.tgl_krj_awal));
-          $('#etgl_akhir').val(cektgl(data.tgl_krj_akhir));
-          $('#enominal_rp').val(data.nominal_rp);
-          $('#enominal_usd').val(data.nominal_usd);
-          $('#enominal_bg').val(data.bg_rp);
-          $('#edraft_dr_legal').val(cektgl(data.tgl_ke_legal));
-          $('#edraft_ke_user').val(cektgl(data.tgl_draft_ke_user));
-          $('#edraft_ke_vendor').val(cektgl(data.tgl_draft_ke_vendor));
-          $('#ereview_ke_legal').val(cektgl(data.tgl_review_send_to_legal));
-          $('#ettd_ke_vendor').val(cektgl(data.tgl_ke_vendor));
-          $('#ettd_ke_pemimpin').val(cektgl(data.tgl_blk_dr_vendor_ke_legal));
-          $('#e_serahterima').val(cektgl(data.tgl_ke_vendor_kedua));
-          $('#eno_pks').val(data.no_pks);
-          $('#etgl_pks').val(cektgl(data.tgl_pks));
-
-          if($('#enominal_rp').val() > 100000000){
-            $('.ebg').show();
-          }else{
-            $('.ebg').hide();
-          }
-          $('#enominal_rp').on('change', function(){
-            var nom = this.value;
-            if(nom > 100000000){
-              var bg = Math.ceil(nom / 100*5);
-              $('.ebg').show();
-              $('#enominal_bg').val(bg);
-              
-            } else {
-              $('.ebg').hide()
-              $('#enominal_bg').val('');
-            }
-          })          
-        }
-      })
-    }) 
-    //end btn 
-    $('#update').on('click', function(){
-      $.ajax({
-        type: 'POST',
-        url: '<?= base_url()."pks/update_pks";?>',
-        data: $('#formedit').serialize(),
-        success: function(response){
-          var data = JSON.parse(response);
-          swal({
-              type: data.type,
-              text: data.message,
-              showConfirmButton: true,
-          }).then(function(){
-            $('#modal_ubah').modal('close');
-            $('#modal_detail').modal('close');
-            $('#table').DataTable().ajax.reload();
-          })
-        }
-      })
-    })
-
-    $("#add_data").on('click', function(){
-      $('#modal_tambah').modal('open');
-      $('#nominal_rp').on('change', function(){
-        var nom = this.value;
-        if(nom >= 100000000){
-          var bg = Math.ceil(nom / 100*5);
-          $('.bg').show();
-          $('#nominal_bg').val(bg);
-          $('#labelnom').addClass('active');
-        } else {
-          $('.bg').hide()
-          $('#nominal_bg').val('');
-        }
-      })
-      
-    })
-    $('#save').on('click', function(){
-        
-      $.ajax({
-        type: 'POST',
-        url : '<?= base_url()."pks/add_data";?>',
-        data: $('#formtambah').serialize(),
-        success: function(response){
-          var data = JSON.parse(response);
-
-          swal({
-            type: data.type,
-            text: data.message,
-            showConfirmButton: true,
-          }).then(function(){
-            $('#modal_tambah').modal('close');
-            $('#table').DataTable().ajax.reload();
-          })
-        }
-      })
-    })
+    }
 
   })
 </script>

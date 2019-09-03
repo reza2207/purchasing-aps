@@ -176,6 +176,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	        }
 	        return count($hari)-1;
 
+	    }elseif($awal_tgl == $akhir_tgl){
+
+	        return "1";
+
 	    }else{
 
 	        return "error";

@@ -138,5 +138,44 @@ class User_model extends CI_Model {
 		
 	}
 
+	public function get_detail($username)
+	{
+		$this->db->select('username, recovery_q,answer_rec');
+		$this->db->from('user');
+		$this->db->where('username', $username);
+		return $this->db->get();
+	}
+
+	public function submit_new_pass($username, $newpassword)
+	{
+		$data = array('password'=>$this->hash_password($newpassword));
+		$this->db->where('username', $username);
+		return $this->db->update('user', $data);
+	}
+
+	public function check_answer($username, $question, $answer)
+	{
+		$this->db->from('user');
+		$this->db->where('username', $username);
+		$this->db->where('recovery_q', $question);
+		$this->db->where('answer_rec', $answer);
+		return $this->db->get();
+	}
+
+	public function update_photo($username, $profilpict)
+	{
+		$this->db->where('username', $username);
+		return $this->db->update('user', array('profil_pict'=>$profilpict));
+	}
+
+	public function update_profil($username, $newpassword)//, $question, $answer)
+	{
+		$data = array(//'recovery_q'=>$question,
+					  //'answer_rec'=>$answer,
+					  '$newpassword'=>$this->hash_password($newpassword));
+		$this->db->where('username', $username);
+		return $this->db->update('user', $data);
+	}
+
 	
 }

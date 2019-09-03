@@ -1,7 +1,7 @@
 .waiting
 {
     position: fixed;
-    z-index: 1000;
+    z-index: 1500;
     top: 0;
     left: 0;
     display:block;
@@ -16,10 +16,9 @@
 {
     position: relative;
     top: 45%;
-    left: 47%;
+    left: 40%;
     width: 20%;
     display: block;
-    
     color: white;
     /*border: 2px solid #ddd;*/
     border-radius: 5px;
@@ -89,23 +88,19 @@ div.fixed
 @font-face {
     font-family: ogresse;
     src: url('../font/Print Ogresse.ttf');
-    word-spacing: 100px
+    
 }
 @font-face {
     font-family: caviar;
     src: url('../font/CaviarDreams.ttf');
-    word-spacing: 100px
+    
 }
 @font-face {
     font-family: comfortaa;
     src: url('../font/Comfortaa-Regular.ttf');
-    word-spacing: 100px
+    
 }
-@font-face {
-    font-family: comfortaa;
-    src: url('../font/Comfortaa-Regular.ttf');
-    word-spacing: 100px
-}
+
 #brand-logo{
     font-family: crackWall;
     letter-spacing: 10px;
@@ -117,4 +112,91 @@ div.fixed
 #reminder li marquee {
     font-family: happySchool;
     letter-spacing: 10px;
+}
+
+#sayhi{
+    border: 2px #00b0ff solid;
+    border-radius: .4em;
+    display: inline-block;
+    position: absolute;
+    padding-left: 10px;
+    font-family: happySchool;
+    letter-spacing: 2px;
+    color:#00b0ff;
+    
+    margin-top: 25px;
+    background:white;
+}
+#sayhi:hover{
+    background-color: #50394c;
+    color:white;
+    text-shadow: 3px 2px 2px #b2b2b2;
+}
+
+#sayhi:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 11px solid transparent;
+    border-right-color: #00aabb;
+    border-left: 0;
+    border-bottom: 0;
+    margin-top: -5.5px;
+    margin-left: -11px;
+}
+
+.collapsible-header, .collapsible-body{
+    padding-left: 30px !important;
+}
+.collapsible-header:hover , .bold a:hover{
+    border-left: 6px solid #ff6f69;
+    color:#588c7e !important;
+    font-weight: bolder;
+}
+
+.user-view{
+     display: block !important;padding-left: 10px !important;
+}
+
+#img-user{
+    text-transform: capitalize;
+    display: inline-block;
+    border-style:solid;
+    border-color:#d4e157;
+    height: 100px;
+    width: 100px;
+    
+}
+
+#img-user:hover{
+    filter:grayscale(70%);
+}
+
+.collapsible-body ul li a:hover {
+    font-weight: bolder;
+    color:#d9ad7c;
+    background-color: #674d3c;
+
+}
+
+.collapsible-body{
+    background:#fbefcc !important;
+    font-family: happySchool;
+    color:#674d3c;
+    margin-left: -30px;
+}
+.collapsible-header, .bold a{
+    font-family: happySchool;
+    color:#50394c !important;
+}
+.collapsible-body a:before{
+    content:"> ";
+}
+
+#table{
+    font-family:'Times New Roman', Times, serif;
+    font-size: 12px
 }

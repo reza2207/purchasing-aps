@@ -25,9 +25,11 @@ class Register extends CI_Controller {
 		$this->load->model('User_model');
 		$this->load->model('Pks_model');
 		$this->load->model('Register_masuk_model');
+		$this->load->model('Pengolahan_model');
 		$this->load->helper(array('form', 'url', 'terbilang_helper','tanggal_helper'));
 		$this->load->library('form_validation');
 		$this->load->model('Tdr_model');
+		date_default_timezone_set("Asia/Bangkok");
 
 	}	
 
@@ -544,6 +546,315 @@ class Register extends CI_Controller {
 	protected function _get_nama_vendor($id){
 		
 		return $this->Tdr_model->get_nama($id);
+	}
+
+	public function lembar_pengolahan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			$data = new stdClass();
+			$data->title = 'Lembar Pengolahan';
+			$data->year = $this->Register_masuk_model->get_year()->result();
+			$data->user = $this->User_model->select_user(array('amgr','asst'));
+			$data->pks = $this->Pks_model->list_reminder(180);
+			$this->load->view('header',$data);
+			$this->load->view('lembar_pengolahan');
+
+		}else{
+			show_404();
+		}
+	}
+
+	public function get_data_pengolahan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$this->load->model('Pengolahan_model');
+			$list = $this->Pengolahan_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $field) {
+				$no++;
+				$row = array();
+				$row['no'] = $no;
+				$row['id_surat'] = $field->id_surat;
+				$row['no_srt'] = $field->no_srt;
+				$row['perihal'] = $field->perihal;
+				$row['dari_kelompok'] = $field->dari_kelompok;
+				$row['tgl_petugas_kirim'] = tanggal($field->tgl_petugas_kirim);
+				$row['tgl_terima_doc'] = tanggal($field->tgl_terima_doc);
+				$row['tahun'] = $field->tahun;
+				$row['divisi'] = $field->divisi;
+				$row['status'] = $row['tgl_terima_doc'] != '' ? 'Done': '-';
+			
+				$data[] = $row;
+				
+			}
+
+			$output = array(
+				"draw"=> $_POST['draw'], 
+				"recordsTotal" =>$this->Pengolahan_model->count_all(),
+				"recordsFiltered"=>$this->Pengolahan_model->count_filtered(),
+				"data"=>$data,
+			);
+			echo json_encode($output);
+		}else{
+			$this->load->helper('form');
+			$this->load->view('login');
+		}
+	}
+
+	public function add_pengolahan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->post(null))
+			{
+				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required|max_length[250]');
+				$this->form_validation->set_rules('dari', 'Dari', 'required');
+				$this->form_validation->set_rules('tgl_kirim', 'Tgl. Kirim', 'required');
+				if ($this->form_validation->run() == false) {
+
+					$data = new stdClass();
+					$errors = validation_errors();
+
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+		            echo json_encode($data);
+				
+				}else{
+
+					$no_surat = $this->input->post('no_surat');
+					$divisi = $this->input->post('divisi');
+					$perihal = $this->input->post('perihal');
+					$dari = $this->input->post('dari');
+					$tgl_kirim = tanggal1($this->input->post('tgl_kirim'));
+					$tahun = date('Y');
+					$id_register = $this->get_id_pengolahan($tahun);
+
+					$this->load->model('Pengolahan_model');
+
+					if($this->Pengolahan_model->add_pengolahan($id_register, $no_surat, $perihal, $dari, $tgl_kirim, $divisi, $tahun))
+					{
+						
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->pesan = 'Success!';
+						echo json_encode($data);
+					}else{
+
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'Failed!';
+						echo json_encode($data);
+					}
+
+				}
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	protected function get_id_pengolahan($tahun)
+	{
+		$this->load->model('Pengolahan_model');
+		if($this->Pengolahan_model->cek_id($tahun)->num_rows() > 0 )
+		{
+			$oldid = $this->Pengolahan_model->cek_id($tahun)->row()->id_surat;
+			$oldid = explode("-", $oldid);
+			$oldid = $oldid[1];
+			$id_register = date("Y")."-".str_pad($oldid +1 ,4,"0",STR_PAD_LEFT);
+			return $id_register;
+
+		}else{
+			$id_register = $tahun.'-0001';
+			return $id_register;
+		}
+	}
+
+	public function get_data_id_pengolahan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->post(null))
+			{
+				$this->load->model('Pengolahan_model');
+
+				$id = $this->input->post('id');
+				$data = $this->input->post('data');
+
+				if($data == 'data'){
+					if($this->Pengolahan_model->get_data_pengolahan($id))
+					{
+						$data = $this->Pengolahan_model->get_data_pengolahan($id)->row();
+						echo json_encode($data);
+
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'data not found';
+						echo json_encode($data);
+					}
+				}elseif($data == 'status'){
+					$data = $this->get_comment($id);
+					echo json_encode($data);
+				}
+
+
+
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+
+	}
+
+	public function print_pengolahan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->get('checkid') != NULL)
+			{
+				$this->load->model('Pengolahan_model');
+
+				$id = $this->input->get('checkid');
+				$id = explode(',',$id);
+				
+
+				if($this->Pengolahan_model->get_data_pengolahan($id)->num_rows()> 0 ){
+					$data = new stdClass();
+					$data->result = $this->Pengolahan_model->get_data_pengolahan($id);
+					$this->load->view('print_surat', $data);
+				}
+			}
+		}
+	}
+
+	public function edit_pengolahan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$data = new stdClass();
+			if($this->input->post(null))
+			{
+
+				$id = $this->input->post('id_surat');
+				$no = $this->input->post('no_surat');
+				$divisi = $this->input->post('divisi');
+				$perihal = $this->input->post('perihal');
+				$dari = $this->input->post('dari');
+				$tglkirim = $this->input->post('tgl_kirim');
+				$tglterima = $this->input->post('tgl_terima');
+				
+				if($this->update_pengolahan($id, $no, $divisi, $perihal, $dari, $tglkirim, $tglterima))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Berhasil';
+
+				}else{
+					$data->type = 'error';
+					$data->type = 'Gagal';
+
+				}
+
+				echo json_encode($data);
+			}else{
+				
+				$data->status = '404';
+				echo json_encode($data);
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function get_status()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				$id = $this->input->post('id');
+				echo json_encode($this->Pengolahan_model->get_status($id)->result());
+			}
+
+		}else{
+			show_404();
+		}
+	}
+
+	public function addstatus()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			$data = new stdClass();
+			if($this->input->post(null))
+			{
+				$idsurat = $this->input->post('id');
+				$status = $this->input->post('value');
+				$username = $_SESSION['username'];
+				$date = date('Y-m-d H:i:s');
+				$idstatus = $this->get_id_status($idsurat);
+				if($this->Pengolahan_model->input_status($idstatus, $idsurat, $status, $username, $date))
+				{			
+					$data->type = 'success';
+					$data->pesan = 'Berhasil';
+
+				}else{
+					$data->type = 'error';
+					$data->type = 'Gagal';
+				}
+				echo json_encode($data);
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	protected function get_id_status($id)
+	{
+		if($this->Pengolahan_model->get_id_status($id)->num_rows() > 0)
+		{
+			$lastid = $this->Pengolahan_model->get_id_status($id)->row('id_status');
+			$uniqlastid = explode('-',$lastid);
+			$uniq = $uniqlastid[2];
+			$id = $id.'-'.str_pad($uniq+1, 3,"0",STR_PAD_LEFT);
+			return $id;
+
+		}else{
+			return $id.'-001';
+		}
+	}
+
+	public function hapus_pengelohan()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			$data = new stdClass();
+			if($this->input->post(null))
+			{
+				$id = $this->input->post('id');
+
+				if($this->Pengolahan_model->hapus_pengolahan($id) && $this->Pengolahan_model->hapus_status($id))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Berhasil';
+
+				}else{
+					$data->type = 'error';
+					$data->type = 'Gagal';
+				}
+				echo json_encode($data);
+				
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
 	}
 
 	

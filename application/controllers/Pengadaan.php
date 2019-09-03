@@ -30,6 +30,8 @@ class Pengadaan extends CI_Controller {
 		$this->load->model('Tdr_model');
 		$this->load->model('Setting_model');
 		$this->load->model('User_model');
+		$this->load->model('Invoice_model');
+		date_default_timezone_set("Asia/Jakarta");
 
 	}	
 	public function index()
@@ -40,7 +42,6 @@ class Pengadaan extends CI_Controller {
 			$data->role = $_SESSION['role'];
 			$data->select_tdr = $this->Tdr_model->select_tdr();
 			$data->tahun = $this->Pengadaan_model->get_tahun();
-			//$data->id = $this->get_id_pengadaan();
 			$data->select_user = $this->User_model->select_user()->result();
 			$data->divisi = $this->Setting_model->get_divisi()->result();
 			$data->pks = $this->Pks_model->list_reminder(180);
@@ -91,29 +92,29 @@ class Pengadaan extends CI_Controller {
 
 	public function submit_new_data()
 	{	
-		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
 
 			if($this->input->post(null)){
 				$this->load->library('form_validation');
 
-				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');//
-				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');//
+				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');
+				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
 				$this->form_validation->set_rules('tgl_disposisi', 'Tgl. Disposisi', 'required');
-				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');//
-				$this->form_validation->set_rules('perihal', 'Perihal', 'required');//
-				
-				$this->form_validation->set_rules('divisi', 'Divisi', 'required');//
+				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required');
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
 				if($this->form_validation->set_rules('divisi', 'Divisi', 'required') == 'BSK'){
-					$this->form_validation->set_rules('kelompok', 'Kelompok', 'required');//
+					$this->form_validation->set_rules('kelompok', 'Kelompok', 'required');
 				}
 				$this->form_validation->set_rules('jenis_surat', 'Jenis Surat', 'required');//
 				$this->form_validation->set_rules('jenis_pengadaan', 'Jenis Pengadaan', 'required');
-				
-				if(($this->input->post('jenis_pengadaan')!= 'Pembelian Langsung') || ($this->input->post('jenis_pengadaan')!= '')){
-					$this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');//
-					$this->form_validation->set_rules('tgl_usulan', 'Tgl. Usulan', 'required');//
-				}//
+				if(($this->input->post('jenis_pengadaan')!= 'Pembelian Langsung') &&	 ($this->input->post('jenis_pengadaan')!= '')){
+					$this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');
+					$this->form_validation->set_rules('tgl_usulan', 'Tgl. Usulan', 'required');
+				}
 				$this->form_validation->set_rules('kewenangan', 'Kewenangan', 'required');
+
 				//validate array
 				$this->form_validation->set_rules('item[]', 'Item', 'required');
 				$this->form_validation->set_rules('ukuran[]', 'Ukuran', 'required');
@@ -121,7 +122,7 @@ class Pengadaan extends CI_Controller {
 				$this->form_validation->set_rules('jumlah[]', 'Jumlah', 'required');
 				$this->form_validation->set_rules('satuan[]', 'Satuan', 'required');
 				$this->form_validation->set_rules('hpssatuan[]', 'Hps Satuan', 'required');
-				$this->form_validation->set_rules('penawaran[]', 'Harga Penawaran', 'required');
+				$this->form_validation->set_rules('penawaran[]', 'Harga Penawaran', 'required|trim|numeric');
 				$this->form_validation->set_rules('hpsidr[]', 'Hps', 'required');
 				$this->form_validation->set_rules('realisasirp[]', 'Harga Realisasi', 'required');
 				$this->form_validation->set_rules('realisasiqty[]', 'Qty Realisasi', 'required');
@@ -129,31 +130,31 @@ class Pengadaan extends CI_Controller {
 				$this->form_validation->set_rules('tglkontrak[]', 'Tgl. Kontrak', 'required');
 				$this->form_validation->set_rules('vendor[]', 'Vendor', 'required');
 
-				if ($this->form_validation->run() == false) {
+				if ($this->form_validation->run() == false) 
+				{
 					$data = new stdClass();
+					$errors = validation_errors();
 					$data->type = 'error';
 		            $data->pesan = $errors;
 		            echo json_encode($data);
 					
 				}else{
 
-					$jenispengadaan = $this->input->post('jenis_pengadaan');//
-					$tglsurat = tanggal1($this->input->post('tgl_surat'));//
-					$nosurat =  $this->input->post('no_surat');//
-					$jenissurat = $this->input->post('jenis_surat');//
-					$tgldisposisi = tanggal1($this->input->post('tgl_disposisi'));//
-					$tahun = $this->input->post('tahun_pengadaan');//
-					$perihal = $this->input->post('perihal');//
-					$nousulan = $this->input->post('no_usulan');//
+					$jenispengadaan = $this->input->post('jenis_pengadaan');
+					$tglsurat = tanggal1($this->input->post('tgl_surat'));
+					$nosurat =  $this->input->post('no_surat');
+					$jenissurat = $this->input->post('jenis_surat');
+					$tgldisposisi = tanggal1($this->input->post('tgl_disposisi'));
+					$tahun = $this->input->post('tahun_pengadaan');
+					$perihal = $this->input->post('perihal');
+					$nousulan = $this->input->post('no_usulan');
 					
-					$tglusulan = tanggal1($this->input->post('tgl_usulan'));//
-					$divisi = $this->input->post('divisi');//
-					$kelompok = $this->input->post('kelompok');//
-					//$pembuat = $this->input->post('pembuat_pekerjaan');
+					$tglusulan = tanggal1($this->input->post('tgl_usulan'));
+					$divisi = $this->input->post('divisi');
+					$kelompok = $this->input->post('kelompok');
 					$keterangan = $this->input->post('keterangan');
 					$kewenangan = $this->input->post('kewenangan');
 					$id = $this->_get_id_pengadaan($tahun);
-					add_new()
 					//array
 					$item = $this->input->post('item');
 					$ukuran = $this->input->post('ukuran');
@@ -168,7 +169,7 @@ class Pengadaan extends CI_Controller {
 					$realisasirp = $this->input->post('realisasirp');
 					$realisasiqty = $this->input->post('realisasiqty');
 					$nokontrak = $this->input->post('nokontrak');
-					$tglkontrak = tanggal1($this->input->post('tglkontrak'));
+					$tglkontrak = $this->input->post('tglkontrak');
 					$vendor = $this->input->post('vendor');
 
 					foreach($item AS $key => $val){
@@ -188,35 +189,35 @@ class Pengadaan extends CI_Controller {
 							"realisasi_nego_rp" => $realisasirp[$key],
 							"realisasi_qty_unit"=>$realisasiqty[$key],
 							"no_kontrak" => $nokontrak[$key],
-							"tgl_kontrak"=> $tglkontrak[$key],
+							"tgl_kontrak"=> tanggal1($tglkontrak[$key]),
 							"id_vendor" => $vendor[$key]
 						);
 					}
        
 
-					if($this->Pengadaan_model->add_new())
+					if($this->Pengadaan_model->add_new($jenispengadaan,$tglsurat,$nosurat,$jenissurat,$tgldisposisi,$tahun,$perihal,$nousulan,$tglusulan,$divisi,$kelompok,$keterangan,$kewenangan,$id) && $this->db->insert_batch('detail_item_pengadaan', $result))
 					{
-						
+						$data = new stdClass();
 						$data->type = 'success';
-						$data->message = 'Success';
+						$data->pesan = 'Success';
 						echo json_encode($data);
 						
 					}else{
+						$data = new stdClass();
 						$data->type = 'error';
-						$data->message = 'Failed';
+						$data->pesan = 'Failed';
 						echo json_encode($data);
 
 					}
 				}
+			}else{
+				show_404();
 			}
 
+		}else{
+			show_404();
 		}
 
-			
-		}else{
-			$this->load->helper('form');
-			$this->load->view('login');
-		}*/
 	}
 
 	public function get_detail()
@@ -228,7 +229,13 @@ class Pengadaan extends CI_Controller {
 				if($this->Pengadaan_model->get_pengadaan($id)){
 					$data = new stdClass();
 					$data->pengadaan = $this->Pengadaan_model->get_pengadaan($id);
+
 					$data->detail = $this->Pengadaan_model->get_detail($id);
+					$tgl_awal = $this->Pengadaan_model->get_pengadaan($id)->tgl_disposisi;
+					$tgl_akhir = $this->Pengadaan_model->get_tgl_kontrak($id);
+					//$data->sli = '0';
+					$data->sli = $this->_get_sli($tgl_awal, $tgl_akhir);
+					
 					echo json_encode($data);
 						
 				}else{
@@ -256,37 +263,41 @@ class Pengadaan extends CI_Controller {
 
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
-			$id = $this->input->post('no_kontrak');
-			$tahun = $this->input->post('tahun');
+			if($this->input->post(null)){
+				$id = $this->input->post('no_kontrak');
+				$tahun = $this->input->post('tahun');
+				$idpengadaan = $this->input->post('id');
 
-			if($this->Pengadaan_model->get_kontrak($id, $tahun)){
+				if($this->Pengadaan_model->get_kontrak($id, $tahun)){
 
-				if($this->Pengadaan_model->get_kontrak($id, $tahun)->num_rows()>0){
-					$data = new stdClass();
+					if($this->Pengadaan_model->get_kontrak($id, $tahun)->num_rows()>0){
+						$data = new stdClass();
 
-					$data->data = $this->Pengadaan_model->get_kontrak($id, $tahun)->result();
-					$data->jml = $this->Pengadaan_model->get_kontrak($id, $tahun)->num_rows();
-					echo json_encode($data);
+						$data->data = $this->Pengadaan_model->get_kontrak($id, $tahun)->result();
+						$data->jml = $this->Pengadaan_model->get_kontrak($id, $tahun)->num_rows();
+						echo json_encode($data);
+					}else{
+						$data = new stdClass();
+						$data = $this->Pengadaan_model->get_nominal($id, $idpengadaan);
+						$data->jml = $this->Pengadaan_model->get_kontrak($id, $tahun, $idpengadaan)->num_rows();
+						echo json_encode($data);
+					}
 				}else{
-					$data = new stdClass();
-					$data = $this->Pengadaan_model->get_nominal($id);
-					$data->jml = $this->Pengadaan_model->get_kontrak($id, $tahun)->num_rows();
-					echo json_encode($data);
+					
+					echo json_encode($id);
 				}
 			}else{
-				
-				
-				//echo json_encode($this->Pengadaan_model->get_kontrak($id, $tahun));
-				echo json_encode($id);
+				show_404();
 			}
 		}
 	}
 
-	public function input_invoice(){
+	public function input_invoice()
+	{
 
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-			$this->load->library('encryption');
 			
+			$this->load->library('form_validation');
 			$this->form_validation->set_rules('no_invoice', 'No. Invoice', 'required|is_unique[invoice.no_invoice]',
 				array('is_unique' => 'The number %s already exists.'));
 			$this->form_validation->set_rules('perihal','Perihal', 'required',
@@ -311,20 +322,12 @@ class Pengadaan extends CI_Controller {
 			$this->load->helper('form');
 			$this->load->view('login');
 		}
-/*
-        tahun_pengadaan
-no_kontrak
-o_invoice
-tgl_invoice
-perihal
-nominal
-memo_keluar
-invoice_ke_user*/
 	}
 
 	
 
-	public function get_kewenangan(){
+	public function get_kewenangan()
+	{
 		$divisi = $this->input->post('divisi');
 
 		foreach($this->Pengadaan_model->get_kewenangan($divisi) AS $result) {
@@ -347,7 +350,187 @@ invoice_ke_user*/
 		}
 		
 		return $idpengadaan;
+	}
 
+	public function submit_invoice()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->post(null)){
+
+				$this->load->library('form_validation');
+
+				$this->form_validation->set_rules('tahun', 'Tahun', 'required');
+				$this->form_validation->set_rules('id_vendor', 'Nama Vendor', 'required');
+				$this->form_validation->set_rules('no_invoice', 'No. Invoice', 'required|max_length[35]|is_unique[invoice.no_invoice]');
+				$this->form_validation->set_rules('no_kontrak', 'No. Kontrak', 'required');
+				$this->form_validation->set_rules('nominal', 'Nominal', 'required|max_length[10]');
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required|max_length[250]');
+				$this->form_validation->set_rules('tgl_invoice', 'Tgl. Invoice', 'required');
+				$this->form_validation->set_rules('invoice_ke_user', 'Tgl. Invoice ke User', 'required');
+
+
+				if ($this->form_validation->run() == false) 
+				{
+					$data = new stdClass();
+					$errors = validation_errors();
+					$data->type = 'error';
+		            $data->pesan = $errors;
+		            echo json_encode($data);
+					
+				}else{
+
+					$tahun = $this->input->post('tahun');
+					$nokontrak = $this->input->post('no_kontrak');
+					$noinv = $this->input->post('no_invoice');
+					$tglinv = tanggal1($this->input->post('tgl_invoice'));
+					$perihal = $this->input->post('perihal');
+					$nominal = $this->input->post('nominal');
+					$memo = $this->input->post('memo_keluar');
+					$invkeuser = tanggal1($this->input->post('invoice_ke_user'));
+					$idvendor = $this->input->post('id_vendor');
+					$tglinput = date('Y-m-d');
+					$idinv = uniqid();
+
+					if($this->Invoice_model->submit_invoice($idinv, $tglinput, $idvendor, $noinv, $memo, $nokontrak, $nominal, $perihal, $tglinv, $invkeuser, $tahun))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->pesan = 'Success';
+						echo json_encode($data);
+						
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'Failed';
+						echo json_encode($data);
+
+					}
+				}
+
+
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function get_file()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$id = $_GET['file'];
+			$tahun = $_GET['tahun'];
+			$dir = $this->Setting_model->get_dir_file($tahun)->row('defaultnya');
+			$file = $dir.$id;
+			if(file_exists($file)){
+				$pdf = file_get_contents($file);
+		       	header('Content-Type: application/pdf');
+		       	header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+		       header('Pragma: public');
+		       header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		       header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+		       header('Content-Length: '.strlen($pdf));
+		       header('Content-Disposition: inline; filename="'.basename($file_name).'";');
+		       ob_clean(); 
+		       flush(); 
+		       echo $pdf;
+		   	}else{
+		   		echo "Sorry file doesn't exist, please contact administrator... :(";
+		   	}
+
+		}else{
+			show_404();
+		}
+
+	}
+
+	protected function _get_sli($tgl_awal, $tgl_akhir)
+	{
+		$tl = $this->Setting_model->get_tgl_libur($tgl_awal, $tgl_akhir);
+		if($tl->num_rows()>0){
+			foreach($tl->result_array() AS $r){
+				$tgl_libur[] = $r['tgl'];
+			}
+		}else{
+			$tgl_libur = array("0000-00-00");
+		}
+		return jmlharikerja($tgl_awal, $tgl_akhir, $tgl_libur);
+		//return $tgllibur;
+	}
+
+	public function update_inv()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				$id = $this->input->post('id');
+				$tgl = tanggal1($this->input->post('tgl'));
+				$j = $this->input->post('j');
+				if($j == 'tk'){
+
+					if($this->Invoice_model->update_tk($id, $tgl))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->pesan = 'Success';
+						echo json_encode($data);
+						
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'Failed';
+						echo json_encode($data);
+					}
+				}elseif($j == 'tp'){
+					if($this->Invoice_model->update_tp($id, $tgl))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->pesan = 'Success';
+						echo json_encode($data);
+						
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'Failed';
+						echo json_encode($data);
+					}
+				}
+			}
+
+
+		}else{
+
+			show_404();
+		}
+	}
+
+	public function tgl_libur()
+	{
+		if(isset($_GET['awal']) && isset($_GET['akhir'])){
+			$tgl_awal = $_GET['awal'];
+			$tgl_akhir = $_GET['akhir'];
+			$tl = $this->Setting_model->get_tgl_libur($tgl_awal, $tgl_akhir);
+			if($this->Setting_model->get_tgl_libur($tgl_awal, $tgl_akhir)->num_rows() > 0){
+				foreach($tl->result_array() AS $r){
+					$tgl_libur[] = $r['tgl'].'|'.$r['keterangan'];
+					
+				}
+			}else{
+				$tgl_libur = null;
+			}
+			echo '<pre>';
+			print_r($tgl_libur);
+			echo '</pre>';
+		}else{
+			echo "cara penggunaannya<br>";
+			echo '- masukkan parameter tanggal awal dan akhir<br>';
+			echo '- dipisahkan dengan simbol &<br>';
+			echo '- contoh: ?awal=2019-08-19&akhir=2019-10-22<br>';
+			echo '- url lengkapnya: pengadaan/tgl_libur?awal=2019-08-19&akhir=2019-10-22';
+			
+		}
 	}
 
 }

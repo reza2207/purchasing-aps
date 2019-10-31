@@ -40,7 +40,7 @@
 </style>
 <div class="row first">
 
-	<div class="col push-l3 l9">
+	<div class="col s12 offset-l3 l9">
 		<div class="row hide" id="filter">
 			<div class="col l2">
 				<label class="active">My Task</label>
@@ -71,11 +71,8 @@
 				</select>
 			</div>
 		</div>
-	</div>
-	<div class="col push-l3 l9" id="row-first">
 		
-		<!-- <button id="" class="btn btn-sm">[+]Add Data</button> -->
-		<table class="table display"  id="table">
+		<table class="table display" id="table" style="width: 100%">
 			<thead class="teal white-text">
 				<tr class="rowhead">
 					<th class="center align-middle">#</th>
@@ -288,18 +285,9 @@
 		<button class="waves-effect green waves-green btn-flat white-text" id="btn-proses" aria-label="Proses" data-balloon-pos="up"><i class="fa fa-pencil-square-o"></i></button>
 		
 		<?php 
-		}/*elseif($_SESSION['role'] == "admin"){?>
-				<button class="waves-blue btn-flat left teal white-text" id="update_surat">Update Surat</button>
-				<button class="waves-blue btn-flat left teal white-text" id="btn-disposisi">Disposisi</button>
-				<button class="waves-blue btn-flat left teal white-text" id="btn-jenis">Metode Pengadaan</button>
-				<button class="waves-blue btn-flat left teal white-text" id="btn-aanwijzing">Aanwijzing</button>
-				<button class="waves-effect green waves-green btn-flat white-text" id="btn-proses">Proses</button>
-		
-		<?php }*/
-
+		}
 		?>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
-		<!-- <button id="proses" class="waves-effect blue waves-green btn-flat">PROSES</button> -->
 	</div>
 </div>
 
@@ -538,9 +526,6 @@
 			},
 			"columns":[
 				{"data": ['no']},
-				/*{"data": ['tgl_email']},
-				{"data": ['email']},
-				{"data": ['tgl_terima_email']},*/
 				{"data": ['tgl_surat']},
 				{"data": ['no_surat']},
 				{"data": ['tgl_terima_surat']},
@@ -550,12 +535,12 @@
 			],
 			"dom": 'Bflrtip',
 							buttons: [
-						{ className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
-						{ className: 'btn btn-sm light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
-						{ extend: 'copy', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
-						{ extend: 'csv', className: 'btn btn-sm light-blue darken-4'},
-						{ extend: 'excel', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
-						{ className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
+						{ className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
+						{ className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
+						{ extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
+						{ extend: 'csv', className: 'btn btn-small light-blue darken-4'},
+						{ extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+						{ className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
 						],
 			"processing": true,
 			"language":{
@@ -571,8 +556,8 @@
 			},
 			"columnDefs": [
 						{
-								"targets": [ 0, 1, 2, 3, 5, -1 ],
-								"className": 'center'
+							"targets": [ 0, 1, 2, 3, 5, -1 ],
+							"className": 'center'
 						},
 						{
 							"targets": [1,3],
@@ -590,10 +575,12 @@
 		})
 		
 		//$('#table_filter label').hide();
-		let html = "<div class='input-field'><label class='active'>Search</label>"+
-		"<input type='text' class='validate' id='searchnew' placeholder='Search here...'>"+
-		"</div>";
-		$('#table_filter label').html(html)
+		 $('#table_filter input ').attr('placeholder', 'Search here...');
+	    //$('#table_filter label').hide();
+	    let tagsearch = "<div class='input-field'><label class='active'>Search</label>"+
+	    "<input type='text' class='validate' id='searchnew' style='margin-left: 0;'>"+
+	    "</div>";
+	    $('#table_filter label').html(tagsearch);
 		
 		$('#btn-filter').on('click', function(e){
 			$('#filter').toggleClass('hide');

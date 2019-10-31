@@ -21,80 +21,80 @@
 	
 }
 
-	.table {
-	    border-collapse: collapse;
-	}
+.table {
+    border-collapse: collapse;
+}
 
-	.table tr td {
-	    border: 1px solid black;align-items: center;font-family: Arial, Helvetica, sans-serif;
-	}
+.table tr td {
+    border: 1px solid black;align-items: center;font-family: Arial, Helvetica, sans-serif;
+}
 
-	.head-tb{
-		text-align: center
-	}
-	.table td{
-		width: 120px;
-	}
-	.isi{
-		padding-bottom: 5px;
-		min-height: 60px;
-		max-height: 80px;
-	}
+.head-tb{
+	text-align: center
+}
+.table td{
+	width: 120px;
+}
+.isi{
+	padding-bottom: 5px;
+	min-height: 60px;
+	max-height: 80px;
+}
 
-	.header{
-		text-align: center;
+.header{
+	text-align: center;
+	padding-bottom: 10px;
+	font-family: Arial, Helvetica, sans-serif;
+	padding-top: 10px;
+}
+
+.table{
+	margin:auto;
+
+}
+.container{
+	width: 195mm;
+    height: 200px;
+    border: 1px solid black;
+
+
+}
+.ttd{
+	height: 50px;
+}
+.tdisidb{
+	padding-left: 8px;padding-right: 15px;font-family: Arial, Helvetica, sans-serif;
+}
+.contact{
+	z-index: 2;
+	position: absolute;
+	padding-left:7px;
+	margin-top: 0px;
+	font-family: Arial, Helvetica, sans-serif;
+	padding-top: 10px;
+	font-weight: bolder;
+}
+.btn:hover, .btn:focus {
+  text-decoration: none;
+}
+	.kotak1{
+		padding-top: 10px
+	}
+	.kotak{
+		position: relative;
 		padding-bottom: 10px;
-		font-family: Arial, Helvetica, sans-serif;
-		padding-top: 10px;
+		padding-left: 30px;
+		
 	}
-
-	.table{
-		margin:auto;
-
+	.kotak0{
+		padding-bottom: 15px;
 	}
-	.container{
-		width: 195mm;
-	    height: 200px;
-	    border: 1px solid black;
-
-
-	}
-	.ttd{
-		height: 50px;
-	}
-	.tdisidb{
-		padding-left: 8px;padding-right: 15px;font-family: Arial, Helvetica, sans-serif;
-	}
-	.contact{
-		z-index: 2;
-		position: absolute;
-		padding-left:7px;
-		margin-top: 0px;
-		font-family: Arial, Helvetica, sans-serif;
-		padding-top: 10px;
-		font-weight: bolder;
-	}
-	.btn:hover, .btn:focus {
-	  text-decoration: none;
-	}
-  	.kotak1{
-  		padding-top: 10px
-  	}
-  	.kotak{
-  		position: relative;
-  		padding-bottom: 10px;
-  		padding-left: 30px;
-  		
-  	}
-  	.kotak0{
-  		padding-bottom: 15px;
-  	}
-	.head-tb td{
-		font-weight: bolder;
-	}
-	.header,.isi,.isidb,.tdisidb,.table,.head-tb,.tgl,.contact{
-		font-size: 10px;
-	}
+.head-tb td{
+	font-weight: bolder;
+}
+.header,.isi,.isidb,.tdisidb,.table,.head-tb,.tgl,.contact{
+	font-size: 10px;
+}
 
 </style>
 <?php 

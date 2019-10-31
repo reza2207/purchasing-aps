@@ -25,7 +25,7 @@ function strip(value){
 
 function tanggal(value){
   if(value == '0000-00-00'){
-    return '-';
+    return '';
   }else{
     let d = new Date(value); 
     let bulan = (d.getMonth()+1).toString().length == '1' ? '0'+(d.getMonth()+1).toString() : (d.getMonth()+1).toString();
@@ -46,45 +46,45 @@ function tanggal_indo(value){
     //return tanggal+'-'+get_month(bulan)+'-'+d.getFullYear();
   }  
 }
-function get_month($month){
-  switch ($month) {
+function get_month(month){
+  switch (month) {
     case '01':
         month = "Januari";
         break;
     case '02':
-        day = "Februari";
+        month = "Februari";
         break;
     case '03':
-        day = "Maret";
+        month = "Maret";
         break;
     case '04':
-        day = "April";
+        month = "April";
         break;
     case '05':
-        day = "Mei";
+        month = "Mei";
         break;
     case '06':
-        day = "Juni";
+        month = "Juni";
         break;
     case '07':
-        day = "Juli";
+        month = "Juli";
         break;
     case '08':
-        day = "Agustus";
+        month = "Agustus";
         break;
     case '09':
         month = "September";
         break;
     case '10':
-        day = "Oktober";
+        month = "Oktober";
         break;
     case '11':
-        day = "November";
+        month = "November";
         break;
     case '12':
-        day = "Desember";
+        month = "Desember";
   }
-  return day; 
+  return month; 
 }
 function tanggal_r(value){
   if(value == '-' || value ==''){

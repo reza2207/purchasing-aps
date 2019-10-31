@@ -10,7 +10,7 @@ class Tdr_model extends CI_Model {
 
 	var $table = 'tdr';
 	var $column_order = array('id_vendor', 'no_srt_vendor', 'nm_vendor', 'alamat', 'sub_bdg_usaha','kualifikasi','tgl_mulai','tgl_akhir','status','id_vendor');//,'status');//field yang ada di table user
-	var $column_search = array('id_vendor', 'no_srt_vendor', 'nm_vendor', 'alamat', 'sub_bdg_usaha','kualifikasi','tgl_mulai','tgl_akhir','IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) <= 90 AND DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) > 0, "Expired_Soon", IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) < 0, "Expired", "Active"))');//,'status');//field yang dizinkan untuk pencarian
+	var $column_search = array('a.id_vendor', 'a.no_srt_vendor', 'a.nm_vendor', 'a.alamat', 'a.sub_bdg_usaha','a.kualifikasi','a.tgl_mulai','a.tgl_akhir','a.status');//,'status');//field yang dizinkan untuk pencarian
 	var $order = array('tgl_akhir'=>'desc', 'nm_vendor'=> 'asc'); //default sort
 
 	public function __construct() {
@@ -21,9 +21,10 @@ class Tdr_model extends CI_Model {
 	}
 	
 	private function _get_datatables_query() 
-	{
-		$this->db->select('tdr.id_vendor, tdr.no_srt_vendor, tdr.divisi, tdr.nm_vendor, tdr.sub_bdg_usaha, tdr.kualifikasi, tdr.tgl_mulai, tdr.tgl_akhir, tdr.alamat, tdr.file_tdr, DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) AS diff, IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) <= 90 AND DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) > 0, "Expired_Soon", IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) < 0, "Expired", IF(tdr.tgl_akhir = "0000-00-00","-", "Active"))) AS status, (SELECT defaultnya FROM settings WHERE namasetting = "default_tdr") setting ');
-		$this->db->from($this->table);
+	{	
+		$this->db->select('a.id_vendor, a.no_srt_vendor, a.divisi, a.nm_vendor, a.sub_bdg_usaha, a.kualifikasi, a.tgl_mulai, a.tgl_akhir, a.alamat, a.file_tdr, a.diff, status.keterangan status');
+		$this->db->from('(SELECT tdr.id_vendor, tdr.no_srt_vendor, tdr.divisi, tdr.nm_vendor, tdr.sub_bdg_usaha, tdr.kualifikasi, tdr.tgl_mulai, tdr.tgl_akhir, tdr.alamat, tdr.file_tdr, DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) AS diff, IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) <= 90 AND DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) > 0, "16", IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) < 0, "15", IF(tdr.tgl_akhir = "0000-00-00","-", "17"))) AS status FROM tdr) a');
+		$this->db->join('status','a.status = status.id_status', 'LEFT');
 
 		$i = 0;
 		
@@ -132,5 +133,34 @@ class Tdr_model extends CI_Model {
 		return $this->db->get()->row('nm_vendor');
 	}
 	
+	public function update($id, $no, $nm, $alt, $bid, $tglawal, $tglakhir, $kualifikasi, $file)
+	{
+		$data = array('no_srt_vendor'=>$no,
+					  'nm_vendor'=>$nm,
+					  'alamat'=>$alt,
+					  'sub_bdg_usaha'=>$bid,
+					  'kualifikasi'=>$kualifikasi,
+					  'tgl_mulai'=>$tglawal,
+					  'tgl_akhir'=>$tglakhir,
+					  'file_tdr'=>$file);
+		$this->db->where('id_vendor', $id);
+		return $this->db->update($this->table, $data);
+
+	}
+
+	public function new_data($id, $no, $nm, $alt, $bid, $tglawal, $tglakhir, $kualifikasi, $file)
+	{
+		$data = array('id_vendor'=>$id,
+					  'no_srt_vendor'=>$no,
+					  'nm_vendor'=>$nm,
+					  'alamat'=>$alt,
+					  'sub_bdg_usaha'=>$bid,
+					  'kualifikasi'=>$kualifikasi,
+					  'tgl_mulai'=>$tglawal,
+					  'tgl_akhir'=>$tglakhir,
+					  'file_tdr'=>$file);
+		return $this->db->insert($this->table, $data);
+
+	}
 	
 }

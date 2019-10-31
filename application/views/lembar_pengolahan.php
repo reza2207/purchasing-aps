@@ -1,9 +1,9 @@
 <div class="row first">
   <!-- <div class="col s12"> -->
   
-  <div class="col push-s3 s9">
+  <div class="col s12 offset-l3 l9">
     
-    <table class="table display" id="table">
+    <table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
       <thead class="teal white-text">
         <tr class="rowhead">
           <th>#</th>
@@ -115,6 +115,7 @@
         </div>
       </div>
     </div>
+    
     <?= form_close();?>
 
     <div class="modal-footer">
@@ -181,12 +182,11 @@
       ],
       "dom": 'Bflrtip',
               buttons: [
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
-            { className: 'btn btn-sm light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
-            { extend: 'copy', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
-            { extend: 'csv', className: 'btn btn-sm light-blue darken-4'},
-            { extend: 'excel', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-print"><i>', attr: {id: 'btn-print-checklist','aria-label':'Print Checklist','data-balloon-pos':'up'}}
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
+            { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
+            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
+            
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-print"><i>', attr: {id: 'btn-print-checklist','aria-label':'Print Checklist','data-balloon-pos':'up'}}
             ],
       "processing": true,
       "language":{
@@ -220,7 +220,7 @@
         $(row).children().eq(-1).children().eq(-1).children().attr('data-id',data['id_surat']);
         $(row).children().eq(-1).children().eq(0).attr('data-id',data['id_surat']);
         if(data['status'] == 'Done'){
-          $(row).addClass('amber lighten-3');
+          $(row).addClass('green accent-1');
         }
       }
     })
@@ -275,7 +275,8 @@
           $('#perihal').val(data.perihal);
           $('#dari').val(data.dari_kelompok);
           $('#tgl_kirim').val(tanggal(data.tgl_petugas_kirim));
-          if(tanggal(data.tgl_terima_doc) == '-'){          $('#proses-button').text('proses');
+          if(tanggal(data.tgl_terima_doc) == '-'){          
+            $('#proses-button').text('proses');
           }else{
             $('#proses-button').text('edit');
           }
@@ -305,8 +306,6 @@
               html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+data[i].tgl_buat+'">'+data[i].nama+' on </span>'+data[i].status+'</a>';
             }
           }
-          
-
           $('#bodycomment').html(html);
         }
       })
@@ -383,8 +382,6 @@
         allowOutsideClick: false,
         showCancelButton: true
       }).then(function(){
-
-
         $.ajax({
           type: 'POST',
           url : '<?= base_url()."register/hapus_pengolahan";?>',
@@ -428,15 +425,17 @@
       $.ajax({
         type: 'POST',
         data: $('#formedit').serialize(),
-        url: '<?= base_url()."edit_pengolahan";?>',
+        url: '<?= base_url()."register/edit_pengolahan";?>',
         success: function(result){
+          let data = JSON.parse(result);
           swal({
             type: data.type,
             text: data.pesan,
             showConfirmButton: true,
             allowOutsideClick: false,
           }).then(function(){
-            $('#table').DataTable().ajax.reload(); 
+            $('#table').DataTable().ajax.reload();
+            $('#modal_detail').modal('close');
           })
         }
 

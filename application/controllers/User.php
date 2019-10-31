@@ -58,7 +58,7 @@ class User extends CI_Controller {
 		}
 
 	}
-	public function profile()
+	public function profile($user = 'Reza')
 	{
 		$this->load->view('profile');
 
@@ -303,6 +303,8 @@ class User extends CI_Controller {
 			show_404();
 		}
 	}
+
+
 
 	public function change_profile()
 	{

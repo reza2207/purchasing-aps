@@ -8,11 +8,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Invoice_model extends CI_Model {
 
-	/*var $table = 'tdr';
-	var $column_order = array('id_vendor', 'no_srt_vendor', 'nm_vendor', 'alamat', 'sub_bdg_usaha','kualifikasi','tgl_mulai','tgl_akhir','status','id_vendor');//,'status');//field yang ada di table user
-	var $column_search = array('id_vendor', 'no_srt_vendor', 'nm_vendor', 'alamat', 'sub_bdg_usaha','kualifikasi','tgl_mulai','tgl_akhir','IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) <= 90 AND DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) > 0, "Expired_Soon", IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) < 0, "Expired", "Active"))');//,'status');//field yang dizinkan untuk pencarian
-	var $order = array('tgl_akhir'=>'desc', 'nm_vendor'=> 'asc'); //default sort
-*/
+	var $table = 'invoice';
+	var $column_order = array('a.tgl_input', 'tdr.nm_vendor', 'a.no_invoice','a.tgl_invoice', 'a.no_kontrak','a.nominal','a.perihal','a.tgl_invoice_diantar','a.tgl_invoice_kembali','a.tgl_kebagian_pembayaran','a.status');//,'status');//field yang ada di table user
+	var $column_search = array('a.tgl_input', 'tdr.nm_vendor', 'a.no_invoice','a.tgl_invoice', 'a.memo_keluar', 'a.no_kontrak','a.nominal','a.perihal','a.tgl_invoice_diantar','a.tgl_invoice_kembali','a.tgl_kebagian_pembayaran','a.status');//,'status');//field yang dizinkan untuk pencarian
+	var $order = array('tgl_input'=>'desc'); //default sort
+
 	public function __construct() {
 		
 		parent::__construct();
@@ -20,10 +20,20 @@ class Invoice_model extends CI_Model {
 		
 	}
 	
-	/*private function _get_datatables_query() 
+	private function _get_datatables_query() 
 	{
-		$this->db->select('tdr.id_vendor, tdr.no_srt_vendor, tdr.divisi, tdr.nm_vendor, tdr.sub_bdg_usaha, tdr.kualifikasi, tdr.tgl_mulai, tdr.tgl_akhir, tdr.alamat, tdr.file_tdr, DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) AS diff, IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) <= 90 AND DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) > 0, "Expired_Soon", IF(DATEDIFF(tdr.tgl_akhir, CURRENT_DATE) < 0, "Expired", IF(tdr.tgl_akhir = "0000-00-00","-", "Active"))) AS status, (SELECT defaultnya FROM settings WHERE namasetting = "default_tdr") setting ');
-		$this->db->from($this->table);
+		$this->db->select('a.id_invoice, a.tgl_input, a.no_invoice, a.memo_keluar, a.no_kontrak, a.nominal, a.perihal, a.tgl_invoice, a.tgl_invoice_diantar, a.tgl_invoice_kembali, a.tgl_kebagian_pembayaran, a.tahun, tdr.nm_vendor, status.keterangan, a.status, a.id_vendor');
+		$this->db->from('(SELECT invoice.id_invoice, invoice.tgl_input, invoice.id_vendor, invoice.no_invoice, invoice.memo_keluar, invoice.no_kontrak, invoice.nominal, invoice.perihal, invoice.tgl_invoice, invoice.tgl_invoice_diantar, invoice.tgl_invoice_kembali, invoice.tgl_kebagian_pembayaran, invoice.tahun, IF(invoice.no_invoice IS NULL, "10", IF(invoice.tgl_invoice_diantar = "0000-00-00", "11", IF(invoice.tgl_invoice_kembali = "0000-00-00", "12", IF(invoice.tgl_kebagian_pembayaran = "0000-00-00", "13", "14")))) AS status FROM invoice ) AS a');
+		$this->db->join('tdr', 'a.id_vendor = tdr.id_vendor', 'LEFT');
+		$this->db->join('status', 'a.status = status.id_status', 'LEFT');
+
+		if($this->input->post('tahun') != 'All'){
+	    	$this->db->where('a.tahun', $this->input->post('tahun'));
+	    }
+
+	    if($this->input->post('status') != ''){
+	      $this->db->where('a.status', $this->input->post('status'));	
+	    }
 
 		$i = 0;
 		
@@ -79,7 +89,7 @@ class Invoice_model extends CI_Model {
 	{
 		$this->db->from($this->table);
 		return $this->db->count_all_results();
-	}*/
+	}
 
 
 	public function submit_invoice($idinv, $tglinput, $idvendor, $noinv, $memo, $nokontrak, $nominal, $perihal, $tglinv, $invkeuser, $tahun)
@@ -109,6 +119,27 @@ class Invoice_model extends CI_Model {
 		$data = array('tgl_kebagian_pembayaran'=>$tgl);
 		$this->db->where('id_invoice', $id);
 		return $this->db->update('invoice', $data);
+	}
+
+
+	public function get_year()
+	{
+		$this->db->select('tahun');
+		$this->db->from($this->table);
+		$this->db->group_by('tahun');
+		$this->db->order_by('tahun', 'DESC');
+		return $this->db->get();
+	}
+
+	public function get_select_status($menu = 'INVOICE')
+	{
+		$this->db->select('keterangan, id_status');
+		$this->db->from('status');
+		$this->db->where('menu', $menu);
+		$this->db->where('id_status !=', '10');
+		$this->db->where('id_status !=', '11');
+		
+		return $this->db->get();
 	}
 	
 	

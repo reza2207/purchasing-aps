@@ -1,63 +1,63 @@
 <!-- loader -->
     <div class="waiting">
-        <div class="warning-alert">
-          <div class="loader">
-            <div class="preloader-wrapper big active">
-              <div class="spinner-layer spinner-blue">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                  <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
+      <div class="warning-alert">
+        <div class="loader">
+          <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
               </div>
-
-              <div class="spinner-layer spinner-red">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                  <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
               </div>
-
-              <div class="spinner-layer spinner-yellow">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                  <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
               </div>
+            </div>
 
-              <div class="spinner-layer spinner-green">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                  <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
+            <div class="spinner-layer spinner-red">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-yellow">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-green">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
               </div>
             </div>
           </div>
-          <div class="warning-text">Please Wait...<i class='fa fa-smile-o'></i></div>
         </div>
+        <div class="warning-text">Please Wait...<i class='fa fa-smile-o'></i></div>
+      </div>
     </div>
   <!-- Page Layout here -->
     <div class="row first">
-      <div class="col push-s3 s9">
+      <div class="col s12 offset-l3 l9">
         <div class="row">
           <?php if($_SESSION['role'] != 'user'){?>
           <div class="col l3">
@@ -135,7 +135,7 @@
           <div class="col l3">
             <div class="card hoverable">
               <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
-                <div class="white-text activator" style="text-align: center;padding-top: 10px;font-size: 2em">My Task</div>
+                <div class="white-text activator" style="text-align: center;padding-top: 10px;font-size: 2em"><a href="<?= base_url().'register/my_task';?>" class="white-text">My Task</a></div>
                 <div style="text-align: center" class="white-text activator"><i class="fa fa-tasks" style="font-size: 6em;padding-top: 20px"></i></div>
                 <div style="text-align: center;padding-top: 20px" class="white-text activator">ss</div>
               </div>
@@ -167,8 +167,6 @@
 
   <!-- page end layout -->
 
-  
-
     <!-- end -->
 <script>
   $(document).ready(function(){
@@ -179,7 +177,13 @@
       $('.waiting').hide();
     }
     setTimeout(loader, 1000);
-      
+      if(<?= $pks->num_rows();?> > 0){
+        swal({
+          type: 'warning',
+          text: '<?= $pks->num_rows() == 0 ? '': $pks->num_rows(). ' PKS yang akan berakhir';?>'
+        })
+        
+      }
 
     });
 </script>

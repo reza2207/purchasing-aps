@@ -116,8 +116,10 @@ class Pengolahan_model extends CI_Model {
 					  'perihal'=>$perihal,
 					  'dari_kelompok'=>$dari,
 					  'tgl_petugas_kirim'=>$tglkirim,
+					  'tgl_terima_doc'=>$tglterima,
 					  'divisi'=>$divisi);
 		$this->db->where('id_surat', $id);
+		return $this->db->update($this->table, $data);
 	}
 
 	public function get_status($id)
@@ -155,14 +157,15 @@ class Pengolahan_model extends CI_Model {
 
 	public function hapus_pengolahan($id)
 	{
-		$this->db->where('id_surat', $id);
-		return $this->db->delete($this->table, $id);
+		
+
+		return $this->db->delete($this->table, array('id_surat'=>$id));
 	}
 	
 	public function hapus_status($id)
 	{
-		$this->db->where('id_surat', $id);
-		return $this->db->delete('status_sirkulasi', $id);
+		
+		return $this->db->delete('status_sirkulasi', array('id_surat'=>$id));
 	}
 
 

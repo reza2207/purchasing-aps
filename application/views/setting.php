@@ -1,83 +1,16 @@
-<style>
-  #image-preview {
-    width: 150px;
-    height: 150px;
-    position: relative;
-    overflow: hidden;
-    background-color: #ffffff;
-    color: #ecf0f1;
-    border-radius: 100px
-  }
-  #image-preview input {
-    line-height: 200px;
-    font-size: 200px;
-    position: absolute;
-    opacity: 0;
-    z-index: 10;
-  }
 
-  #image-old{
-    position:relative;
-  }
-  #image-old label{
-    position: absolute;
-    padding-top: 50px;
-    width: 150px;
-    color:black;
-    text-shadow: 3px 2px 2px #46d53d;
-    text-align: center;
-  }
-  #image-preview label {
-    position: absolute;
-    z-index: 5;
-    opacity: 0.8;
-    cursor: pointer;
-    
-    width: 150px;
-    height: 150px;
-    
-    line-height: 50px;
-    text-transform: uppercase;
-    top: 0;
-    padding-top: 48px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    text-align: center;
-  }
-  #image-preview i {
-    position: absolute;
-    z-index: 5;
-    opacity: 0.8;
-    cursor: pointer;
-    font-size: 5em;
-    width: 150px;
-    height: 150px;
-    padding-top: 48px;
-    line-height: 50px;
-    text-transform: uppercase;
-    top: -20px;
-    
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    text-align: center;
-  }
-</style>
   <!-- Page Layout here -->
     <div class="row first">
-      <div class="col push-s3 s9">
+      <div class="col s12 offset-l3 l9">
         <div class="row">
           <div class="col s12">
             <ul class="tabs">
               <li class="tab col s3"><a href="#menu1">Change Password</a></li>
               <li class="tab col s3"><a class="" href="#menu2">Change Picture</a></li>
-              <li class="tab col s3"><a href="#menu3">Test 4</a></li>
+              <li class="tab col s3"><a href="#menu3">Tanggal Libur</a></li>
             </ul>
           </div>
-          <div id="menu1" class="col s12">
+          <div id="menu1" class="col s12" style="padding-top: 50px">
             <?= form_open('', array('id'=>'form_cp'));?>
               <div class="row">
                 <div class="input-field col s6">
@@ -89,16 +22,6 @@
                   <label>Confirm New Password :</label>
                 </div>
               </div>
-              <!-- <div class="row">
-                <div class="input-field col s6">
-                  <input type="text" class="default" name="question" value="<?= $user->recovery_q;?>">
-                  <label>Question Recovery:</label>
-                </div>
-                <div class="input-field col s6">
-                  <input type="text" class="default" value="<?= $user->answer_rec;?>" name="answer">
-                  <label>Answer Recovery:</label>
-                </div>
-              </div> -->
               <div class="row">
                 <div class="input-field col s6">
                   <button class="btn teal">Submit</button>
@@ -106,7 +29,7 @@
               </div>
             <?= form_close();?>
           </div>
-          <div id="menu2" class="col s12">
+          <div id="menu2" class="col s12" style="padding-top: 50px">
             <?= form_open_multipart('', array('id'=>'form_pict'));?>
               <div class="row">
                 <div class="input-field col s6" id="image-old">
@@ -126,7 +49,19 @@
               </div>
             <?= form_close();?>
           </div>
-          <div id="menu3" class="col s12">Test 3</div>
+          <div id="menu3" class="col s12" style="padding-top: 50px;">
+            <table class="table display" id="table" style="width: 100%">
+              <thead class="teal white-text">
+                <tr>
+                  <th class="center align-middle">No.</th>
+                  <th>Tanggal</th>
+                  <th>Keterangan</th>
+                  <th>Action</th>
+
+                </tr>
+              </thead>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -238,7 +173,86 @@
         }
       })
     })
+    //table 
 
+    var table = $('#table').DataTable({
+      "lengthMenu": [[5,10,25, 50, -1],[5,10,25,50, "All"]],
+      "stateSave": false,
+      "processing" : true,
+      "serverSide": true,
+      "orderClasses": false,
+      "order": [],
+      "ajax":{
+        "url": "<?= site_url('Setting/get_data_libur');?>",
+        "type": "POST",
+        "data": function ( data ) {
+                /*data.divisi = $('#divisi-select').val();
+                data.tahun = $('#year-select').val();
+                data.my_task = $('#my_task').val();*/
+        }
+
+      },
+      "columns":[
+        {"data": ['no']},
+        {"data": ['tgl']},
+        {"data": ['keterangan']},
+        {"data": ['no']},
+      ],
+      "dom": 'Bflrtip',
+              buttons: [
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
+            { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
+            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
+            { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
+            ],
+      "processing": true,
+      "language":{
+        "processing": "<div class='warning-alert'><i class='fa fa-circle-o-notch fa-spin'></i> Please wait........",
+        "buttons": {
+          "copyTitle": "<div class='row'><div class='col push-l3 l9' style='font-size:15px'>Copy to clipboard</div></div>",
+          "copyKeys":"Press <i>ctrl</i> or <i>\u2318</i> + <i>C</i> to copy the table data<br>to your system clipboard.<br>To cancel, click this message or press escape.",
+          "copySuccess":{
+            "_": "%d line tercopy",
+            "1": "1 line tercopy"
+          }
+        }
+      },
+      "columnDefs": [
+            {
+              "targets": [ 0, 1,  -1 ],
+              "className": 'center'
+            },
+        ],
+      "createdRow" : function(row, data, index){
+        $(row).addClass('row');
+        $(row).attr('data-id',data['id_tgl']);
+        
+      }
+    
+    })
+    
+    //$('#table_filter label').hide();
+     $('#table_filter input ').attr('placeholder', 'Search here...');
+      //$('#table_filter label').hide();
+      let tagsearch = "<div class='input-field'><label class='active'>Search</label>"+
+      "<input type='text' class='validate' id='searchnew' style='margin-left: 0;'>"+
+      "</div>";
+      $('#table_filter label').html(tagsearch);
+    
+    $('#btn-filter').on('click', function(e){
+      $('#filter').toggleClass('hide');
+    })
+    $('#searchnew').on('keyup change', function(){
+        table
+          .search(this.value)
+          .draw();
+    })
+    $('#reload').on('click', function(){ //reload
+      $('#table').DataTable().ajax.reload();
+    })
+    
+    $("[name='table_length']").formSelect();
 
   });
 </script>

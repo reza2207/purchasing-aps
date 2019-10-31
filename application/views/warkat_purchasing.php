@@ -1,20 +1,20 @@
 <div class="row first">
   <!-- <div class="col s12"> -->
   
-  <div class="col push-s3 s9">
+  <div class="col s12 offset-l3 l9">
     
-    <table class="table display" id="table">
+    <table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
       <thead class="teal white-text">
         <tr class="rowhead">
           <th>#</th>
-          <th>No. Surat</th>
+          <th>No. Warkat</th>
           <th>Perihal</th>      
-          <th>Dari Kelompok</th>
-          <th>Peruntukan</th>
-          <th>Tgl. Petugas Kirim</th>
-          <th>Tgl. Terima Dokumen</th>
+          <th>Pemutus</th>
+          <th>Petugas</th>
+          <th>Nominal</th>
+          <th>Tanggal</th>
+          <th>Catatan</th>
           <th>Status</th>
-          <th>Action</th>
         </tr>
       </thead>
     </table>
@@ -27,33 +27,43 @@
   <div class="modal-content">
     <div class="col s12 l12">
       <div class="row">
-        <div class="input-field col s12 l6">
-          <input name="no_surat" type="text">
-          <label class="active">No. Surat</label>
+        <div class="input-field col s12 l12">
+          <input name="perihal" type="text">
+          <label class="active">Perihal</label>
         </div>
         <div class="input-field col l6 s12">
-          <label class="active">Kepada</label>
-          <select name="divisi" class="select-m">
-            <option value="">--pilih--</option>  
-            <option value="BSK">BSK</option>
-            <option value="PDM">PDM</option>
-            <option value="EBK">EBK</option>
-            <option value="Others">Lain-lain</option>
+          <label class="active">Pemutus</label>
+          <select name="pemutus" class="select-m">
+            <option value="">--pilih--</option>
+            <?php foreach ($pemutus as $pm) {?>
+              <option value="<?= $pm->id_pemutus;?>"><?= $pm->nama_pemutus;?></option>
+            <?php }?>
+            
           </select>
           
         </div>
-        <div class="input-field col s12 l12">
-          <input name="perihal" type="text" class="">
-          <label class="active">Perihal</label>
+        <div class="input-field col s12 l6">
+          <label class="active">Petugas</label>
+          <select name="petugas" class="select-m">
+            <option value="">--pilih--</option>  
+            <?php foreach ($petugas as $pt) {?>
+              <option value="<?= $pt->username;?>"><?= $pt->nama;?></option>
+            <?php }?>
+          </select>
         </div>   
         <div class="input-field col s12 l6">
-          <input name="dari" value="STL Purchasing BSK">
-          <label class="active">Dari Kelompok</label>
+          <input name="nominal" type="number" min="1">
+          <label class="active">Nominal</label>
         </div>
         <div class="input-field col s12 l6">
-          <input name="tgl_kirim" class="datepicker">
-          <label class="active">Tgl. Petugas Kirim</label>
+          <input name="tanggal" class="datepicker">
+          <label class="active">Tanggal</label>
         </div>
+        <div class="input-field col s12 l12">
+          <input name="catatan" >
+          <label class="active">Catatan</label>
+        </div>
+       
       </div>
     </div>
   </div>
@@ -153,6 +163,14 @@
       firstDay:1
 
     });
+    function selected(status, stat){
+      if(status == stat){
+        return 'selected';
+      
+      }else{
+        return '';
+      }
+    }
     $('.modal').modal();
     $('.bg').hide();
     var table = $('#table').DataTable({
@@ -163,7 +181,7 @@
       "orderClasses": false,
       "order": [],
       "ajax":{
-        "url": "<?= site_url('Register/get_data_pengolahan');?>",
+        "url": "<?= site_url('Register/get_data_warkat');?>",
         "type": "POST",
         "data": function ( data ) {
         }
@@ -171,23 +189,36 @@
       },
       "columns":[
         {"data": ['no']},
-        {"data": ['no_srt']},
+        {"data": ['no_warkat']},
         {"data": ['perihal']},
-        {"data": ['dari_kelompok']},
-        {"data": ['divisi']},
-        {"data": ['tgl_petugas_kirim']},
-        {"data": ['tgl_terima_doc']},
-        {"data": ['status']},
-        {"data": ''},
+        {"data": ['pemutus']},
+        {"data": ['petugas']},
+        {"data": ['nominal']},
+        {"data": ['tanggal']},
+        {"data": ['catatan']},
+        {"data": function(data){
+            $('.select-m').formSelect();
+            /*if(data['status']=='done'){
+              return 'Done';
+            }else{*/
+              let status = data.status;
+              return "<select class='browser-default status' data-id='"+data['id_warkat']+"'>"+
+                      "<option "+selected(status,'none')+">-pilih-</option>"+
+                      "<option value='done' "+selected(status,'done')+">Approve</option>"+
+                      "<option value='reject' "+selected(status,'reject')+">Reject</option>"+
+                    "</select>";
+           
+            //}
+          }
+        }
       ],
       "dom": 'Bflrtip',
               buttons: [
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
-            { className: 'btn btn-sm light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
-            { extend: 'copy', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
-            { extend: 'csv', className: 'btn btn-sm light-blue darken-4'},
-            { extend: 'excel', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-print"><i>', attr: {id: 'btn-print-checklist','aria-label':'Print Checklist','data-balloon-pos':'up'}}
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
+            { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
+            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
+            { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            
             ],
       "processing": true,
       "language":{
@@ -203,28 +234,22 @@
       },
       "columnDefs": [
             {
-                "targets": [ 0, 1, 3,4,5,7,-1 ],
+                "targets": [ 0, 1,2,3,4,5,6,7,-1 ],
                 "className": 'center'
             },
-            {
-              "targets": [6],
-              "className": 'tglterimadoc center'
-            },
-            {
-              "targets":-1,"data":null,"orderable":false,"defaultContent":"</button><button class='detail blue btn-small'><i class='fa fa-eye'></i></button><label><input type='checkbox' class='checkbox' name='check'/><span></span></label>","width":"120px","className":"center"
-            }
             
         ],
       "createdRow" : function(row, data, index){
         $(row).addClass('row');
-        $(row).attr('data-id',data['id_surat']);
-        $(row).children().eq(-1).children().eq(-1).children().attr('data-id',data['id_surat']);
-        $(row).children().eq(-1).children().eq(0).attr('data-id',data['id_surat']);
+        $(row).attr('data-id',data['id_warkat']);
+        $(row).children().eq(-1).children().eq(-1).children().attr('data-id',data['id_warkat']);
+        $(row).children().eq(-1).children().eq(0).attr('data-id',data['id_warkat']);
         if(data['status'] == 'Done'){
           $(row).addClass('amber lighten-3');
         }
       }
     })
+    
     $('#table_filter input ').attr('placeholder', 'Search here...');
     let tagsearch = "<div class='input-field'><label class='active'>Search</label>"+
     "<input type='text' class='validate' id='searchnew' style='margin-left: 0;'>"+
@@ -242,9 +267,6 @@
     $('#reload').on('click', function(){ //reload
       $('#table').DataTable().ajax.reload();
     })
-    // $('#table tbody').on('click', function(e){
-    //   alert('s')
-    // })
 
     $("[name='table_length']").formSelect();
 
@@ -252,104 +274,25 @@
       $('#modal_tambah').modal('open');
 
     })
-
-    $("#table tbody").on('click','.detail',function(e){
+    $("#table tbody").on('change','.status', function(e){
       e.preventDefault();
-      $('#modal_detail').modal('open');
-      $('#modal_detail label').addClass('active');
-      $('#bodycomment').html('');
-      $('#comment').val('');
-      let id = $(this).attr('data-id');
-      $('#hapus-button, #comment').attr('data-id', id);
-
+      id = $(this).attr('data-id');
+      val = this.value;
       $.ajax({
         type: 'POST',
-        url : '<?= base_url()."Register/get_data_id_pengolahan";?>',
-        data: {id:id, data:'data'},
+        url : '<?= base_url()."register/update_warkat";?>',
+        data: {id:id, value:val},
         success: function(result){
-          let data = JSON.parse(result);
-          $('#id_srt').val(data.id_surat);
-          $('#no_srt').val(data.no_srt);
-          $('#divisi').find('option[value="'+data.divisi+'"]').prop('selected', true);
-          $('#divisi').formSelect();
-          //$('#divisi').val(data.divisi);
-          $('#perihal').val(data.perihal);
-          $('#dari').val(data.dari_kelompok);
-          $('#tgl_kirim').val(tanggal(data.tgl_petugas_kirim));
-          if(tanggal(data.tgl_terima_doc) == '-'){          $('#proses-button').text('proses');
-          }else{
-            $('#proses-button').text('edit');
-          }
-          $('#tgl_terima').val(tanggal(data.tgl_terima_doc));
-
-          get_status(id);
-
+          $('#table').DataTable().ajax.reload();
         }
       })
     })
-    
-    function get_status(id){
-      $.ajax({
-        type: 'POST',
-        url : '<?= base_url()."Register/get_status";?>',
-        data: {id:id, data:'status'},
-        success: function(result){
-          let html = '';
-          let data = JSON.parse(result);
-          let no = 0;
-          
-          for(i = 0; i < data.length;i++){
-            no++;
-            if(i == 0){
-              html += '<a class="collection-item green white-text"><span class="new badge" data-badge-caption="'+data[i].tgl_buat+'">'+data[i].nama+' on </span>'+data[i].status+'</a>';
-            }else{
-              html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+data[i].tgl_buat+'">'+data[i].nama+' on </span>'+data[i].status+'</a>';
-            }
-          }
-          
-
-          $('#bodycomment').html(html);
-        }
-      })
-
-    }
-    $('#comment').on('keyup', function(e){
-      if(e.which == '13'){
-        let id = $(this).attr('data-id');
-        let value = this.value;
-        $.ajax({
-          type: 'POST',
-          url : '<?= base_url()."register/addstatus";?>',
-          data: {id:id, value:value},
-          success: function(result){
-            let data = JSON.parse(result);
-            if(data.type == 'error'){
-              swal({
-                type: data.type,
-                text: data.pesan,
-                showConfirmButton: true,
-                allowOutsideClick: false,
-              })
-            }else{
-              swal({
-                type: data.type,
-                text: data.pesan,
-                showConfirmButton: true,
-                allowOutsideClick: false,
-              }).then(function(){
-                get_status(id)
-                $('#table').DataTable().ajax.reload();  
-              })
-            }
-          }
-        })
-      }
-    })
+       
     $('#submit_new').on('click', function(e){
       e.preventDefault();
       $.ajax({
         type: 'POST',
-        url : '<?= base_url()."Register/add_pengolahan";?>',
+        url : '<?= base_url()."Register/add_warkat";?>',
         data: $('#formtambah').serialize(),
         success: function(result){
           let data = JSON.parse(result);
@@ -367,102 +310,14 @@
               showConfirmButton: true,
               allowOutsideClick: false,
             }).then(function(){
-              $('#formtambah')[0].reset();
+              $('#formtambah input').val('');
               $('#modal_tambah').modal('close');
               $('#table').DataTable().ajax.reload();  
             })
-          }
+          } 
         }
       })
     })
-    $('#hapus-button').on('click',function(e){
-      let id = $(this).attr('data-id');
-      swal({
-        type: 'question',
-        text: 'Are you sure to delete this data?',
-        showConfirmButton: true,
-        allowOutsideClick: false,
-        showCancelButton: true
-      }).then(function(){
-
-
-        $.ajax({
-          type: 'POST',
-          url : '<?= base_url()."register/hapus_pengolahan";?>',
-          data: {id:id},
-          success: function(result){
-            let data = JSON.parse(result);
-            if(data.type == 'error'){
-              swal({
-                type: data.type,
-                text: data.pesan,
-                showConfirmButton: true,
-                allowOutsideClick: false,
-              })
-            }else{
-              swal({
-                type: data.type,
-                text: data.pesan,
-                showConfirmButton: true,
-                allowOutsideClick: false,
-              }).then(function(){
-                $('#modal_detail').modal('close');
-                $('#table').DataTable().ajax.reload();  
-              })
-            }
-          }
-        })
-      }, function(e){
-          if(e == 'cancel'){
-            swal({
-              type: 'success',
-              text: 'OKE! HUFT...',
-              showConfirmButton: true,
-              allowOutsideClick: false,
-            })
-          }
-      })
-    })
-
-    $('#proses-button').on('click', function(e){
-      e.preventDefault();
-      $.ajax({
-        type: 'POST',
-        data: $('#formedit').serialize(),
-        url: '<?= base_url()."edit_pengolahan";?>',
-        success: function(result){
-          swal({
-            type: data.type,
-            text: data.pesan,
-            showConfirmButton: true,
-            allowOutsideClick: false,
-          }).then(function(){
-            $('#table').DataTable().ajax.reload(); 
-          })
-        }
-
-      })
-    })
-    
-    $('#btn-print-checklist').on('click', function(e){
-      let chkarray = [];
-      $('.checkbox:checked').each(function(){
-        chkarray.push($(this).attr('data-id'));
-      })
-      let selected;
-      selected = chkarray.join(',');
-      if(selected.length > 0){
-        window.open("<?=base_url().'register/print_pengolahan';?>?checkid="+selected,target='_blank','width=800,height=500,scrollbars=yes, location=no, resizable=yes');
-      }else{
-        swal({
-          'type':'error',
-          'text':'please select at least 1 row'});
-      }
-
-    })
-      
-
-
   });
   
 </script>

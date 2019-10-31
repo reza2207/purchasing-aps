@@ -111,5 +111,35 @@ class Setting extends CI_Controller {
 		return $this->Setting_model->dir_foto()->row()->defaultnya;
 	}
 
+	public function get_data_libur()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$list = $this->Setting_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $field) {
+				$no++;
+				$row = array();
+				$row['no'] = $no;
+				$row['tgl'] = tanggal_indo($field->tgl);
+				$row['keterangan'] = $field->keterangan;
+			
+				$data[] = $row;
+				
+			}
+
+			$output = array(
+				"draw"=> $_POST['draw'], 
+				"recordsTotal" =>$this->Setting_model->count_all(),
+				"recordsFiltered"=>$this->Setting_model->count_filtered(),
+				"data"=>$data,
+			);
+			echo json_encode($output);
+		}else{
+			$this->load->helper('form');
+			$this->load->view('login');
+		}
+	}
+
 	
 }

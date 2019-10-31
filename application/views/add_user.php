@@ -12,63 +12,65 @@
       </div>
 
       <!-- Page Layout here -->
-      <div class="row col l12 s12">
-        <?= form_open();?>
-        <div class="col s10 push-s1 l10 push-l2">
-          <div class="row">
-            <div class="input-field col s12 l4 push-l2">
-              <input id="username" type="text" class="validate">
-              <label>Username</label>
+      <div class="row first">
+        
+        <div class="col s12 offset-l3 l9">
+          <?= form_open();?>
+            <div class="row">
+              <div class="input-field col s12 l5">
+                <input id="username" type="text" class="validate">
+                <label>Username</label>
+              </div>
+              <div class="input-field col s12 l5">
+                <input id="password" type="password" class="validate">
+                <label>Password</label>
+              </div>
             </div>
-            <div class="input-field col s12 l4 push-l2">
-              <input id="password" type="password" class="validate">
-              <label>Password</label>
+            <div class="row">
+              <div class="input-field col s12 l10">
+                <input id="full_name" type="text" class="validate">
+                <label>Full Name</label>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12 l8 push-l2">
-              <input id="full_name" type="text" class="validate">
-              <label>Full Name</label>
+            <div class="row">
+              <div class="input-field col s12 l4 push-l2">
+                <input id="recovery" type="text" class="validate">
+                <label>Recovery Question</label>
+              </div>
+              <div class="input-field col s12 l4 push-l2">
+                <input id="recovery_answer" type="text" class="validate">
+                <label>Recovery Question Answer</label>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12 l4 push-l2">
-              <input id="recovery" type="text" class="validate">
-              <label>Recovery Question</label>
+            <div class="row">
+              <div class="input-field col s12 l4 push-l2">
+                <input>
+              </div>
+              <div class="input-field col s12 l4 push-l2">
+                <select id="role">
+                  <option value="" disabled selected>Choose your option</option>
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                  <option value="superuser">SuperUser</option>
+                </select>
+                <label>Role</label>
+              </div>
             </div>
-            <div class="input-field col s12 l4 push-l2">
-              <input id="recovery_answer" type="text" class="validate">
-              <label>Recovery Question Answer</label>
+            <div class="row show-on-large hide-on-med-and-down">
+              <div class="input-field col l4 push-l8 s12">
+                <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
+                <button class="waves-effect waves-light btn register" type="submit">Register</button>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12 l4 push-l2">
-              <input>
+            <div class="row show-on-small hide-on-med-and-up">
+              <div class="input-field col s12">
+                <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
+                <button class="waves-effect waves-light btn" type="submit">Register</button>
+              </div>
             </div>
-            <div class="input-field col s12 l4 push-l2">
-              <select id="role">
-                <option value="" disabled selected>Choose your option</option>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-                <option value="superuser">SuperUser</option>
-              </select>
-              <label>Role</label>
-            </div>
-          </div>
-          <div class="row show-on-large hide-on-med-and-down">
-            <div class="input-field col l4 push-l8 s12">
-              <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
-              <button class="waves-effect waves-light btn register" type="submit">Register</button>
-            </div>
-          </div>
-          <div class="row show-on-small hide-on-med-and-up">
-            <div class="input-field col s12">
-              <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
-              <button class="waves-effect waves-light btn" type="submit">Register</button>
-            </div>
-          </div>
+          <?= form_close();?>
         </div>
-        <?= form_close();?>
+        
       </div>
       <!--JavaScript at end of body for optimized loading-->
       

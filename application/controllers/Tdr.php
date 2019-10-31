@@ -26,6 +26,7 @@ class Tdr extends CI_Controller {
 		$this->load->helper('terbilang_helper');
 		$this->load->helper('tanggal_helper');
 		$this->load->model('Pks_model');
+		$this->load->library('form_validation');
 		date_default_timezone_set("Asia/Bangkok");
 	}	
 	public function index()
@@ -48,14 +49,16 @@ class Tdr extends CI_Controller {
 
 	}
 
-	public function detail_tdr($id){
+	public function detail_tdr($id = null)
+	{
 
-		$data = new stdClass();
-		//$sql = $this->tdr_model->list_tdr();
-		$sql = $this->Tdr_model->get_detail_tdr($id);
+		if($this->Tdr_model->get_detail_tdr($id)->num_rows() > 0){
+			$sql = $this->Tdr_model->get_detail_tdr($id);
 
-		echo json_encode($sql->result());
-
+			echo json_encode($sql->row());
+		}else{
+			echo json_encode(null);
+		}
 	}
 
 	public function get_data_tdr()
@@ -80,7 +83,8 @@ class Tdr extends CI_Controller {
 				$row['file_tdr'] = $field->file_tdr;
 				$row['datedif'] = $field->diff;
 				$row['status'] = $field->status;
-				$row['setting'] = $field->setting;
+				$row['stat_pdf'] = $field->file_tdr == '' ? null : $this->get_stat_pdf($field->id_vendor);
+				//$row['setting'] = $field->setting;
 
 				$data[] = $row;
 				
@@ -112,7 +116,7 @@ class Tdr extends CI_Controller {
 	       header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 	       header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 	       header('Content-Length: '.strlen($pdf));
-	       header('Content-Disposition: inline; filename="'.basename($file_name).'";');
+	       header('Content-Disposition: inline; filename="'.basename($file).'";');
 	       ob_clean(); 
 	       flush(); 
 	       echo $pdf;
@@ -121,7 +125,17 @@ class Tdr extends CI_Controller {
 	   	}
 	}
 
-	public function get_dir($id){
+	protected function get_stat_pdf($id)
+	{
+		$file = $this->get_dir($id);
+		if(file_exists($file)){
+			return $id;
+		}else{
+			return null;
+		}
+	}
+
+	protected function get_dir($id){
 		$dir = $this->Tdr_model->get_dir($id)->row('defaultnya');
 		$file = $this->Tdr_model->get_file($id)->row('file_tdr');
 
@@ -130,6 +144,119 @@ class Tdr extends CI_Controller {
 
 	public function get_tdr(){
 		echo json_encode($this->Tdr_model->select_tdr());
+	}
+
+	public function edit_tdr()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->post(null)){
+
+				//validate
+				$this->form_validation->set_rules('no_vendor', 'No. TDR', 'required');
+				$this->form_validation->set_rules('no_vendor', 'No Vendor', 'required');
+				$this->form_validation->set_rules('nm_vendor', 'Nama Vendor', 'required');
+				$this->form_validation->set_rules('alamat', 'Alamat Vendor', 'required');
+				$this->form_validation->set_rules('bidang', 'Bidang Pekerjaan', 'required');
+				$this->form_validation->set_rules('tgl_berlaku', 'Tgl. Mulai Berlaku', 'required');
+				$this->form_validation->set_rules('tgl_berakhir', 'Tgl. Berakhir', 'required');
+				$this->form_validation->set_rules('kualifikasi', 'Kualifikasi Vendor', 'required');
+				//$this->form_validation->set_rules('file_tdr', 'File TDR', 'required');
+					
+				if ($this->form_validation->run() == false) {
+					
+					$data = new stdClass();
+					$errors = validation_errors();
+
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+					
+				} else {
+					$id = $this->input->post('id_vendor');
+					$no = $this->input->post('no_vendor');
+					$nm = $this->input->post('nm_vendor');
+					$alt = $this->input->post('alamat');
+					$bid = $this->input->post('bidang');
+					$tglawal = tanggal1($this->input->post('tgl_berlaku'));
+					$tglakhir = tanggal1($this->input->post('tgl_berakhir'));
+					$kualifikasi = $this->input->post('kualifikasi');
+					$file = $this->input->post('file_tdr');
+
+					if($this->Tdr_model->update($id, $no, $nm, $alt, $bid, $tglawal, $tglakhir, $kualifikasi, $file))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+			            $data->pesan = 'Berhasil';
+			        }else{
+			        	$data = new stdClass();
+ 						$data->type = 'error';
+			            $data->pesan = 'Failed';
+			        }
+			    }
+
+			    echo json_encode($data);				
+
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function add_tdr()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->post(null)){
+				//validate
+				$this->form_validation->set_rules('no_vendor', 'No. TDR', 'required');
+				$this->form_validation->set_rules('no_vendor', 'No Vendor', 'required');
+				$this->form_validation->set_rules('nm_vendor', 'Nama Vendor', 'required');
+				$this->form_validation->set_rules('alamat', 'Alamat Vendor', 'required');
+				$this->form_validation->set_rules('bidang', 'Bidang Pekerjaan', 'required');
+				$this->form_validation->set_rules('tgl_berlaku', 'Tgl. Mulai Berlaku', 'required');
+				$this->form_validation->set_rules('tgl_berakhir', 'Tgl. Berakhir', 'required');
+				$this->form_validation->set_rules('kualifikasi', 'Kualifikasi Vendor', 'required');
+				//$this->form_validation->set_rules('file_tdr', 'File TDR', 'required');
+					
+				if ($this->form_validation->run() == false) {
+					
+					$data = new stdClass();
+					$errors = validation_errors();
+
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+					
+				} else {
+					$id = uniqid();
+					$no = $this->input->post('no_vendor');
+					$nm = $this->input->post('nm_vendor');
+					$alt = $this->input->post('alamat');
+					$bid = $this->input->post('bidang');
+					$tglawal = tanggal1($this->input->post('tgl_berlaku'));
+					$tglakhir = tanggal1($this->input->post('tgl_berakhir'));
+					$kualifikasi = $this->input->post('kualifikasi');
+					$file = $this->input->post('file_tdr');
+
+					if($this->Tdr_model->new_data($id, $no, $nm, $alt, $bid, $tglawal, $tglakhir, $kualifikasi, $file))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+			            $data->pesan = 'Berhasil';
+			        }else{
+			        	$data = new stdClass();
+ 						$data->type = 'error';
+			            $data->pesan = 'Failed';
+			        }
+			    }
+
+			    echo json_encode($data);				
+
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
 	}
 
 }

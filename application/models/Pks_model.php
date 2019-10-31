@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Pks_model extends CI_Model {
 
 	var $table = 'pks';
-	var $column_order = array(null, 'tgl_minta', 'no_srt_pelaksana', 'no_notin','nm_vendor','perihal','nominal_rp','tgl_krj_awal','tgl_krj_akhir', 'status');//,'status');//field yang ada di table user
+	var $column_order = array(null, 'tgl_minta', 'no_srt_pelaksana', 'no_notin','nm_vendor','perihal','nominal_rp','tgl_krj_awal','tgl_krj_akhir', 'a.status');//,'status');//field yang ada di table user
 	var $column_search = array('tgl_minta', 'no_srt_pelaksana', 'no_notin', 'nm_vendor', 'perihal', 'tgl_krj_awal', 'tgl_krj_akhir','nominal_rp', 'status.keterangan', 'a.segera');//,'status');//field yang dizinkan untuk pencarian
 	var $order = array('tgl_minta'=>'desc'); //default sort
 	
@@ -23,7 +23,7 @@ class Pks_model extends CI_Model {
 	{
 		$this->db->select('a.id_pks, a.tgl_minta, a.no_srt_pelaksana, a.no_notin, a.perihal, a.tgl_krj_awal, a.tgl_krj_akhir, a.tgl_ke_legal, a.tgl_draft_ke_user, a.tgl_draft_ke_user, a.tgl_draft_ke_vendor, a.tgl_review_send_to_legal, a.tgl_ke_vendor, a.tgl_blk_dr_vendor_ke_legal, a.tgl_ke_vendor_kedua, a.nm_vendor, a.reminder, a.beda, a.nominal_rp, a.bg_rp, a.no_pks, a.tgl_pks, a.segera, status.keterangan AS status');
 		$this->db->from('(SELECT `pks`.`id_pks`, `pks`.`tgl_minta`, `pks`.`no_srt_pelaksana`, `pks`.`no_notin`, `pks`.`perihal`, `pks`.`nominal_rp`, `pks`.`tgl_krj_awal`, `pks`.`tgl_krj_akhir`, `pks`.`tgl_ke_legal`, `pks`.`tgl_draft_ke_user`, `pks`.`tgl_draft_ke_vendor`, `pks`.`tgl_review_send_to_legal`, `pks`.`tgl_ke_vendor`, `pks`.`tgl_blk_dr_vendor_ke_legal`, `tgl_ke_vendor_kedua`, `pks`.`bg_rp`, `pks`.`no_pks`, `pks`.`tgl_pks`, `tdr`.`nm_vendor`, IF(pks.reminder = "y", "Done", "-") AS reminder, IF(`pks`.`tgl_ke_legal` = "0000-00-00", "1", IF(`pks`.`tgl_draft_ke_user` = "0000-00-00" AND `pks`.`tgl_draft_ke_vendor` = "0000-00-00", "2", IF(`pks`.`tgl_review_send_to_legal` = "0000-00-00", "3", IF(`pks`.`tgl_ke_vendor` = "0000-00-00", "4", IF(`pks`.`tgl_blk_dr_vendor_ke_legal` = "0000-00-00", "5", IF(`pks`.`tgl_ke_vendor_kedua` = "0000-00-00", "6", IF(`pks`.`tgl_ke_vendor_kedua` != "0000-00-00" AND `pks`.`tgl_krj_akhir` > current_date, "7", "8"))))))) AS status, datediff(pks.tgl_krj_akhir, curdate()) as beda, IF(datediff(pks.tgl_krj_akhir, curdate()) > 0 AND datediff(pks.tgl_krj_akhir, curdate()) < 180, "Segera", "") AS segera FROM `pks` LEFT JOIN `tdr` ON `pks`.`id_vendor` = `tdr`.`id_vendor`) a');
-		$this->db->join('status', 'a.status = status.id_status_pks', 'LEFT');
+		$this->db->join('status', 'a.status = status.id_status', 'LEFT');
 		$this->db->where('a.tgl_minta != ', '0000-00-00');
 		$this->db->where('YEAR(current_date) - YEAR(a.tgl_krj_awal) <', '4');
 		
@@ -101,10 +101,10 @@ class Pks_model extends CI_Model {
 
 	public function get_detail($id)
 	{
-		$this->db->select('a.id_pks, a.tgl_minta, a.no_srt_pelaksana, a.no_notin, a.perihal, a.tgl_krj_awal, a.tgl_krj_akhir, a.tgl_ke_legal, a.tgl_draft_ke_user, a.tgl_draft_ke_user, a.tgl_draft_ke_vendor, a.tgl_review_send_to_legal, a.tgl_ke_vendor, a.tgl_blk_dr_vendor_ke_legal, a.tgl_ke_vendor_kedua, a.nm_vendor, a.reminder, a.beda, a.nominal_rp, a.bg_rp, a.no_pks, a.tgl_pks, IFNULL(b.keterangan, "") segera, status.keterangan AS status');
-		$this->db->from('(SELECT `pks`.`id_pks`, `pks`.`tgl_minta`, `pks`.`no_srt_pelaksana`, `pks`.`no_notin`, `pks`.`perihal`, `pks`.`nominal_rp`, `pks`.`tgl_krj_awal`, `pks`.`tgl_krj_akhir`, `pks`.`tgl_ke_legal`, `pks`.`tgl_draft_ke_user`, `pks`.`tgl_draft_ke_vendor`, `pks`.`tgl_review_send_to_legal`, `pks`.`tgl_ke_vendor`, `pks`.`tgl_blk_dr_vendor_ke_legal`, `tgl_ke_vendor_kedua`, `pks`.`bg_rp`, `pks`.`no_pks`, `pks`.`tgl_pks`, `tdr`.`nm_vendor`, IF(pks.reminder = "y", "Done", "-") AS reminder, IF(pks.tgl_ke_legal = "0000-00-00", "1", IF(pks.tgl_draft_ke_user = "0000-00-00" AND pks.tgl_draft_ke_vendor = "0000-00-00", "2", IF(pks.tgl_review_send_to_legal = "0000-00-00", "3", IF(pks.tgl_ke_vendor = "0000-00-00", "4", IF(pks.tgl_blk_dr_vendor_ke_legal = "0000-00-00", "5", IF(pks.tgl_ke_vendor_kedua = "0000-00-00", "6", IF(pks.tgl_ke_vendor_kedua != "0000-00-00" AND pks.tgl_krj_akhir > current_date, "7", "8"))))))) AS status, datediff(pks.tgl_krj_akhir, curdate()) as beda, IF(datediff(pks.tgl_krj_akhir, curdate()) > 0 AND datediff(pks.tgl_krj_akhir, curdate()) < 180, "9", "") AS segera FROM `pks` LEFT JOIN `tdr` ON `pks`.`id_vendor` = `tdr`.`id_vendor`) a');
-		$this->db->join('status', 'a.status = status.id_status_pks', 'LEFT');
-		$this->db->join('status AS b', 'a.segera = b.id_status_pks', 'LEFT');
+		$this->db->select('a.id_pks, a.tgl_minta, a.no_srt_pelaksana, a.no_notin, a.perihal, a.tgl_krj_awal, a.tgl_krj_akhir, a.tgl_ke_legal, a.tgl_draft_ke_user, a.tgl_draft_ke_user, a.tgl_draft_ke_vendor, a.tgl_review_send_to_legal, a.tgl_ke_vendor, a.tgl_blk_dr_vendor_ke_legal, a.tgl_ke_vendor_kedua, a.nm_vendor, a.reminder, a.beda, a.nominal_rp, a.bg_rp, a.no_pks, a.tgl_pks, IFNULL(b.keterangan, "") segera, status.keterangan AS status, a.id_vendor, a.file');
+		$this->db->from('(SELECT `pks`.`id_pks`, `pks`.`tgl_minta`, `pks`.`no_srt_pelaksana`, `pks`.`no_notin`, `pks`.`perihal`, `pks`.`nominal_rp`, `pks`.`tgl_krj_awal`, `pks`.`tgl_krj_akhir`, `pks`.`tgl_ke_legal`, `pks`.`tgl_draft_ke_user`, `pks`.`tgl_draft_ke_vendor`, `pks`.`tgl_review_send_to_legal`, `pks`.`tgl_ke_vendor`, `pks`.`tgl_blk_dr_vendor_ke_legal`, `tgl_ke_vendor_kedua`, `pks`.`bg_rp`, `pks`.`no_pks`, `pks`.`tgl_pks`, `tdr`.`nm_vendor`, IF(pks.reminder = "y", "Done", "-") AS reminder, IF(pks.tgl_ke_legal = "0000-00-00", "1", IF(pks.tgl_draft_ke_user = "0000-00-00" AND pks.tgl_draft_ke_vendor = "0000-00-00", "2", IF(pks.tgl_review_send_to_legal = "0000-00-00", "3", IF(pks.tgl_ke_vendor = "0000-00-00", "4", IF(pks.tgl_blk_dr_vendor_ke_legal = "0000-00-00", "5", IF(pks.tgl_ke_vendor_kedua = "0000-00-00", "6", IF(pks.tgl_ke_vendor_kedua != "0000-00-00" AND pks.tgl_krj_akhir > current_date, "7", "8"))))))) AS status, datediff(pks.tgl_krj_akhir, curdate()) as beda, IF(datediff(pks.tgl_krj_akhir, curdate()) > 0 AND datediff(pks.tgl_krj_akhir, curdate()) < 180, "9", "") AS segera, `pks`.`id_vendor`, `pks`.`file` FROM `pks` LEFT JOIN `tdr` ON `pks`.`id_vendor` = `tdr`.`id_vendor`) a');
+		$this->db->join('status', 'a.status = status.id_status', 'LEFT');
+		$this->db->join('status AS b', 'a.segera = b.id_status', 'LEFT');
 		//$this->db->join('expired', 'a.segera = expired.id_exp', 'LEFT');
 		$this->db->where('a.id_pks', $id);
 		return $this->db->get()->row();
@@ -144,7 +144,7 @@ class Pks_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	public function update_pks($id, $nopenunjukan, $tglminta, $nousulan, $idtdr, $perihal, $tglawal, $tglakhir, $nominalrp, $nominalusd, $bankgaransi,$tgldraftdarilegal, $tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks, $tglpks, $nopks)
+	public function update_pks($id, $nopenunjukan, $tglminta, $nousulan, $idtdr, $perihal, $tglawal, $tglakhir, $nominalrp, $nominalusd, $bankgaransi,$tgldraftdarilegal, $tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks, $tglpks, $nopks, $file)
 	{
 		$data = array(
 			'no_srt_pelaksana' => $nopenunjukan,
@@ -165,7 +165,8 @@ class Pks_model extends CI_Model {
 			'tgl_blk_dr_vendor_ke_legal'=>$tglttdkepemimpin,
 			'tgl_ke_vendor_kedua'=>$tglserahterimapks,
 			'no_pks'=>$nopks,
-			'tgl_pks'=>$tglpks);
+			'tgl_pks'=>$tglpks,
+			'file'=>$file);
 
 		$this->db->where('id_pks', $id);
 		return $this->db->update('pks', $data);
@@ -173,7 +174,7 @@ class Pks_model extends CI_Model {
 
 	public function delete_pks($id)
 	{	
-		return $this->db->delete('pks', array('no_srt_pelaksana' => $id));
+		return $this->db->delete('pks', array('id_pks' => $id));
 	}
 
 	public function proses_pks($id,$tgldraftdarilegal,$tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks,$nopks,$tglpks, $id)
@@ -211,5 +212,24 @@ class Pks_model extends CI_Model {
 		$this->db->limit('1');
 
 		return $this->db->get();
+	}
+
+	public function get_file($id)
+	{
+		$this->db->select('file');
+		$this->db->from($this->table);
+		$this->db->where('id_pks', $id);
+		return $this->db->get();
+	}
+
+	public function add_reminder($id, $idpks, $no, $tgl, $perihal, $file)
+	{
+		$data = array('id_perpanjangan'=>$id,
+			          'id_pks'=> $idpks,
+			          'no_pks'=>$no,
+			          'perihal'=>$perihal,
+			          'tgl_surat'=>$tgl,
+			          'file'=>$file);
+		return $this->db->insert('perpanjang_pks', $data);
 	}
 }

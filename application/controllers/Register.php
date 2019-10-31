@@ -30,6 +30,9 @@ class Register extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('Tdr_model');
 		date_default_timezone_set("Asia/Bangkok");
+		$this->load->model('Warkat_model');
+		$this->load->model('Bg_model');
+		$this->load->library("excel");
 
 	}	
 
@@ -39,7 +42,6 @@ class Register extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Register';
-			$data->pks = $this->Pks_model->list_reminder(180);
 			$this->load->view('header', $data);
 			$this->load->view('register');
 		}else{
@@ -56,7 +58,7 @@ class Register extends CI_Controller {
 			$data->title = 'Register Masuk';
 			$data->year = $this->Register_masuk_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
-			$data->pks = $this->Pks_model->list_reminder(180);
+			
 			$data->select_vendor = $this->Tdr_model->select_tdr();
 			$this->load->view('header', $data);
 			$this->load->view('register_masuk');
@@ -445,11 +447,13 @@ class Register extends CI_Controller {
 		}
 	}
 
-	public function get_user(){
+	public function get_user()
+	{
 		echo json_encode($this->User_model->select_user(array('amgr','asst'))->result());
 	}
 
-	protected function _get_name($username){
+	protected function _get_name($username)
+	{
 		return $this->User_model->get_name($username)->row('nama');
 	}
 
@@ -556,7 +560,7 @@ class Register extends CI_Controller {
 			$data->title = 'Lembar Pengolahan';
 			$data->year = $this->Register_masuk_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
-			$data->pks = $this->Pks_model->list_reminder(180);
+			
 			$this->load->view('header',$data);
 			$this->load->view('lembar_pengolahan');
 
@@ -745,17 +749,17 @@ class Register extends CI_Controller {
 				$divisi = $this->input->post('divisi');
 				$perihal = $this->input->post('perihal');
 				$dari = $this->input->post('dari');
-				$tglkirim = $this->input->post('tgl_kirim');
-				$tglterima = $this->input->post('tgl_terima');
+				$tglkirim = tanggal1($this->input->post('tgl_kirim'));
+				$tglterima = tanggal1($this->input->post('tgl_terima'));
 				
-				if($this->update_pengolahan($id, $no, $divisi, $perihal, $dari, $tglkirim, $tglterima))
+				if($this->Pengolahan_model->update_pengolahan($id, $no, $divisi, $perihal, $dari, $tglkirim, $tglterima))
 				{
 					$data->type = 'success';
 					$data->pesan = 'Berhasil';
 
 				}else{
 					$data->type = 'error';
-					$data->type = 'Gagal';
+					$data->pesan = 'Gagal';
 
 				}
 
@@ -829,7 +833,7 @@ class Register extends CI_Controller {
 		}
 	}
 
-	public function hapus_pengelohan()
+	public function hapus_pengolahan()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
 		{
@@ -848,13 +852,517 @@ class Register extends CI_Controller {
 					$data->type = 'Gagal';
 				}
 				echo json_encode($data);
-				
+
 			}else{
 				show_404();
 			}
 		}else{
 			show_404();
 		}
+	}
+
+	public function warkat()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			$data = new stdClass();
+			$data->title = 'Warkat Purchasing';
+			$data->year = $this->Register_masuk_model->get_year()->result();
+			$data->user = $this->User_model->select_user(array('amgr','asst'));
+			$data->pemutus = $this->User_model->pemutus_warkat('active')->result();
+			$data->petugas = $this->list_pemutus(array('asst'));
+			
+			$this->load->view('header',$data);
+			$this->load->view('warkat_purchasing');
+
+		}else{
+			show_404();
+		}
+	}
+	public function get_data_warkat()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$list = $this->Warkat_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $field) {
+				$no++;
+				$row = array();
+				$row['no'] = $no;
+				$row['no_warkat'] = $field->no_warkat;
+				$row['perihal'] = $field->perihal;
+				$row['pemutus'] = $field->nama_pemutus;
+				$row['petugas'] = $field->nama;
+				$row['nominal'] = titik($field->nominal);
+				$row['tanggal'] = tanggal($field->tanggal);
+				$row['catatan'] = $field->catatan;
+				$row['status'] = $field->status;
+				$row['id_warkat'] = $field->id_warkat;
+			
+				$data[] = $row;
+				
+			}
+
+			$output = array(
+				"draw"=> $_POST['draw'], 
+				"recordsTotal" =>$this->Warkat_model->count_all(),
+				"recordsFiltered"=>$this->Warkat_model->count_filtered(),
+				"data"=>$data,
+			);
+			echo json_encode($output);
+		}else{
+			$this->load->helper('form');
+			$this->load->view('login');
+		}
+	}
+
+	protected function list_pemutus(array $params)
+	{
+		return $this->User_model->select_user($params)->result();
+	}
+
+	public function add_warkat()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+
+			if($this->input->post(null)){
+				
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required');
+				$this->form_validation->set_rules('pemutus', 'Pemutus', 'required');
+				$this->form_validation->set_rules('petugas', 'Petugas', 'required');
+				$this->form_validation->set_rules('nominal', 'Nominal', 'required');
+				$this->form_validation->set_rules('tanggal', 'Tanggal', 'required');
+				if ($this->form_validation->run() == false) {
+
+					$data = new stdClass();
+					$errors = validation_errors();
+
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+		            echo json_encode($data);
+				
+				}else{
+					$data = new stdClass();
+					$perihal = $this->input->post('perihal');
+					$pemutus = $this->input->post('pemutus');
+					$petugas = $this->input->post('petugas');
+					$nominal = $this->input->post('nominal');
+					$tanggal = tanggal1($this->input->post('tanggal'));
+					$catatan = $this->input->post('catatan');
+					$rubrik = 'STL/4/';
+
+					$tahun = date('Y');
+					if($this->Warkat_model->get_last_id($tahun)->num_rows() > 0){
+						$s = $this->Warkat_model->get_last_id(date('Y'))->row()->no_warkat;
+						$lastid = (int) substr($s, -3);
+						
+						$nowarkat = $rubrik.date('y').STR_PAD($lastid+1,3,'0',STR_PAD_LEFT);
+						$idwarkat = $nowarkat.'/'.$tahun;
+					}else{
+						$nowarkat = $rubrik.date('y').'001';
+						$idwarkat = $nowarkat.'/'.$tahun;
+					}
+
+					if($this->Warkat_model->insert_data($idwarkat, $nowarkat, $perihal, $pemutus, $petugas, $nominal, $tanggal, $catatan, $tahun))
+
+					{
+						$data->type = 'success';
+						$data->pesan = 'Berhasil! nomornya adalah: '.$nowarkat;
+
+					}else{
+						$data->type = 'error';
+						$data->type = 'Gagal';
+					}
+					echo json_encode($data);
+				}
+
+			}
+			
+
+		}
+	}
+
+	public function update_warkat()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+
+			if($this->input->post(null))
+			{
+				$id = $this->input->post('id');
+				$val = $this->input->post('value');
+				$data = new stdClass();
+				if($this->Warkat_model->update($id, $val))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Berhasil';
+
+				}else{
+					$data->type = 'error';
+					$data->type = 'Gagal';
+				}
+					echo json_encode($data);
+			}else{
+
+				show_404();	
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function gb()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			$data = new stdClass();
+			$data->title = 'Register Masuk';
+			
+			$data->year = $this->Bg_model->get_year()->result();
+
+			$this->load->view('header', $data);
+			$this->load->view('gb');
+		}else{
+			redirect('/');
+		}
+	}
+
+	public function get_data_gb()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$list = $this->Bg_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $field) {
+				$no++;
+				$row = array();
+				$row['no'] = $no;
+				$row['no_bg'] = $field->no_bg;
+				$row['beneficiary'] = $field->beneficiary;
+				$row['applicant'] = $field->applicant;
+				$row['issuer'] = $field->issuer;
+				$row['ccy'] = $field->ccy;
+				$row['amount'] = titik($field->amount);
+				$row['eqv'] = titik($field->eqv);
+				$row['open'] = tanggal($field->open);
+				$row['start'] = tanggal($field->start);
+				$row['maturity'] = tanggal($field->maturity);
+				$row['gl_acc'] = $field->gl_acc;
+				$row['type'] = $field->type;
+				$row['keterangan'] = $field->keterangan;
+				$row['buku_satu'] = $field->buku_satu;
+				$row['buku_dua'] = $field->buku_dua;
+				$row['jenis_pekerjaan'] = $field->jenis_pekerjaan;
+				$row['divisi'] = $field->divisi;
+				$row['id_bg'] = $field->id_bg;
+			
+				$data[] = $row;
+				
+			}
+
+			$output = array(
+				"draw"=> $_POST['draw'], 
+				"recordsTotal" =>$this->Bg_model->count_all(),
+				"recordsFiltered"=>$this->Bg_model->count_filtered(),
+				"data"=>$data,
+			);
+			echo json_encode($output);
+		}else{
+			$this->load->helper('form');
+			$this->load->view('login');
+		}
+	}
+
+	public function add_gb()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+
+			if($this->input->post(null))
+			{
+				$nobg = trim($this->input->post('no_bg'));
+				$beneficiary = trim($this->input->post('beneficiary'));
+				$applicant = trim($this->input->post('applicant'));
+				$issuer = trim($this->input->post('issuer'));
+				$ccy = $this->input->post('ccy');
+				$amount = $this->input->post('amount');
+				$eqv = $this->input->post('eqv_rupiah');
+				$open = tanggal1($this->input->post('open_date'));
+				$start = tanggal1($this->input->post('start_date'));
+				$maturity = tanggal1($this->input->post('maturity_date'));
+				$gl = trim($this->input->post('gl_account'));
+				$type = $this->input->post('gb_type');
+				$keterangan = trim($this->input->post('keterangan'));
+				$buku1 = trim($this->input->post('pembukuan_satu'));
+				$jenispekerjaan = trim($this->input->post('jenis_pekerjaan'));
+				$divisi = $this->input->post('divisi');
+				$year = explode('-',$open);
+				$id = $this->id_bg($divisi,$year[0]);
+				$data = new stdClass();
+				if($this->Bg_model->add_data($id, $nobg, $beneficiary, $applicant, $issuer, $ccy, $amount, $eqv, $open, $start, $maturity, $gl, $type, $keterangan, $buku1, $jenispekerjaan, $divisi))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Berhasil';
+
+				}else{
+					$data->type = 'error';
+					$data->type = 'Gagal';
+
+				}
+
+				echo json_encode($data);
+			}else{
+
+				show_404();
+			}
+		}
+	}
+
+	private function id_bg($divisi, $year)
+	{
+		
+		$query = $this->Bg_model->get_last_id($year, $divisi);
+		if($query->num_rows() > 0){
+			$lastid = $query->row('id_bg');
+			$ex = explode('-', $lastid);
+			$id = 'bg-'.$divisi.'-'.$year.'-'.str_pad((int) $ex[3]+1,3,"0",STR_PAD_LEFT);
+		}else{
+			$id = 'bg-'.$divisi.'-'.$year.'-001';
+		}
+
+		return $id;
+	}
+
+	public function test_report($year = null, $month = null)
+	{
+		$data = new stdClass();
+		$divisi = 'BSK';
+		$data->query = $this->Bg_model->get_bg($year, $month, $divisi);
+		$this->load->view('report_pdf', $data);
+		/*$object = new PHPExcel();
+		$object->getProperties()->setCreator("Muhamad Reza")
+								 ->setLastModifiedBy("Muhamad Reza")
+								 ->setTitle("Export Document By Sistem Purchasing")
+								 ->setSubject("Office 2007 XLSX Document")
+								 ->setDescription("Report BG By Sytem.")
+								 ->setKeywords("office 2007 openxml php")
+								 ->setCategory("BG FILE");
+
+		//$object->createSheet();
+		// Create a new worksheet called “My Data”
+		$sheetbsk = new PHPExcel_Worksheet($object, 'Divisi BSK');
+		$sheetpdm = new PHPExcel_Worksheet($object, 'Divisi PDM');
+		$sheetebk = new PHPExcel_Worksheet($object, 'Divisi EBK');
+		// Attach the “My Data” worksheet as the first worksheet in the PHPExcel object
+		$object->addSheet($sheetbsk, 0);
+		$object->addSheet($sheetpdm, 1);
+		$object->addSheet($sheetebk, 2);
+
+		//bsk
+		$object->setActiveSheetIndex(0);	
+
+		$table_columns = array("Name", "Email");
+
+		$column = 0;
+		$object->getActiveSheet()->setCellValue('B2', 'Saldo Awal Tahun '.$year)->getStyle('B2')->getFont()->setBold(true);
+
+		foreach($table_columns as $field){
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, 1, $field);
+
+        	$column++;
+
+      	}
+      	$object->getActiveSheet();
+      	//end bsk
+
+
+      	//pdm
+      	$object->setActiveSheetIndex(1);	
+
+		$table_columns1 = array("Names", "Email");
+
+		$columns = 0;
+		$object->getActiveSheet()->setCellValue('B2', 'Saldo Awal Tahun '.$year)->getStyle('B2')->getFont()->setBold(true);
+
+
+		foreach($table_columns1 as $field){
+			$object->getActiveSheet()->setCellValueByColumnAndRow($columns, 1, $field);
+
+        	$columns++;
+
+      	}
+      	$object->getActiveSheet();
+      	//end pdm
+
+
+      	//save excel
+
+      	 $object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+
+		header('Content-Type: application/vnd.ms-excel');
+
+		header('Content-Disposition: attachment;filename="Report.xls"');
+
+		$object_writer->save('php://output');*/
+	}
+
+
+	public function report($year = null, $month = null)
+	{
+		$object = new PHPExcel();
+		$object->getProperties()->setCreator("Muhamad Reza")
+								 ->setLastModifiedBy("Muhamad Reza")
+								 ->setTitle("Export Document By Sistem Purchasing")
+								 ->setSubject("Office 2007 XLSX Document")
+								 ->setDescription("Report BG By Sytem.")
+								 ->setKeywords("office 2007 openxml php")
+								 ->setCategory("BG FILE");
+
+		//$object->createSheet();
+		// Create a new worksheet called “My Data”
+		$sheetbsk = new PHPExcel_Worksheet($object, 'Divisi BSK');
+		$sheetpdm = new PHPExcel_Worksheet($object, 'Divisi PDM');
+		$sheetebk = new PHPExcel_Worksheet($object, 'Divisi EBK');
+		// Attach the “My Data” worksheet as the first worksheet in the PHPExcel object
+		$object->addSheet($sheetbsk, 0);
+		$object->addSheet($sheetpdm, 1);
+		$object->addSheet($sheetebk, 2);
+
+		$rowawal = 8;
+		
+
+		$table_column = array("No.", "No. BG", "Beneficiary", "Applicant", "Issuing Bank / Issuer", "CCY", "Amount", "Eqv Rupiah", "Open Date", "Start Date", "Maturity Date", "GL Account", "GB Type", "Keterangan", "Pembukuan I", "Pembukuan II");
+
+		$query= $this->Bg_model->get_bg($year, $month, 'BSK');
+
+		//bsk
+
+		$object->setActiveSheetIndex(0);	
+		
+		$column = 1;
+		
+
+		$object->getActiveSheet()->setCellValue('B4', 'Daftar Penerimaan Tahun '.$year)->getStyle('B4')->getFont()->setBold(true);
+
+		/*foreach($table_column as $field){
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $rowawal, $field);
+
+        	$column++;
+
+      	}*/
+      	$no = 1;
+      	$r = $query->result();
+
+      	for($i = 0; $i < $query->num_rows();$i++){
+      		if($i > 0){
+      			if($r[$i]->bulan_open != $r[$i-1]->bulan_open)
+      			{	
+      				$rowawal++;
+
+      				$objWorksheet = $object->getActiveSheet();
+      				$highhestrow = $objWorksheet->getHighestRow();
+      				foreach($table_column as $field){
+
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column, $rowawal, $field);
+			        	$column++;
+
+			      	}
+			      	$row = $object->getActiveSheet()->getHighestRow()+1;
+
+              		$object->getActiveSheet()->setCellValue('B'.$row, $no++);
+              		$object->getActiveSheet()->setCellValue('C'.$row, $r[$i]->no_bg);
+              		$object->getActiveSheet()->setCellValue('D'.$row,$r[$i]->beneficiary);
+					$object->getActiveSheet()->setCellValue('E'.$row,$r[$i]->applicant);
+					$object->getActiveSheet()->setCellValue('F'.$row,$r[$i]->issuer);
+					$object->getActiveSheet()->setCellValue('G'.$row,$r[$i]->ccy);
+					$object->getActiveSheet()->setCellValue('H'.$row,$r[$i]->amount);
+					$object->getActiveSheet()->setCellValue('I'.$row,$r[$i]->eqv);
+					$object->getActiveSheet()->setCellValue('J'.$row,$r[$i]->open)->getNumberFormat()
+					    ->setFormatCode(
+					        PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDDSLASH
+				    );
+					$object->getActiveSheet()->setCellValue('K'.$row,$r[$i]->start)->getNumberFormat()
+					    ->setFormatCode(
+					        PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDDSLASH
+				    );
+					$object->getActiveSheet()->setCellValue('L'.$row,$r[$i]->maturity)->getStyle('L'.$row)
+					    ->getNumberFormat()
+					    ->setFormatCode(
+					        PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDDSLASH
+				    );
+					$object->setActiveSheetIndex(0)->setCellValue('M'.$row,$r[$i]->gl_acc);
+					$object->setActiveSheetIndex(0)->setCellValue('N'.$row,$r[$i]->type);
+					$object->setActiveSheetIndex(0)->setCellValue('O'.$row,$r[$i]->keterangan);
+					$object->setActiveSheetIndex(0)->setCellValue('P'.$row,$r[$i]->buku_satu);
+					$object->setActiveSheetIndex(0)->setCellValue('Q'.$row,$r[$i]->buku_dua);
+      			}
+      		}     		
+
+      	}
+
+      	/*$object->getActiveSheet()->fromArray(
+      		$arraydata,
+      		NULL,
+      		'B9');*/
+
+      	$object->getActiveSheet();
+      	//end bsk
+
+
+      	//pdm
+      	$object->setActiveSheetIndex(1);	
+
+      	$column = 1;
+		$object->getActiveSheet()->setCellValue('B2', 'Saldo Awal Tahun '.$year)->getStyle('B2')->getFont()->setBold(true);
+
+		$object->getActiveSheet()->setCellValue('B4', 'Daftar Penerimaan Tahun '.$year)->getStyle('B4')->getFont()->setBold(true);
+
+		foreach($table_column as $field){
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $rowawal, $field);
+
+        	$column++;
+
+      	}
+      	$object->getActiveSheet();
+      	//end pdm
+
+      	//ebk
+      	//pdm
+      	$object->setActiveSheetIndex(2);
+
+		$column = 1;
+
+		$object->getActiveSheet()->setCellValue('B2', 'Saldo Awal Tahun '.$year)->getStyle('B2')->getFont()->setBold(true);
+
+		$object->getActiveSheet()->setCellValue('B4', 'Daftar Penerimaan Tahun '.$year)->getStyle('B4')->getFont()->setBold(true);
+
+		foreach($table_column as $field){
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $rowawal, $field);
+
+        	$column++;
+
+      	}
+      	$object->getActiveSheet();
+      	//end ebk
+
+      	//save excel
+
+      	 $object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+
+		header('Content-Type: application/vnd.ms-excel');
+
+		header('Content-Disposition: attachment;filename="Report.xls"');
+
+		$object_writer->save('php://output');
+	}
+
+	public function my_task()
+	{	
+		$data = new stdClass();
+		$data->title = 'My Task';
+		$this->load->view('header', $data);
+		$this->load->view('my_task');
 	}
 
 	

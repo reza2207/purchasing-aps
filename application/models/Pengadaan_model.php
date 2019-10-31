@@ -21,7 +21,7 @@ class Pengadaan_model extends CI_Model {
 	}
 	private function _get_datatables_query() 
 	{
-		$this->db->select(' pengadaan.id_pengadaan, pengadaan.kewenangan, pengadaan.tgl_notin, pengadaan.jenis_notin_masuk, pengadaan.tgl_disposisi, pengadaan.no_notin, pengadaan.perihal, pengadaan.no_usulan, pengadaan.tgl_usulan, pengadaan.jenis_pengadaan, pengadaan.divisi, GROUP_CONCAT(detail_item_pengadaan.item) AS item, GROUP_CONCAT(detail_item_pengadaan.no_kontrak) AS no_kontrak, LEFT(pengadaan.id_pengadaan,4) AS tahun, pengadaan.kelompok ');
+		$this->db->select('right(pengadaan.id_pengadaan, 4) AS no, pengadaan.id_pengadaan, pengadaan.kewenangan, pengadaan.tgl_notin, pengadaan.jenis_notin_masuk, pengadaan.tgl_disposisi, pengadaan.no_notin, pengadaan.perihal, pengadaan.no_usulan, pengadaan.tgl_usulan, pengadaan.jenis_pengadaan, pengadaan.divisi, GROUP_CONCAT(detail_item_pengadaan.item) AS item, GROUP_CONCAT(detail_item_pengadaan.no_kontrak) AS no_kontrak, LEFT(pengadaan.id_pengadaan,4) AS tahun, pengadaan.kelompok ');
 		$this->db->from($this->table);
 		$this->db->join('detail_item_pengadaan', 'pengadaan.id_pengadaan = detail_item_pengadaan.id_pengadaan', 'left');
 		$this->db->group_by('pengadaan.id_pengadaan');
@@ -105,7 +105,7 @@ class Pengadaan_model extends CI_Model {
 
 	public function get_pengadaan($id)
 	{
-		$this->db->select('pengadaan.id_pengadaan, pengadaan.kewenangan, pengadaan.tgl_notin, pengadaan.jenis_notin_masuk, pengadaan.tgl_disposisi, pengadaan.no_notin, pengadaan.perihal, pengadaan.no_usulan, pengadaan.tgl_usulan, pengadaan.jenis_pengadaan, pengadaan.divisi, LEFT(pengadaan.id_pengadaan,4) AS tahun, pengadaan.file, settings.defaultnya');
+		$this->db->select('pengadaan.id_pengadaan, pengadaan.kewenangan, pengadaan.tgl_notin, pengadaan.jenis_notin_masuk, pengadaan.tgl_disposisi, pengadaan.no_notin, pengadaan.perihal, pengadaan.no_usulan, pengadaan.tgl_usulan, pengadaan.jenis_pengadaan, pengadaan.divisi, pengadaan.kelompok, LEFT(pengadaan.id_pengadaan,4) AS tahun, pengadaan.file, settings.defaultnya, pengadaan.keterangan');
 		$this->db->from($this->table);
 		$this->db->join('detail_item_pengadaan', 'pengadaan.id_pengadaan = detail_item_pengadaan.id_pengadaan', 'left');
 		$this->db->join('settings', 'CONCAT("default_doc_", pengadaan.tahun_pengadaan) = settings.namasetting', 'LEFT');
@@ -127,7 +127,7 @@ class Pengadaan_model extends CI_Model {
 	{
 		$this->db->select('a.id_pengadaan, a.id_pengadaan_uniq, a.item, a.ukuran, a.bahan, a.jumlah, a.satuan, a.hps_usd, a.hps_idr, a.hps_satuan, a.penawaran, a.id_vendor, a.realisasi_nego_usd, a.realisasi_nego_rp, a.realisasi_qty_unit, a.no_kontrak, a.tgl_kontrak, a.nm_vendor, a.jml, status.keterangan AS status, a.tahun ');
 		$this->db->from('(SELECT `detail_item_pengadaan`.*, `tdr`.`nm_vendor`, (detail_item_pengadaan.realisasi_qty_unit*detail_item_pengadaan.realisasi_nego_rp) as jml, IF(invoice.no_invoice IS NULL, "10", IF(invoice.tgl_invoice_diantar = "0000-00-00", "11", IF(invoice.tgl_invoice_kembali = "0000-00-00", "12", IF(invoice.tgl_kebagian_pembayaran = "0000-00-00", "13", "14")))) AS status, LEFT(pengadaan.id_pengadaan, 4) AS tahun FROM `detail_item_pengadaan` LEFT JOIN `tdr` ON `detail_item_pengadaan`.`id_vendor` = `tdr`.`id_vendor` LEFT JOIN `pengadaan` ON `detail_item_pengadaan`.`id_pengadaan` = `pengadaan`.`id_pengadaan` LEFT JOIN `invoice` ON CONCAT(detail_item_pengadaan.no_kontrak,"-",pengadaan.tahun_pengadaan) = CONCAT(invoice.no_kontrak,"-",invoice.tahun) group by detail_item_pengadaan.id_pengadaan_uniq) a');
-		$this->db->join('status','a.status = status.id_status_pks', 'LEFT');
+		$this->db->join('status','a.status = status.id_status', 'LEFT');
 		$this->db->where('a.id_pengadaan', $id);
 		$this->db->order_by('a.id_pengadaan', 'ASC');
 		return $this->db->get()->result();
@@ -209,9 +209,49 @@ class Pengadaan_model extends CI_Model {
 	}
 
 	public function list_pengadaan($tahun){
-		$this->db->select(' pengadaan.perihal');
+		$this->db->select('pengadaan.perihal');
 		$this->db->from($this->table);
 		$this->db->where('LEFT(pengadaan.id_pengadaan,4) = ', $tahun);
+		return $this->db->get();
+	}
+
+
+	public function hapus_data($id){
+		
+		return $this->db->delete($this->table, array('id_pengadaan'=>$id));
+	}
+
+	public function hapus_detail($id)
+	{
+		return $this->db->delete('detail_item_pengadaan', array('id_pengadaan'=>$id));
+	}
+
+	public function update($jenispengadaan,$tglsurat,$nosurat,$jenissurat,$tgldisposisi,$tahun,$perihal,$nousulan,$tglusulan,$divisi,$kelompok,$keterangan,$kewenangan,$id,$file)
+	{
+		$data = array('tgl_notin'=>$tglsurat,
+					  'jenis_notin_masuk'=>$jenissurat,
+					  'tgl_disposisi'=>$tgldisposisi,
+					  'no_notin'=>$nosurat,
+					  'perihal'=>$perihal,
+					  'no_usulan'=>$nousulan,
+					  'tgl_usulan'=>$tglusulan,
+					  'jenis_pengadaan'=>$jenispengadaan,
+					  'keterangan'=>$keterangan,
+					  'divisi'=>$divisi,
+					  'kewenangan'=>$kewenangan,
+					  'tahun_pengadaan'=>$tahun,
+					  'kelompok'=>$kelompok,
+					  'file'=>$file);
+		$this->db->where('id_pengadaan', $id);
+		return $this->db->update($this->table, $data);
+
+	}
+
+	public function get_detail_row($id)
+	{
+		$this->db->select('a.id_pengadaan, a.id_pengadaan_uniq, a.item, a.ukuran, a.bahan, a.jumlah, a.satuan, a.hps_usd, a.hps_idr, a.hps_satuan, a.penawaran, a.id_vendor, a.realisasi_nego_usd, a.realisasi_nego_rp, a.realisasi_qty_unit, a.no_kontrak, a.tgl_kontrak, a.id_vendor');
+		$this->db->from('detail_item_pengadaan a');
+		$this->db->where('a.id_pengadaan_uniq', $id);
 		return $this->db->get();
 	}
 

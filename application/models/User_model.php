@@ -124,7 +124,7 @@ class User_model extends CI_Model {
 		if($role != NULL){
 			$this->db->where_in('jabatan',$role);	
 		}
-
+		$this->db->order_by('jabatan', 'DESC');
 		return $this->db->get();
 
 	}
@@ -175,6 +175,15 @@ class User_model extends CI_Model {
 					  '$newpassword'=>$this->hash_password($newpassword));
 		$this->db->where('username', $username);
 		return $this->db->update('user', $data);
+	}
+
+	public function pemutus_warkat($params)
+	{
+		$this->db->select('*');
+		$this->db->from('pemutus_warkat');
+		$this->db->where('status', $params);
+		$this->db->order_by('id_pemutus', 'DESC');
+		return $this->db->get();
 	}
 
 	

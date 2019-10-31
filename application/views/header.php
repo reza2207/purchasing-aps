@@ -13,34 +13,36 @@
       
       <link href="<?= base_url().'assets/css/reza.css';?>" rel="stylesheet">
       <!-- Include Editor style. -->
-      
+      <link href="<?= base_url().'assets/materialSummernote-master/css/materialSummernote.css';?>" rel="stylesheet">
+      <link href="<?= base_url().'assets/materialSummernote-master/css/codeMirror/codemirror.css';?>" rel="stylesheet">
+      <link href="<?= base_url().'assets/materialSummernote-master/css/codeMirror/monokai.css';?>" rel="stylesheet">
+      <link href="<?= base_url().'assets/css/materializefont.css';?>" rel="stylesheet">
 
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <link rel="icon" href="<?= base_url().'gambar/logo_purch.png';?>">
     </head>
-    <title><?= $title == "" ? "" : $title;?></title>
+    <title><?= $title == "" ? "Purchasing System" : $title;?></title>
     
     <body class="red lighten-5">
       <div class="navbar-fixed">
-        <div class="navbar"  style="width: calc(100%-50%);left:300px;">
+        <div class="navbar" style="width: calc(100%-50%);left:300px;">
           <nav class="nav-wrapper amber darken-4 header">
-           
-              <a href="#" class="brand-logo show-on-small hide-on-large-only brand-logo " data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
-              <a href="<?= base_url();?>" id="brand-logo" class="show-on-large hide-on-med-and-down brand-logo center" for='dekstop'>Purchasing System</a>
-              
-              <a href="#" data-target="slide-out" class="sidenav-trigger show-on-small hide-on-up center" style="font-size: 16px"><i class='fa fa-bars'></i></a>
+            <div id="menu-bars"><button class="waves-effect waves-blue btn-flat white-text " id="button-side"><i class="fa fa-bars"></i></button></div>  
+            <a href="#" class="brand-logo show-on-small hide-on-large-only" data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
+            <a href="<?= base_url();?>" id="brand-logo" class="show-on-large hide-on-med-and-down brand-logo center" for='dekstop'>Purchasing System</a>
+            
+            <a href="#" data-target="slide-out" class="sidenav-trigger show-on-small hide-on-up center" style="font-size: 16px"><i class='fa fa-bars'></i></a>
 
-              <ul class="right hide-on-med-and-down">
-                <?php if ($_SESSION['role'] == "superuser" ){?>
-                <li><a href="<?= base_url().'user/add_user';?>" class="waves-effect">Add User</a></li>
-                <?php } ?>
-                <?php if ($_SESSION['role'] != "user" ){?>
-                <li><a href="<?= base_url('setting');?>">Setting</a></li>
-                <?php }?>
-                <li><a href="<?= base_url('user/logout');?>">Logout</a></li>
-              </ul>
-            </div>
+            <ul class="right hide-on-med-and-down">
+              <?php if ($_SESSION['role'] == "superuser" ){?>
+              <li><a href="<?= base_url().'user/add_user';?>"><i class="fa fa-user-plus"></i> Add User</a></li>
+              <?php } ?>
+              <?php if ($_SESSION['role'] != "user" ){?>
+              <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
+              <?php }?>
+              <li><a href="<?= base_url('user/logout');?>"><i class="fa fa-sign-out"></i> Logout</a></li>
+            </ul>
           </nav>
         </div>
       </div>
@@ -60,7 +62,7 @@
         </li>
         <ul class="collapsible">
           <li class="">
-            <div class="collapsible-header waves-effect">PKS<span class="new badge red" data-badge-caption=""><?= $pks->num_rows();?></span></div>
+            <div class="collapsible-header waves-effect">PKS<span class="new badge red" data-badge-caption=""><?= $_SESSION['pks'];?></span></div>
             <div class="collapsible-body">
               <ul>
                 <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
@@ -72,17 +74,19 @@
             <div class="collapsible-body">
               <ul>
                 <li><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
+                <li><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
               </ul>
             </div>
           </li>
           <li>
-            <div class="collapsible-header waves-effect"> Register</div>
+            <div class="collapsible-header waves-effect">Register</div>
             <div class="collapsible-body">
               <ul>
                 <li><a href="<?= base_url().'register/masuk';?>">Surat Masuk</a></li>
                 <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li>
                 <li><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
                 <li><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
+                <li><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
               </ul>
             </div>
           </li>
@@ -93,8 +97,11 @@
         <li class="bold">
             <a href="<?= base_url().'pengumuman';?>" class="waves-effect waves-teal">Pengumuman</a>
         </li>
+
+        <div style="" id="jam"></div>
+        
       </ul>
-        <!-- Page Layout here -->
+      <!-- Page Layout here -->
     
 
   <!-- end page Layout-->
@@ -102,7 +109,6 @@
 <script src="<?= base_url().'assets/js/jquery.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/select2.min.js';?>"></script>
 
-<script src="<?= base_url().'assets/js/select2-materialize.js';?>"></script>
 <script src="<?= base_url().'assets/materialize/js/materialize.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/sweetalert2.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/select2-materialize.js';?>"></script>
@@ -110,37 +116,73 @@
 <script src="<?= base_url().'assets/datatables/Buttons-1.5.1/js/datatables.buttons.min.js';?>"></script>
 <script src="<?= base_url().'assets/datatables/buttons.html5.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/moment.js';?>"></script>
-
+<script src="<?= base_url().'assets/js/locale.js';?>"></script>
 <script src="<?= base_url().'assets/datatables/Buttons-1.5.1/js/datatables.buttons.min.js';?>"></script>
 <script src="<?= base_url().'assets/datatables/jszip.min.js';?>"></script>
 <script src="<?= base_url().'assets/datatables/buttons.html5.min.js';?>"></script>
 <script src="<?= base_url().'assets/datatables/buttons.print.min.js';?>"></script>
 <script src="<?= base_url().'assets/datatables/Buttons-1.5.1/js/buttons.colVis.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/reza.js';?>"></script>
-<script src="<?= base_url().'assets/js/tooltip.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/popper.min.js';?>"></script>
+<script src="<?= base_url().'assets/js/tooltip.min.js';?>"></script>
 
-<script src="<?= base_url().'assets/ckeditor/ckeditor.js';?>"></script>
-<!-- <script src="<?= base_url().'assets/ckeditor5-build-classic/ckeditor.js';?>"></script>
-<script src="<?= base_url().'assets/ckeditor5-ckfinder-master/src/ckfinder.js';?>"></script> -->
+
+<script src="<?= base_url().'assets/materialSummernote-master/js/zzz_ckMaterializeOverrides.js';?>"></script>
+<script src="<?= base_url().'assets/materialSummernote-master/js/codeMirror/codemirror.js';?>"></script>
+<script src="<?= base_url().'assets/materialSummernote-master/js/codeMirror/xml.js';?>"></script>
+<script src="<?= base_url().'assets/materialSummernote-master/js/materialSummernote.js';?>"></script>
+
 <script>
   
-  $(document).ready(function(){/*
-    var ref = $('#img-user');        
-    var popup = $('#popup');
-    popup.hide();
-    new Popper(ref, popup, {
-      modifiers: {
-        preventOverflow: { enabled: false }
+  $(document).ready(function(){
+    $(".collapsible-header").parent().on('click', function(e){
+      if($(this).hasClass('active')){
+        console.log('active');
+      }else{
+        console.log($(this).html());
+        //console.log('non');
       }
-    })*/
+      
+    })
+    window.setInterval(jam, 1000);
 
+    function jam(){
+      moment.locale('id');
+      let jam = moment().format('Do MMMM YYYY, ')+"<i class='fa fa-clock-o'></i> "+moment().format('h:mm:ss a');
+      document.getElementById('jam').innerHTML = jam;
+    }
     M.updateTextFields();
     $('.sidenav').sidenav();
     $('.collapsible').collapsible();
-    $('.sidenav-unfixed').hide();
+    
+    $('#button-side').on('click', function(e){
+      //$('#slide-out').toggleClass('hides');
+      /*if($('#slide-out').hasClass('hides')){
+        
+        $('#slide-out').fadeIn();
 
-    $('#slide-out').on('click', )
+      }else{
+        $('#slide-out').fadeOut();
+      }*/
+      $('#slide-out').fadeToggle("slow", "swing");
+
+      if($(this).parent().hasClass('leftside')){
+       $(this).parent().removeClass('leftside');
+      }else{
+        $(this).parent().addClass('leftside');
+      }
+      //$(this).parent().toggleClass('leftside');
+      if($('.first').children().hasClass('offset-l3 l9')){
+        $('.first').children().removeClass('offset-l3 l9').addClass('l12');
+        $('#table').DataTable().columns.adjust();
+      }else{
+        $('.first').children().removeClass('l12').addClass('offset-l3 l9');
+        $('#table').DataTable().columns.adjust();
+      }
+
+      
+    })
+
   });
 </script>
 

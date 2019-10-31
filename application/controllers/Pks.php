@@ -94,13 +94,12 @@ class Pks extends CI_Controller {
 				//$data = $this->input->post();
 				
 				$this->load->library('form_validation');
-				$this->load->library('encryption');
 				
 				//validasi
-				$this->form_validation->set_rules('no_srt_penunjukan', 'No. Penunjukan', 'required|is_unique[pks.no_srt_pelaksana]',
+				$this->form_validation->set_rules('no_srt_penunjukan', 'No. Penunjukan', 'required',
 		        array(
 		                'required'      => 'You have not provided %s.',
-		                'is_unique'     => 'This %s already exists.'
+		                //'is_unique'     => 'This %s already exists.'
 		        ));
 		        $this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');
 		        $this->form_validation->set_rules('perihal', 'Perihal', 'required');
@@ -231,7 +230,7 @@ class Pks extends CI_Controller {
 
 				}else{
 
-					$id = "comm_".$nopenunjukan.'_001';
+					$id = "comm_".$id_pks.'_001';
 				}
 
 				
@@ -297,7 +296,7 @@ class Pks extends CI_Controller {
 			//$id = $this->input->post('id');
 				$id = $this->input->post('id_pks');
 				$nopenunjukan = $this->input->post("no_srt_penunjukan");
-				$tglminta = tanggal($this->input->post("tgl_minta"));
+				$tglminta = tanggal1($this->input->post("tgl_minta"));
 				$nousulan = $this->input->post("no_usulan");
 				$idtdr = $this->input->post("id_tdr");
 				$perihal = $this->input->post("perihal");
@@ -315,10 +314,11 @@ class Pks extends CI_Controller {
 				$tglserahterimapks = tanggal1($this->input->post("tgl_serahterima_pks"));
 				$tglpks = tanggal1($this->input->post("tgl_pks"));
 				$nopks = $this->input->post("no_pks");
+				$file = $this->input->post("file");
 				$data = new stdClass();
 
 				//if($this->Pks_model->)
-				if($this->Pks_model->update_pks($id, $nopenunjukan, $tglminta, $nousulan, $idtdr, $perihal, $tglawal, $tglakhir, $nominalrp, $nominalusd, $bankgaransi,$tgldraftdarilegal, $tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks, $tglpks, $nopks))
+				if($this->Pks_model->update_pks($id, $nopenunjukan, $tglminta, $nousulan, $idtdr, $perihal, $tglawal, $tglakhir, $nominalrp, $nominalusd, $bankgaransi,$tgldraftdarilegal, $tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks, $tglpks, $nopks, $file))
 				{	
 					$data->type = 'success';
 					$data->message = 'Berhasil';
@@ -380,6 +380,82 @@ class Pks extends CI_Controller {
 			$this->load->view('login');
 		}
 	}
+
+	public function submit_reminder()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				
+				$this->load->library('form_validation');
+ 				$this->form_validation->set_rules('no', 'No. Surat', 'required');
+ 				$this->form_validation->set_rules('tgl', 'Tgl. Surat', 'required');
+ 				$this->form_validation->set_rules('perihal', 'Perihal', 'required');
+ 				//$this->form_validation->set_rules('file', 'file', 'required');
+ 				if ($this->form_validation->run() == FALSE){
+
+		        	$errors = validation_errors();
+		            $respons_ajax['type'] = 'error';
+		            $respons_ajax['message'] = $errors;
+		            echo json_encode($respons_ajax);
+
+		        }else{
+
+					$no = $this->input->post('no');
+					$idpks = $this->input->post('idpks');
+					$tgl = $this->input->post('tgl');
+					$perihal = $this->input->post('perihal');
+					$file = $this->input->post('file');
+					$id = uniqid();
+
+					if($this->Pks_model->add_reminder($id, $idpks, $no, $tgl, $perihal, $file))
+					{
+						
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->message = 'Berhasil';
+						echo json_encode($data);
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->message = 'Gagal';
+						echo json_encode($data);
+					}
+				}
+
+			}
+		}
+	}
+
+	public function get_pdf($id)
+	{
+		
+		$file = 'file_pks/'.$this->file_pdf($id)->row()->file;//		
+		
+		if(file_exists($file)){
+			$pdf = file_get_contents($file);
+	       	header('Content-Type: application/pdf');
+	       	header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+	       header('Pragma: public');
+	       header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+	       header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+	       header('Content-Length: '.strlen($pdf));
+	       header('Content-Disposition: inline; filename="'.basename($file).'";');
+	       ob_clean(); 
+	       flush(); 
+	       echo $pdf;
+	   	}else{
+	   		echo "Sorry file doesn't exist... :(";
+	   	}
+	}
+
+
+	private function file_pdf($id)
+	{
+		return $this->Pks_model->get_file($id);
+	}
+
+
 
 
 }

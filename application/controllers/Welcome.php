@@ -27,6 +27,10 @@ class Welcome extends CI_Controller {
 		$this->load->model('Pengadaan_model');
 		$this->load->model('Register_masuk_model');
 
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$_SESSION['pks'] = $this->Pks_model->list_reminder(180)->num_rows();
+		}
+
 	}	
 	public function index()
 	{

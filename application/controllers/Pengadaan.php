@@ -72,6 +72,7 @@ class Pengadaan extends CI_Controller {
 				$row['divisi'] = $field->divisi;
 				$row['kewenangan'] = $field->kewenangan;
 				$row['id_pengadaan'] = $field->id_pengadaan;
+				$row['no_id'] = $field->no;
 			
 				$data[] = $row;
 				
@@ -240,7 +241,7 @@ class Pengadaan extends CI_Controller {
 						
 				}else{
 
-					echo json_encode($id);
+					echo json_encode($this->Pengadaan_model->get_detail_row($id)->row());
 				}
 			}else{
 				if($this->Pengadaan_model->get_pengadaan($id)){
@@ -530,6 +531,134 @@ class Pengadaan extends CI_Controller {
 			echo '- contoh: ?awal=2019-08-19&akhir=2019-10-22<br>';
 			echo '- url lengkapnya: pengadaan/tgl_libur?awal=2019-08-19&akhir=2019-10-22';
 			
+		}
+	}
+
+	public function hapus()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				$id = $this->input->post('id');
+
+				if($this->Pengadaan_model->hapus_data($id) && $this->Pengadaan_model->hapus_detail($id))
+				{
+
+					$data = new stdClass();
+					$data->type = 'success';
+					$data->pesan = 'Success';
+					echo json_encode($data);
+					
+				}else{
+					$data = new stdClass();
+					$data->type = 'error';
+					$data->pesan = 'Failed';
+					echo json_encode($data);
+				}
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function update_row()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true)
+		{
+			if($this->input->post(null))
+			{
+
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function hapus_row()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null))
+			{
+
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
+		}
+	}
+
+	public function update_data()
+	{	
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+
+				$this->load->library('form_validation');
+
+				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');//
+				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');//
+				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');//
+				$this->form_validation->set_rules('tgl_disposisi', 'Tgl. Disposisi', 'required');//
+				
+				$this->form_validation->set_rules('perihal', 'Perihal', 'required');//
+				$this->form_validation->set_rules('divisi', 'Divisi', 'required');//
+				$this->form_validation->set_rules('jenis_surat', 'Jenis Surat', 'required');//
+				$this->form_validation->set_rules('jenis_pengadaan', 'Jenis Pengadaan', 'required');//
+
+				if ($this->form_validation->run() == false) 
+				{
+					$data = new stdClass();
+					$errors = validation_errors();
+					$data->type = 'error';
+		            $data->pesan = $errors;
+		            echo json_encode($data);
+					
+				}else{
+
+					$id = $this->input->post('id_pengadaan');
+					$tahun = $this->input->post('tahun_pengadaan');//
+					$tglsurat = tanggal1($this->input->post('tgl_surat'));//
+					$nosurat = $this->input->post('no_surat');//
+					$jenissurat = $this->input->post('jenis_surat');//
+					$tgldisposisi = tanggal1($this->input->post('tgl_disposisi'));//
+					$divisi = $this->input->post('divisi');//
+					$kelompok = $this->input->post('kelompok');
+					$jenispengadaan = $this->input->post('jenis_pengadaan');//
+					$perihal = $this->input->post('perihal');//
+					$nousulan = $this->input->post('no_usulan');
+					$tglusulan = tanggal1($this->input->post('tgl_usulan'));
+					$keterangan = trim($this->input->post('keterangan'));
+					$kewenangan = $this->input->post('kewenangan');
+					$file = $this->input->post('file');
+
+					if($this->Pengadaan_model->update($jenispengadaan,$tglsurat,$nosurat,$jenissurat,$tgldisposisi,$tahun,$perihal,$nousulan,$tglusulan,$divisi,$kelompok,$keterangan,$kewenangan,$id,$file))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->pesan = 'Success';
+						echo json_encode($data);
+						
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'Failed';
+						echo json_encode($data);
+
+					}
+
+
+				}
+			}else{
+				show_404();
+			}
+		}else{
+			show_404();
 		}
 	}
 

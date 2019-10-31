@@ -3,9 +3,7 @@
 {
 background: #D7A42B;color:white;
 }
-#modal-ubah label{color:white;
 
-}
 #table-detail tr td {
      padding-top:0px;padding-bottom:0px;font-size: 12px
 }
@@ -42,7 +40,7 @@ background: #D7A42B;color:white;
 </div>
 <div class="row first">
   <!-- <div class="col s12"> -->
-  <div class="col push-l3 l9" style="left: 333.25px;">
+  <div class="col s12 offset-l3 l9" style="left: 333.25px;">
     <div class="row row-filter" style="margin-bottom: 0px;">
 
       <div class="input-field col s12 l1">
@@ -70,8 +68,8 @@ background: #D7A42B;color:white;
         <button class="waves-effect green waves-blue btn-flat" id="btn-filter"><i class="fa fa-filter"></i></button>
       </div>
     </div>
-    <table class="table display"  id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
-      <thead class="thead-dark teal">
+    <table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
+      <thead class="teal white-text">
         <tr class="rowhead">
           <th class="center align-middle">#</th>
           <th class="center align-middle">Tgl. Surat</th>
@@ -94,24 +92,23 @@ background: #D7A42B;color:white;
     
     <h6 id="title-modal"></h6>
     <?php
-    $attrt = array('id'=>'formtambahdata');
-    echo form_open('',$attrt);?>
+    echo form_open('',array('id'=>'formtambahdata'));?>
     <div class="col s12 l12">
       <div class="row">
         <div class="input-field col s12 l3">
-          <input name="tahun_pengadaan" type="number" maxlength="4" id="tahun_pengadaan" min="<?= date('Y')-2;?>" max="<?= date('Y');?>" required>
+          <input name="tahun_pengadaan" type="number" maxlength="4" id="tahun_pengadaan" min="<?= date('Y')-2;?>" max="<?= date('Y');?>" >
           <label>Tahun Pengadaan</label>
         </div>   
         <div class="input-field col s12 l3">
-          <input name="tgl_surat" type="text" class="datepicker" id="tp_tahun_pengadaan" required>
+          <input name="tgl_surat" type="text" class="datepicker" id="tp_tahun_pengadaan" >
           <label>Tgl. Surat</label>
         </div>
         <div class="input-field col l3 s12">
-          <input name="no_surat" type="text" required>
+          <input name="no_surat" type="text" >
           <label>No. Surat</label>
         </div>
         <div class="input-field col l3 s12">
-          <select name="jenis_surat" class="select-m" required>
+          <select name="jenis_surat" class="select-m" >
             <option value="">--pilih--</option>
             <option value="Notin">Notin</option>
             <option value="Memo">Memo</option>
@@ -120,11 +117,11 @@ background: #D7A42B;color:white;
           <label>Jenis Surat</label>
         </div>
         <div class="input-field col l3 s12">
-          <input name="tgl_disposisi" type="text" class="datepicker" id="tp_no_invoice" required>
+          <input name="tgl_disposisi" type="text" class="datepicker" >
           <label>Tgl. Disposisi Pimkel</label>
         </div>
         <div class="input-field col s12 l3">
-          <select id="divisi" name="divisi" class="select-m" required>
+          <select id="divisi" name="divisi" class="select-m">
             <option value="">--pilih--</option>
             <?php foreach ($divisi as $d){?>
             <option value="<?= $d->divisi;?>"><?= $d->divisi;?></option>
@@ -137,7 +134,7 @@ background: #D7A42B;color:white;
           <label>Kelompok</label>
         </div>
         <div class="input-field col s12 l3">
-          <select name="jenis_pengadaan" class="select-m" id="n_jenis_pengadaan" required>
+          <select name="jenis_pengadaan" class="select-m" id="n_jenis_pengadaan">
             <option value="Pembelian Langsung">Pembelian Langsung</option>
             
             <option value="Penunjukan Langsung">Penunjukan Langsung</option>
@@ -147,19 +144,19 @@ background: #D7A42B;color:white;
           <label>Metode Pengadaan</label>
         </div>
         <div class="input-field col s12 l6">
-          <input name="perihal" type="text" required>
+          <input name="perihal" type="text">
           <label>Perihal</label>
         </div>
         <div class="input-field col s12 l3 usulan hide">
-          <input name="no_usulan" type="text" required>
+          <input name="no_usulan" type="text">
           <label>No. Usulan</label>
         </div>
         <div class="input-field col s12 l3 usulan hide">
-          <input name="tgl_usulan" type="text" class="datepicker" required>
+          <input name="tgl_usulan" type="text" class="datepicker" >
           <label>Tgl. Usulan</label>
         </div>
         <div class="input-field col s12 l6">
-          <textarea name="keterangan" type="text" id="tp_nominal" class="materialize-textarea"></textarea>
+          <textarea name="keterangan" type="text" class="materialize-textarea"></textarea>
           <label>Keterangan</label>
         </div>
         <div class="input-field col s12 l3 kewenangan hide" style="margin-top: 2rem;">
@@ -221,11 +218,93 @@ background: #D7A42B;color:white;
 <!-- modal edit-->
 <div id="modal-ubah" class="modal modal-fixed-footer">
   <div class="modal-content">
+    
+    <?= form_open('',array('id'=>'formeditdata'));?>
     <div class="col s12 l12">
       <div class="row">
-        sss
+        <div class="input-field col s12 l3">
+          <input name="id_pengadaan" type="text" class="datepicker hide" id="id_pengadaan_e" >
+          <input name="tahun_pengadaan" type="number" maxlength="4" id="tahun_pengadaan_e" min="<?= date('Y')-2;?>" max="<?= date('Y');?>" >
+          <label>Tahun Pengadaan</label>
+        </div>   
+        <div class="input-field col s12 l3">
+          <input name="tgl_surat" type="text" class="datepicker" id="tgl_surat_e" >
+          <label>Tgl. Surat</label>
+        </div>
+        <div class="input-field col l3 s12">
+          <input name="no_surat" id="no_surat_e" type="text" >
+          <label>No. Surat</label>
+        </div>
+        <div class="input-field col l3 s12">
+          <label>Jenis Surat</label>
+          <select name="jenis_surat" class="select-m" id="jenis_surat_e" >
+            <option value="">--pilih--</option>
+            <option value="Notin">Notin</option>
+            <option value="Memo">Memo</option>
+            <option value="Email">Email</option>
+          </select>
+        </div>
+        <div class="input-field col l3 s12">
+          <input name="tgl_disposisi" type="text" class="datepicker" id="tgl_disposisi_e" >
+          <label>Tgl. Disposisi Pimkel</label>
+        </div>
+        <div class="input-field col s12 l3">
+          <label>Divisi</label>
+          <select id="divisi_e" name="divisi" class="select-m" >
+            <option value="">--pilih--</option>
+            <?php foreach ($divisi as $d){?>
+            <option value="<?= $d->divisi;?>"><?= $d->divisi;?></option>
+            <?php }?>
+          </select>
+          
+        </div>
+        <div class="input-field col s12 l3 kelompok">
+          <input name="kelompok" id="kelompok_e" type="text">
+          <label>Kelompok</label>
+        </div>
+        <div class="input-field col s12 l3">
+          <label>Metode Pengadaan</label>
+          <select name="jenis_pengadaan" class="select-m" id="n_jenis_pengadaan_e" >
+            <option value="Pembelian Langsung">Pembelian Langsung</option>
+            
+            <option value="Penunjukan Langsung">Penunjukan Langsung</option>
+            <option value="Pemilihan Langsung">Pemilihan Langsung</option>
+            <option value="Pelelangan">Pelelangan</option>
+          </select>
+        </div>
+        <div class="input-field col s12 l6">
+          <input name="perihal" id="perihal_e" type="text" >
+          <label>Perihal</label>
+        </div>
+        <div class="input-field col s12 l3">
+          <input name="no_usulan" type="text" id="no_usulan_e" >
+          <label>No. Usulan</label>
+        </div>
+        <div class="input-field col s12 l3">
+          <input name="tgl_usulan" type="text" id="tgl_usulan_e" class="datepicker" >
+          <label>Tgl. Usulan</label>
+        </div>
+        <div class="input-field col s12 l6">
+          <textarea name="keterangan" type="text" id="keterangan_e" class="materialize-textarea"></textarea>
+          <label>Keterangan</label>
+        </div>
+        <div class="input-field col s12 l3 kewenangan" style="margin-top: 2rem;">
+           <select id="kewenangan_e" name="kewenangan">
+           </select>
+          <label class='active' style=";top: -14px;">Kewenangan</label>
+        </div>
+        <div class="input-field col s12 l3">
+          <input name="file" type="text" id="file_e">
+          <label>File</label>
+        </div>
       </div>
+      
     </div>
+    <?= form_close();?>
+  </div>
+  <div class="modal-footer">
+    <button class="modal-close waves-effect waves-yellow btn-flat">CLOSE</button>
+    <button id="btn-prosesedit" class="waves-effect blue waves-green  white-text btn-flat">PROSES</button>    
   </div>
 </div>
 <!--end modal edit-->
@@ -273,12 +352,20 @@ background: #D7A42B;color:white;
             <td id="t_kewenangan"></td>
           </tr>
           <tr>
+            <td>No. Usulan</td>
+            <td>:</td>
+            <td id="t_no_usulan"></td>
+            <td>Tgl. Usulan</td>
+            <td>:</td>
+            <td id="t_tgl_usulan"></td>
             <td>File</td>
             <td>:</td>
             <td id="t_file"></td>
+          </tr>
+          <tr>
             <td>Keterangan</td>
             <td>:</td>
-            <td colspan="4" id="t_keterangan"></td>
+            <td colspan="7" id="t_keterangan"></td>
           </tr>
         </table>
       </div>
@@ -324,9 +411,10 @@ background: #D7A42B;color:white;
   <div class="modal-footer">    
     <?php 
     if(isset($_SESSION['role'])){
-      if($_SESSION['role'] == "superuser"){?>
-        <button class="waves-effect yellow waves-green btn-flat" id="btn-ubah"><i class="fa fa-pencil"></i></button>
-        <button class="waves-effect red waves-yellow btn-flat white-text" id="btn-hapus"><i class="fa fa-trash"></i></button>
+      if($_SESSION['role'] != "user"){?>
+        <button class="waves-effect blue white-text waves-green btn-flat" id="btn-tambah-row" aria-label="Tambah Row"data-balloon-pos="up" ><i class="fa fa-plus"></i></button>
+        <button class="waves-effect yellow waves-green btn-flat" id="btn-ubah" aria-label="Edit Data" data-balloon-pos="up"><i class="fa fa-pencil"></i></button>
+        <button class="waves-effect red waves-yellow btn-flat white-text" id="btn-hapus" aria-label="Hapus Data"data-balloon-pos="up"><i class="fa fa-trash"></i></button>
     <?php }}?>
     <button class="modal-close grey waves-effect waves-yellow btn-flat">CLOSE</button>
     
@@ -336,8 +424,7 @@ background: #D7A42B;color:white;
 <!-- start inv-->
 <div id="modal_inv" class="modal modal-fixed-footer ">
   <div class="modal-content">
-    <?php $attrv = array('id'=>'forminv');?>
-    <?= form_open('',$attrv);?>
+    <?= form_open('',array('id'=>'forminv'));?>
       <div class="col s12 l12" id="kolominv" style="margin-bottom: 0px;">
         <div class="row">
           <div class="input-field col s12 l1">
@@ -357,15 +444,15 @@ background: #D7A42B;color:white;
             <label>Nilai</label>
           </div>
           <div class="input-field col l3 s12">
-            <input name="no_invoice" type="text" class="" id="tp_no_invoice" required>
+            <input name="no_invoice" type="text" class="" id="tp_no_invoice" >
             <label>No. Invoice</label>
           </div>
           <div class="input-field col s12 l3">
-            <input name="tgl_invoice" type="text" class="datepicker" id="tp_tgl_invoice" required>
+            <input name="tgl_invoice" type="text" class="datepicker" id="tp_tgl_invoice" >
             <label>Tgl. Invoice</label>
           </div>
           <div class="input-field col s12 l6">
-            <input name="perihal" type="text" class="" id="tp_perihal" data-length="250" required>
+            <input name="perihal" type="text" class="" id="tp_perihal" data-length="250" >
             <label>Perihal</label>
           </div>
           <div class="input-field col s12 l3">
@@ -427,11 +514,96 @@ background: #D7A42B;color:white;
     <button class="modal-close waves-effect waves-yellow btn-flat">CLOSE</button>
   </div>
 </div>
-<!-- end inv-->
+
+<div id="modal_edit_row" class="modal modal-fixed-footer ">
+  <div class="modal-content">
+    <?= form_open('',array('id'=>'form-edit-row'));?>
+      <div class="col s12 l12" style="margin-bottom: 0px;">
+        <div class="row">
+          <div class="input-field col s12 l4">
+            <input name="item" type="text" id="item_e">
+            <input type="text" name="id_row" id="id_row" hidden>
+            <label>Item</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="ukuran" type="text" id="ukuran_e">
+            <label>Ukuran</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="bahan" type="text" id="bahan_e">
+            <label>Bahan</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12 l4">
+            <input name="jumlah" type="text" id="jml_e">
+            <label>jumlah</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="satuan" type="text" id="satuan_e">
+            <label>Satuan</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="hpsusd" type="text" id="hpsusd_e">
+            <label>HPS (USD)</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12 l4">
+            <input name="hpsidr" type="text" id="hpsidr_e">
+            <label>HPS (IDR)</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="hpssatuan" type="text" id="hpssatuanidr_e">
+            <label>HPS Satuan (IDR)</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="penawaran" type="text" id="penawaran_e">
+            <label>Penawaran (IDR)</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12 l4">
+            <input name="realisasiusd" type="text" id="realisasiusd_e">
+            <label>Realisasi Nego (USD)</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="realisasirp" type="text" id="realisasirp_e">
+            <label>Realisasi Nego (Rp)</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="realisasiqty" type="text" id="realisasiqty_e">
+            <label>Realisasi Qty/Unit</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12 l4">
+            <input name="nokontrak" type="text" id="nokontrak_e">
+            <label>No. Kontrak</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <input name="tglkontrak" type="text" id="tglkontrak_e">
+            <label>Tgl. Kontrak</label>
+          </div>
+          <div class="input-field col s12 l4" style="bottom: -14px;" >
+            <select name="vendor" class="select" id="vendor_e">
+              <?php foreach($select_tdr as $row):?>
+                <option value="<?= $row->id_vendor;?>"><?= $row->nm_vendor;?></option>
+              <?php endforeach;?>
+            </select>
+            <label class="active" style="top: -14px;">Vendor</label>
+          </div>
+        </div>
+      </div>
+    <?= form_close();?>
+  </div>
+</div>
+
+
 <script>
   $(document).ready(function(){
     $('.tooltipped').tooltip({delay: 50});
-   $('.select-m').formSelect();
+    $('.select-m').formSelect();
     $(".select").select2({
       placeholder: 'Select an option',
       //theme: 'material'
@@ -478,7 +650,7 @@ background: #D7A42B;color:white;
 
       },
       "columns":[
-        {"data": ['id_pengadaan']},
+        {"data": ['no_id']},
         {"data": ['tgl_notin']},
         {"data": ['no_notin']},
         {"data": ['jenis_notin_masuk']},
@@ -491,11 +663,10 @@ background: #D7A42B;color:white;
       ],
       "dom": 'Bflrtip',
              buttons: [
-            { className: 'btn btn-sm light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
-            { extend: 'copy', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
-            { extend: 'csv', className: 'btn btn-sm light-blue darken-4'},
-            { extend: 'excel', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
+            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
+            { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
             ],
       "processing": true,
       "language":{
@@ -671,8 +842,84 @@ background: #D7A42B;color:white;
 
     })
     $('#btn-ubah').on('click', function(e){
-      
+      let id = $(this).attr('data-id');
       $('#modal-ubah').modal('open');
+      $('#btn-prosesedit').attr('data-id');
+      e.preventDefault();
+      $('#modal-ubah label').addClass('active');
+      $.ajax({
+        type:'POST',
+        url: '<?= base_url()."pengadaan/get_detail";?>',
+        data: {id:id,ubah:'ubah'},
+        success: function(result){
+          let data = JSON.parse(result);
+          
+          $('#tahun_pengadaan_e').val(data.tahun);
+          $('#id_pengadaan_e').val(data.id_pengadaan);
+          $('#tgl_surat_e').val(tanggal(data.tgl_notin));
+          $('#no_surat_e').val(data.no_notin);
+          $('#jenis_surat_e').find('option[value="'+data.jenis_notin_masuk+'"]').prop('selected', true);
+          $('#tgl_disposisi_e').val(tanggal(data.tgl_disposisi));
+          
+          $('#divisi_e').find('option[value="'+data.divisi+'"]').prop('selected', true);
+          
+          $('#kelompok_e').val(data.kelompok);
+          $('#n_jenis_pengadaan_e').find('option[value="'+data.jenis_pengadaan+'"]').prop('selected', true);
+          $('#perihal_e').val(data.perihal);
+          $('#no_usulan_e').val(data.no_usulan);
+          $('#tgl_usulan_e').val(tanggal(data.tgl_usulan));
+          $('#keterangan_e').val(data.keterangan);
+          
+          $('#file_e').val(data.file);
+          $('#divisi_e, #jenis_surat_e').formSelect();
+          $.ajax({
+            type: 'POST',
+            url : '<?= base_url()."pengadaan/get_kewenangan";?>',
+            data: {'divisi':data.divisi},
+            success: function(response){
+
+              $('#kewenangan_e').select2({
+              placeholder: 'Select an option',
+              //theme: 'material'
+              },$('select').css('width','100%'));
+
+              let option= $('#kewenangan_e');
+              $.each(JSON.parse(response), function(){ 
+                  option.append($("<option />").val(this.kewenangan).text(this.kewenangan));
+              });
+
+            }
+          })
+
+        }
+      })
+    })
+    $('#btn-hapus').on('click', function(e){
+      e.preventDefault();
+      let id = $(this).attr('data-id');
+      swal({
+        type: 'question',
+        text: 'Are you sure to deleting this data?',
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        showCancelButton:true
+      }).then(function(){
+        $.ajax({
+          type: 'POST',
+          url: '<?= base_url()."pengadaan/hapus";?>',
+          data: {id:id},
+          success: function(result){
+            let data = JSON.parse(result);
+            swal({
+              type: data.type,
+              text: data.pesan,
+              showConfirmButton: true,
+              allowOutsideClick: false,
+            })  
+          }
+          
+        })
+      })
     })
     //add invoice
     $('#tambahdata').on('click', function(e){
@@ -713,7 +960,7 @@ background: #D7A42B;color:white;
       $('.rowitem').append(rowitem);
 
       $(idselects).select2({
-          placeholder: 'Select an option',
+        placeholder: 'Select an option',
           //theme: 'material'
       },$('select').css('width','200px'));
 
@@ -744,9 +991,6 @@ background: #D7A42B;color:white;
           
         })
       })
-
-     
-
       $.post("<?= base_url()."tdr/get_tdr";?>", function(result){
           
         let options = $(idselects);
@@ -754,12 +998,8 @@ background: #D7A42B;color:white;
         $.each(JSON.parse(result), function() {
               options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
         });
-
       });
-     
     })
-
-
 
     $('#tp_nominal').on('change', function(){
       //var nilai = $('#tp_nilai_kontrak').val();
@@ -797,6 +1037,29 @@ background: #D7A42B;color:white;
         }
       })
 
+    })
+
+    $('#btn-prosesedit').on('click', function(e){
+      let id = $(this).attr('data-id');
+      $.ajax({
+        type: 'POST',
+        data: $('#formeditdata').serialize(),
+        url : '<?= base_url()."pengadaan/update_data";?>',
+        success: function(result){
+          let data = JSON.parse(result);
+          swal({
+            type: data.type,
+            text: data.pesan,
+            showConfirmButton: true,
+            allowOutsideClick: false,
+          }).then(function(){
+            data_tabel(id);
+            $('#modal-ubah').modal('close');
+            $('#table').DataTable().ajax.reload();
+          })
+        }
+      })
+      
     })
 
 
@@ -901,12 +1164,73 @@ background: #D7A42B;color:white;
               });
             })
           }else{
-            html = '';
+            //html = '';
             $('.rowinv').html('');
           }
         }
       }) 
     }
+    $('#tbisiinvoice tbody').on('click', '.edit-row', function(e){
+      
+      let id = $(this).attr('data-id');
+      swal({
+        type: 'question',
+        text: 'Are you sure to edit this data?',
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        showCancelButton:true
+      }).then(function(){
+        $.ajax({
+          type: 'POST',
+          data: {id:id},
+          url : '<?= base_url()."pengadaan/get_detail";?>',
+          success: function(result){
+            let data = JSON.parse(result);
+            $('#modal_edit_row').modal('open');
+            $('#modal_edit_row label').addClass('active');
+            $('#item_e').val(data.item);
+            $('#id_row').val(data.id_pengadaan_uniq);
+            $('#ukuran_e').val(data.ukuran);
+            $('#bahan_e').val(data.bahan);
+            $('#jml_e').val(data.jumlah);
+            $('#satuan_e').val(data.satuan);
+            $('#hpsusd_e').val(data.hps_usd);
+            $('#hpsidr_e').val(data.hps_idr);
+            $('#hpssatuanidr_e').val(data.hps_satuan);
+            $('#penawaran_e').val(data.penawaran);
+            $('#realisasiusd_e').val(data.realisasi_nego_usd);
+            $('#realisasirp_e').val(data.realisasi_nego_rp);
+            $('#realisasiqty_e').val(data.realisasi_qty_unit);
+            $('#nokontrak_e').val(data.no_kontrak);
+            $('#tglkontrak_e').val(tanggal(data.tgl_kontrak));
+            $('#vendor_e').val(data.id_vendor);
+          }
+        })
+      })
+    })
+    $('#tbisiinvoice tbody').on('click', '.hapus-row', function(e){
+      
+      let id = $(this).attr('data-id');
+      swal({
+        type: 'question',
+        text: 'Are you sure to deleting this data?',
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        showCancelButton:true
+      }).then(function(){
+        $.ajax({
+          type: 'POST',
+          data: {id:id},
+          url : '<?= base_url()."pengadaan/hapus_row";?>',
+          success: function(result){
+            let data = JSON.parse(result);
+
+          }
+        })
+      })
+    })
+
+
 
     function data_tabel(id){
       $.ajax({
@@ -933,6 +1257,9 @@ background: #D7A42B;color:white;
           $('#t_jenis_pengadaan').text(data.jenis_pengadaan);
           $('#t_divisi').text(data.divisi);
           $('#t_kewenangan').text(data.kewenangan);
+          $('#t_no_usulan').text(data.no_usulan);
+          $('#t_tgl_usulan').text(tanggal(data.tgl_usulan));
+          $('#t_keterangan').text(data.keterangan);
           let urlfile = "<a href='<?= base_url()."pengadaan/get_file/?file=";?>"+data.file+"&tahun="+data.tahun+"' target='_blank'>"+data.file+"</a>";
           $('#t_file').html(urlfile);
           if(detail.length > 0){
@@ -949,7 +1276,8 @@ background: #D7A42B;color:white;
               let proses, status;
               let role = "<?= $role;?>";
               if(role !== 'user'){
-               edit = "<a href='#' class='edit-row-detail' data-id='"+detail[i].no_kontrak+"' data-pengadaan='"+id+"' data-vendor='"+detail[i].id_vendor+"'>edit</a>";
+               edit = "<a href='#' class='edit-row' data-id='"+detail[i].id_pengadaan_uniq+"' data-pengadaan='"+id+"'>edit</a>";
+               hapus = "<a href='#' class='hapus-row' data-id='"+detail[i].id_pengadaan_uniq+"'>hapus</a>";
                 status = "<a href='#' class='proses-inv' data-id='"+detail[i].no_kontrak+"' data-tahun='"+data.tahun+"' data-pengadaan='"+id+"' data-vendor='"+detail[i].id_vendor+"' data-nm_vendor='"+detail[i].nm_vendor+"'>"+detail[i].status+"</a>";
               }else{
                 
@@ -975,7 +1303,7 @@ background: #D7A42B;color:white;
                       "<td class='center'>"+detail[i].nm_vendor+"</td>"+
                       "<td class='center' style='font-weight:bolder'>"+nego+"</td>"+
                       "<td class='center'>"+status+"</td>"+
-                      "<td class='center'>"+edit+"</td>"+
+                      "<td class='center'>"+edit+' | '+hapus+"</td>"+
                       "</tr>";
              
                       sum += parseFloat(detail[i].jml);

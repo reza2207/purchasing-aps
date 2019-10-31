@@ -11,8 +11,8 @@ background: #D7A42B;color:white;
   <!-- <div class="col s12"> -->
   <div class="col push-l3 l9">
     
-    <!-- <button id="" class="btn btn-sm">[+]Add Data</button> -->
-    <table class="table display"  id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
+    <!-- <button id="" class="btn btn-small">[+]Add Data</button> -->
+    <table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
       <thead class="thead-dark teal">
         <tr class="rowhead">
           <th class="text-center align-middle">#</th>
@@ -424,11 +424,11 @@ background: #D7A42B;color:white;
       ],
       "dom": 'Bflrtip',
              buttons: [
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
-            { className: 'btn btn-sm light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
-            { extend: 'copy', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
-            { extend: 'csv', className: 'btn btn-sm light-blue darken-4'},
-            { extend: 'excel', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
+            { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
+            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
+            { extend: 'csv', className: 'btn btn-small light-blue darken-4'},
+            { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
 
             ],
       "processing": true,
@@ -455,7 +455,7 @@ background: #D7A42B;color:white;
         }
       /*"columnDefs": [
       {
-        "targets":-1,"data":null,"orderable":false,"width":"150px","defaultContent":"<button class='edit orange darken-2 btn-small'>Edit</button><button class='hapus red darken-2 btn-small'>Hapus</button>",
+        "targets":-1,"data":null,"orderable":false,"width":"150px","defaultContent":"<button class='edit orange darken-2 btn-smallall'>Edit</button><button class='hapus red darken-2 btn-smallall'>Hapus</button>",
       },
       {
         "targets":0,

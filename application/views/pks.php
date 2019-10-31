@@ -21,11 +21,11 @@ background: #D7A42B;color:white;
 <div class="row first">
 
   <!-- <div class="col s12"> -->
-  <div class="col push-l3 l9">
+  <div class="col s12 offset-l3 l9">
     <ul class="collection with-header"  id="reminder">
       <li class="collection-item red accent-4 white-text"><marquee id="marquee"><?= $pks->num_rows();?> PKS yang akan berakhir</marquee></li>
     </ul>
-    <!-- <button id="" class="btn btn-sm">[+]Add Data</button> -->
+    <!-- <button id="" class="btn btn-small">[+]Add Data</button> -->
     <table class="table display"  id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
       <thead class="teal white-text">
         <tr class="rowhead">
@@ -209,6 +209,16 @@ background: #D7A42B;color:white;
             <td>:</td>
             <td id="d_status" style="font-style: italic;"></td>
           </tr>
+          <tr>
+            <td>File</td>
+            <td>:</td>
+            <td id="d_file" style="font-style: italic;"></td>
+          </tr>
+          <tr>
+            <td>Last Reminder</td>
+            <td>:</td>
+            <td id="d_reminder" style="font-style: italic;"></td>
+          </tr>
         </table>
         <input placeholder="input comment" id="input-comment">
         <div class="collection" id="comment">
@@ -235,6 +245,55 @@ background: #D7A42B;color:white;
   </div>
 </div>
 <!-- end modal detail-->
+
+<div id="modal_reminder" class="modal modal-fixed-footer">
+  <div class="modal-content">
+       
+    <div class="col s12 l12">
+      <?= form_open('', array('id'=>'form_reminder'));?>
+      <div class="row">
+        <div class="input-field col s12 l2">
+          <input type="text" name="no" placeholder="nomor surat">
+          <input type="text" name="idpks" id="idpks" class="hide">
+        </div>
+        <div class="input-field col s12 l2">
+          <input type="text" name="tgl" class="datepicker" placeholder="tgl. Surat">
+        </div>
+        <div class="input-field col s12 l4">
+          <input type="text" name="perihal" placeholder="perihal">
+        </div>
+        <div class="input-field col s12 l2">
+          <input type="text" name="file" placeholder="file scan">
+        </div>
+        <div class="input-field col s12 l2">
+          <button type="submit" class="waves-effect waves-green white-text btn-flat green">Save</button>
+        </div>
+      </div>
+      <?= form_close();?>
+      <div class="row">
+        <table id="table-reminder">
+          <thead>
+            <tr>
+              <td>No.</td>
+              <td>No. Surat</td>
+              <td>Tgl. Surat</td>
+              <td>Perihal</td>
+              <td>File</td>
+            </tr>
+          </thead>
+
+        </table>        
+      </div>
+    </div>
+  
+  </div>
+  <div class="modal-footer">
+    <button class="modal-close waves-effect waves-yellow btn-flat">CLOSE</button>
+    
+  </div>
+</div>
+
+
 <div id="modal_ubah" class="modal modal-fixed-footer  amber darken-4">
   <div class="modal-content">
     <?php $attrf = array('id'=>'formedit');?>
@@ -324,6 +383,10 @@ background: #D7A42B;color:white;
             <input name="tgl_pks" type="text" class="validate datepicker" id="etgl_pks">
             <label>Tgl. PKS</label>
           </div>
+          <div class="input-field col s12 l12">
+            <input name="file" type="text" class="validate" id="efile">
+            <label>File PKS</label>
+          </div>
           <!-- end start date-->
 
         </div>
@@ -340,8 +403,7 @@ background: #D7A42B;color:white;
 <div id="modal_proses" class="modal modal-fixed-footer">
   <div class="modal-content">
     
-    <?php $attrf = array('id'=>'formproses');?>
-    <?= form_open('',$attrf);?>
+    <?= form_open('',array('id'=>'formproses'));?>
       <div class="col s12 l12">
         <div class="row">
           <div class="input-field col l3 s12">
@@ -447,11 +509,10 @@ background: #D7A42B;color:white;
       ],
       "dom": 'Bflrtip',
              buttons: [
-            { className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
-            { className: 'btn btn-sm light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
-            { extend: 'copy', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
-            { extend: 'csv', className: 'btn btn-sm light-blue darken-4'},
-            { extend: 'excel', className: 'btn btn-sm light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
+            { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
+            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
+            { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
 
             ],
       "processing": true,
@@ -459,7 +520,7 @@ background: #D7A42B;color:white;
         "processing": "<div class='warning-alert'><i class='fa fa-circle-o-notch fa-spin'></i> Please wait........",
         "buttons": {
           "copyTitle": "<div class='row'><div class='col push-l3 l9' style='font-size:15px'>Copy to clipboard</div></div>",
-          "copyKeys":"Press <i>ctrl</i> or <i>\u2318</i> + <i>C</i> to copy the table data<br>to your system clipboard.<br>To cance, click this message or press escape.",
+          "copyKeys":"Press <i>ctrl</i> or <i>\u2318</i> + <i>C</i> to copy the table data<br>to your system clipboard.<br>To cancel, click this message or press escape.",
           "copySuccess":{
             "_": "%d line tercopy",
             "1": "1 line tercopy"
@@ -512,12 +573,8 @@ background: #D7A42B;color:white;
       let id = $(this).attr('data-id');
 
       //table.row($(this).parents('tr')).data();
-      $('#btn-ubah').attr('data-id', id);
-      $('#btn-hapus').attr('data-id', id);
-      $('#btn-comment').attr('data-id', id);
-      $('#proses').attr('data-id', id);
-      $('#update').attr('data-id', id);
-      $('#prosespks').attr('data-id', id);
+      
+      $('#proses, #btn-reminder, #prosespks, #btn-ubah, #btn-hapus, #update, #btn-comment').attr('data-id', id);
       detail_pks(id);
       get_comment(id)
     }) //end tbody row click
@@ -529,6 +586,7 @@ background: #D7A42B;color:white;
               container: 'body',
               format: 'dd-mm-yyyy',
               autoClose: true,
+              disableWeekends:true,
             });
       let id = $('#proses').attr('data-id');
       $.ajax({
@@ -536,150 +594,8 @@ background: #D7A42B;color:white;
         url: '<?= base_url()."pks/get_detail";?>',
         data: {id:id,ubah:id},
         success: function(response){
-          let data = JSON.parse(response);
-          $('#formproses label').addClass('active');
-          $('#pid_pks').val(id);
-          $('#ps_penunjukan').val(data.no_srt_pelaksana).attr('readonly', true);
-          $('#pperihal').val(data.perihal).attr('readonly', true);
-          let tgl1 = data.tgl_ke_legal;
-          let tgl2 =  data.tgl_draft_ke_user;
-          let tgl3 = data.tgl_draft_ke_vendor;
-          let tgl4 = data.tgl_review_send_to_legal;
-          let tgl5 = data.tgl_ke_vendor;
-          let tgl6 = data.tgl_blk_dr_vendor_ke_legal;
-          let tgl7 = data.tgl_ke_vendor_kedua;
-          let tgl8 = data.tgl_pks;
-          let nopks = data.no_pks;
-          if(tgl1 == '0000-00-00'){
-
-            $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-            
-          }else if(tgl2 == '0000-00-00' || tgl3 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal').datepicker('destroy');
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly',false);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly',false);
-            $('#pdraft_ke_user, #pdraft_ke_vendor').parent().show();
-            
-            $('#preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-            
-          }else if(tgl4 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal ').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-
-            $('#preview_ke_legal').parent().show();
-            
-            $('#pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-
-          }else if(tgl5 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker('destroy');
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-
-            $('#pttd_ke_vendor').parent().show();
-
-            $('#pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
-
-          }else if(tgl6 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-
-            $('#pttd_ke_pemimpin').parent().show();
-
-            $('#p_serahterima, #pno_pks, #ptgl_pks').parent().css('display','none');
-
-          }else if(tgl7 == '0000-00-00'){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
-
-            $('#p_serahterima,#pno_pks, #ptgl_pks').parent().show();
-          
-          }else if((tgl7 != '0000-00-00') && (tgl8 == '0000-00-00' || nopks == '')){
-            
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-
-            });
-
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
-            $('#p_serahterima').val(tgl7).attr('readonly', true);
-
-          }else{
-            
-             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin,#p_serahterima,#ptgl_pks').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-
-            });
-            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker('destroy');
-
-            $('#pdraft_dr_legal').val(tgl1).attr('readonly', true);
-            $('#pdraft_ke_user').val(tgl2).attr('readonly', true);
-            $('#pdraft_ke_vendor').val(tgl3).attr('readonly', true);
-            $('#preview_ke_legal').val(tgl4).attr('readonly', true);
-            $('#pttd_ke_vendor').val(tgl5).attr('readonly', true);
-            $('#pttd_ke_pemimpin').val(tgl6).attr('readonly', true);
-            $('#p_serahterima').val(tgl7).attr('readonly', true);
-            $('#ptgl_pks').val(tgl8).attr('readonly', true);
-            $('#pno_pks').val(nopks).attr('readonly', true);
-
-            $('#btncancel').text('CLOSE');
-            $('#prosespks').hide();
-          }
+          proses_pks(response, id);
+        //ini
         }
       })
     })
@@ -689,7 +605,6 @@ background: #D7A42B;color:white;
       $('#input-comment').toggle('slow')
     })
     $('#input-comment').keypress(function(event) {
-        //event.preventDefault();
       if(event.key == "Enter"){/* Act on the event */
         let komen = this.value;
         let id = $('#btn-comment').attr('data-id');
@@ -708,8 +623,7 @@ background: #D7A42B;color:white;
                   text: data.message,
                   showConfirmButton: true,
               }).then(function(){
-                let col = '<a class="collection-item"><span class="new badge" data-badge-caption="'+data.comment_date+'">'+data.name+' on </span>'+data.comment+'</a>';
-                ('.collection').prepend(col);
+                get_comment(id)
 
               })//ini
             }else{
@@ -751,6 +665,13 @@ background: #D7A42B;color:white;
         }) 
       })
     })
+
+    $('#btn-reminder').on('click', function(e){
+      let id = $(this).attr('data-id');
+      $('#idpks').val(id);
+      $('#form_reminder').attr('data-id', id);
+      $("#modal_reminder").modal('open');
+    })
     //end start hapus
     $('#prosespks').on('click', function(e){
       let id = $(this).attr('data-id');
@@ -789,24 +710,24 @@ background: #D7A42B;color:white;
           $('#eid_pks').val(id);
           $("#modal_ubah label").addClass('active');
           $('#eno_penunjukan').val(data.no_srt_pelaksana);
-          $('#etgl_minta').val(cektgl(data.tgl_minta));
+          $('#etgl_minta').val(tanggal(data.tgl_minta));
           $('#eno_usulan').val(data.no_notin);
           $('#eperihal').val(data.perihal);
-          $('#etgl_awal').val(cektgl(data.tgl_krj_awal));
-          $('#etgl_akhir').val(cektgl(data.tgl_krj_akhir));
+          $('#etgl_awal').val(tanggal(data.tgl_krj_awal));
+          $('#etgl_akhir').val(tanggal(data.tgl_krj_akhir));
           $('#enominal_rp').val(data.nominal_rp);
           $('#enominal_usd').val(data.nominal_usd);
           $('#enominal_bg').val(data.bg_rp);
-          $('#edraft_dr_legal').val(cektgl(data.tgl_ke_legal));
-          $('#edraft_ke_user').val(cektgl(data.tgl_draft_ke_user));
-          $('#edraft_ke_vendor').val(cektgl(data.tgl_draft_ke_vendor));
-          $('#ereview_ke_legal').val(cektgl(data.tgl_review_send_to_legal));
-          $('#ettd_ke_vendor').val(cektgl(data.tgl_ke_vendor));
-          $('#ettd_ke_pemimpin').val(cektgl(data.tgl_blk_dr_vendor_ke_legal));
-          $('#e_serahterima').val(cektgl(data.tgl_ke_vendor_kedua));
+          $('#edraft_dr_legal').val(tanggal(data.tgl_ke_legal));
+          $('#edraft_ke_user').val(tanggal(data.tgl_draft_ke_user));
+          $('#edraft_ke_vendor').val(tanggal(data.tgl_draft_ke_vendor));
+          $('#ereview_ke_legal').val(tanggal(data.tgl_review_send_to_legal));
+          $('#ettd_ke_vendor').val(tanggal(data.tgl_ke_vendor));
+          $('#ettd_ke_pemimpin').val(tanggal(data.tgl_blk_dr_vendor_ke_legal));
+          $('#e_serahterima').val(tanggal(data.tgl_ke_vendor_kedua));
           $('#eno_pks').val(data.no_pks);
-          $('#etgl_pks').val(cektgl(data.tgl_pks));
-
+          $('#etgl_pks').val(tanggal(data.tgl_pks));
+          $('#efile').val(data.file);
           if($('#enominal_rp').val() > 100000000){
             $('.ebg').show();
           }else{
@@ -865,6 +786,29 @@ background: #D7A42B;color:white;
       })
       
     })
+    $('#form_reminder').on('submit', function(e){
+      e.preventDefault();
+      let id = $(this).attr('data-id');
+      let form = $(this);
+      
+      $.ajax({
+        type : 'POST',
+        url  : '<?= base_url()."Pks/submit_reminder";?>',
+        data : form.serialize(),
+        success: function(result){
+          let data = JSON.parse(response);
+          swal({
+              type: data.type,
+              text: data.message,
+              showConfirmButton: true,
+          }).then(function(){
+            console.log(result);
+            form[0].reset();
+            $('#idpks').val(id);
+          })
+        }
+      })
+    })
     $('#save').on('click', function(){
         
       $.ajax({
@@ -885,6 +829,160 @@ background: #D7A42B;color:white;
         }
       })
     })
+
+    function proses_pks(response, id){
+      let data = JSON.parse(response);
+          $('#formproses label').addClass('active');
+          $('#pid_pks').val(id);
+          $('#ps_penunjukan').val(data.no_srt_pelaksana).attr('readonly', true);
+          $('#pperihal').val(data.perihal).attr('readonly', true);
+          let tgl1 = data.tgl_ke_legal;
+          let tgl2 =  data.tgl_draft_ke_user;
+          let tgl3 = data.tgl_draft_ke_vendor;
+          let tgl4 = data.tgl_review_send_to_legal;
+          let tgl5 = data.tgl_ke_vendor;
+          let tgl6 = data.tgl_blk_dr_vendor_ke_legal;
+          let tgl7 = data.tgl_ke_vendor_kedua;
+          let tgl8 = data.tgl_pks;
+          let nopks = data.no_pks;
+          if(tgl1 == '0000-00-00'){
+
+            $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+            
+          }else if(tgl2 == '0000-00-00' || tgl3 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal').datepicker('destroy');
+            $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly',false);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly',false);
+            $('#pdraft_ke_user, #pdraft_ke_vendor').parent().show();
+            
+            $('#preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+            
+          }else if(tgl4 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal ').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+              disableWeekends:true,
+              firstDay:1
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly', true);
+
+            $('#preview_ke_legal').parent().show();
+            
+            $('#pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+
+          }else if(tgl5 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+              disableWeekends:true,
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker('destroy');
+            $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly', true);
+            $('#preview_ke_legal').val(tanggal(tgl4)).attr('readonly', true);
+
+            $('#pttd_ke_vendor').parent().show();
+
+            $('#pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
+
+          }else if(tgl6 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+              disableWeekends:true,
+              firstDay:1
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly', true);
+            $('#preview_ke_legal').val(tanggal(tgl4)).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
+
+            $('#pttd_ke_pemimpin').parent().show();
+
+            $('#p_serahterima, #pno_pks, #ptgl_pks').parent().css('display','none');
+
+          }else if(tgl7 == '0000-00-00'){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+              disableWeekends:true,
+              firstDay:1
+            });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val((tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly', true);
+            $('#preview_ke_legal').val(tanggal(tgl4)).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
+            $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
+            $('#ptgl_pks').val(tanggal(tgl8)).attr('readonly', true);
+            $('#pno_pks').val(nopks).attr('readonly', true);
+            $('#p_serahterima,#pno_pks, #ptgl_pks').parent().show();
+          
+          }else if((tgl7 != '0000-00-00') && (tgl8 == '0000-00-00')){
+            
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker({
+              container: 'body',
+              format: 'dd-mm-yyyy',
+              autoClose: true,
+              disableWeekends:true,
+              firstDay:1
+            });
+
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly', true);
+            $('#preview_ke_legal').val(tanggal(tgl4)).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
+            $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
+            $('#p_serahterima').val(tanggal(tgl7)).attr('readonly', true);
+
+          }else{
+            
+             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin,#p_serahterima,#ptgl_pks').datepicker({
+                container: 'body',
+                format: 'dd-mm-yyyy',
+                autoClose: true,
+                disableWeekends:true,
+                firstDay:1
+              });
+            $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker('destroy');
+
+            $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
+            $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
+            $('#pdraft_ke_vendor').val(tanggal(tgl3)).attr('readonly', true);
+            $('#preview_ke_legal').val(tanggal(tgl4)).attr('readonly', true);
+            $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
+            $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
+            $('#p_serahterima').val(tanggal(tgl7)).attr('readonly', true);
+            $('#ptgl_pks').val(tanggal(tgl8)).attr('readonly', true);
+            $('#pno_pks').val(nopks).attr('readonly', true);
+
+            $('#btncancel').text('CLOSE');
+            $('#prosespks').hide();
+          }
+    }
 
     function detail_pks(id)
     {
@@ -961,11 +1059,22 @@ background: #D7A42B;color:white;
             $('#d_tglpks').parent().hide();
           }else{
             $('#d_tglpks').parent().show();
-            $('#d_nopks').text(tanggal_indo(pks.tgl_pks));
+            $('#d_tglpks').text(tanggal_indo(pks.tgl_pks));
           }
           let statusexp = pks.segera == '' ? '' : '('+pks.segera+')';
           let segera = "<i style='color:red'>"+statusexp+"</i>";
           $('#d_status').html(pks.status+' '+segera);
+          
+          
+          if(pks.file != ''){
+            let file = "<a href='pks/get_pdf/"+pks.id_pks+"' target='_blank'>"+pks.file+"</a>";            
+            $('#d_file').parent().show();
+            $('#d_file').html(file);
+          }else{
+            $('#d_file').parent().hide();
+            $('#d_file').html('');
+
+          }
           
         }
       })

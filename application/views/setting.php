@@ -53,11 +53,10 @@
             <table class="table display" id="table" style="width: 100%">
               <thead class="teal white-text">
                 <tr>
-                  <th class="center align-middle">No.</th>
+                  <th class="center">No.</th>
                   <th>Tanggal</th>
                   <th>Keterangan</th>
                   <th>Action</th>
-
                 </tr>
               </thead>
             </table>

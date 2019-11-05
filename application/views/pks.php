@@ -581,7 +581,7 @@ background: #D7A42B;color:white;
 
     $('#proses').on('click', function(){ //proses 
       $('#modal_proses').modal('open');
-      $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('');
+      $('#pdraft_dr_legal, #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('');
       $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
               container: 'body',
               format: 'dd-mm-yyyy',
@@ -639,6 +639,7 @@ background: #D7A42B;color:white;
     });
     $('#reminder').on('click', function(e){
       table.search('segera').draw();
+      $('#searchnew').val('');
     })
     //start hapus
     $('#btn-hapus').on('click', function(){

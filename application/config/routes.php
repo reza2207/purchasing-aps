@@ -56,4 +56,6 @@ $route['register/masuk'] = 'register/register_masuk';
 $route['register/keluar'] = 'register/register_keluar';
 $route['register/pengolahan'] = 'register/lembar_pengolahan';
 $route['register/warkat'] = 'register/warkat';
+$route['forgot_password'] = 'user/forgot_password';
+$route['add_user'] = 'user/add_user';
 $route['register/get_detail_masuk/(:any)'] = 'register/get_detail_masuk';

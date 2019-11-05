@@ -15,39 +15,38 @@
       <div class="row first">
         
         <div class="col s12 offset-l3 l9">
-          <?= form_open();?>
+          <?= form_open('', array('id'=>'form_add'));?>
             <div class="row">
-              <div class="input-field col s12 l5">
-                <input id="username" type="text" class="validate">
+              <div class="input-field col s12 l4">
+                <input id="username" name="username" type="text" class="validate">
                 <label>Username</label>
               </div>
-              <div class="input-field col s12 l5">
-                <input id="password" type="password" class="validate">
+              <div class="input-field col s12 l3">
+                <input id="password" type="password" name="password" class="validate">
                 <label>Password</label>
+              </div>
+              <div class="input-field col s12 l3">
+                <input id="password_conf" type="password" class="validate">
+                <label>Confirm Password</label>
               </div>
             </div>
             <div class="row">
               <div class="input-field col s12 l10">
-                <input id="full_name" type="text" class="validate">
+                <input id="full_name" type="text" name="full_name" class="validate">
                 <label>Full Name</label>
               </div>
             </div>
             <div class="row">
-              <div class="input-field col s12 l4 push-l2">
-                <input id="recovery" type="text" class="validate">
+              <div class="input-field col s12 l3">
+                <input id="recovery" type="text" class="validate" name="recovery">
                 <label>Recovery Question</label>
               </div>
-              <div class="input-field col s12 l4 push-l2">
-                <input id="recovery_answer" type="text" class="validate">
+              <div class="input-field col s12 l3">
+                <input id="recovery_answer" type="text" class="validate" name="recovery_answer">
                 <label>Recovery Question Answer</label>
               </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s12 l4 push-l2">
-                <input>
-              </div>
-              <div class="input-field col s12 l4 push-l2">
-                <select id="role">
+              <div class="input-field col s12 l4">
+                <select id="role" name="role">
                   <option value="" disabled selected>Choose your option</option>
                   <option value="admin">Admin</option>
                   <option value="user">User</option>
@@ -79,40 +78,36 @@
   $(document).ready(function(){
     $('select').formSelect();
 
-    $('form').on('submit', function(e){
+    $('#form_add').on('submit', function(e){
       e.preventDefault();
-      let username = $('#username').val();
       let password = $('#password').val();
-      let full_name = $('#full_name').val();
-      let recovery = $('#recovery').val();
-      let role = $('#role').val();
-      let recovery_answer = $('#recovery_answer').val();
-
-      $.ajax({
-        type: "POST",
-        url : "<?= site_url().'user/submit_register';?>",
-        data: {username: username, password: password, full_name: full_name, recovery: recovery, recovery_answer: recovery_answer, role: role},
-        success: function(response){
-          let data = JSON.parse(response)
-          if(data.status == 'success'){
-            
-            swal({
-            type: data.status,
-            text: data.pesan,
-            }).then(function(){//redirect to 
-            /*$('#username').val('');
-            $('#password').val('');
-            $('#full_name').val('');
-            $('#recovery').val('');
-            $('#role').val('');
-            $('#recovery_answer').val('');*/
-            })
-          }else{
-            $(".print-error-msg").css('display','block');
-            $("#print-error-msg").html(data.pesan);
+      let password_conf = $('#password_conf').val();
+      if(password != password_conf){
+        swal({
+          type: 'error',
+          text: 'Password tidak sama'
+        })
+      }else{
+        $.ajax({
+          type: "POST",
+          url : "<?= site_url().'user/submit_register';?>",
+          data: $(this).serialize(),
+          success: function(response){
+            let data = JSON.parse(response)
+            if(data.status == 'success'){
+              
+              swal({
+              type: data.status,
+              text: data.pesan,
+              }).then(function(){
+              })
+            }else{
+              $(".print-error-msg").css('display','block');
+              $("#print-error-msg").html(data.pesan);
+            }
           }
-        }
-      })
+        })
+      }
       //swal(first_name);
 
     })

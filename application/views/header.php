@@ -36,7 +36,7 @@
 
             <ul class="right hide-on-med-and-down">
               <?php if ($_SESSION['role'] == "superuser" ){?>
-              <li><a href="<?= base_url().'user/add_user';?>"><i class="fa fa-user-plus"></i> Add User</a></li>
+              <li><a href="<?= base_url().'add_user';?>"><i class="fa fa-user-plus"></i> Add User</a></li>
               <?php } ?>
               <?php if ($_SESSION['role'] != "user" ){?>
               <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
@@ -135,15 +135,7 @@
 <script>
   
   $(document).ready(function(){
-    $(".collapsible-header").parent().on('click', function(e){
-      if($(this).hasClass('active')){
-        console.log('active');
-      }else{
-        console.log($(this).html());
-        //console.log('non');
-      }
-      
-    })
+   
     window.setInterval(jam, 1000);
 
     function jam(){
@@ -156,14 +148,6 @@
     $('.collapsible').collapsible();
     
     $('#button-side').on('click', function(e){
-      //$('#slide-out').toggleClass('hides');
-      /*if($('#slide-out').hasClass('hides')){
-        
-        $('#slide-out').fadeIn();
-
-      }else{
-        $('#slide-out').fadeOut();
-      }*/
       $('#slide-out').fadeToggle("slow", "swing");
 
       if($(this).parent().hasClass('leftside')){
@@ -171,7 +155,6 @@
       }else{
         $(this).parent().addClass('leftside');
       }
-      //$(this).parent().toggleClass('leftside');
       if($('.first').children().hasClass('offset-l3 l9')){
         $('.first').children().removeClass('offset-l3 l9').addClass('l12');
         $('#table').DataTable().columns.adjust();

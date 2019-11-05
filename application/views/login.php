@@ -19,15 +19,14 @@
     }
     body{
       background-image: url("<?= base_url().'gambar/background.JPG';?>");
-      background-repeat: no-repeat;background-size: 100%;background-position: center;background-size: cover;height: 500px;position: relative;
+      background-repeat: no-repeat;background-size: 100%;background-position: center;background-size: cover;height:100vh;position: relative;
     }
 
       </style>
     <body>
       <nav>
         <div class="nav-wrapper deep-orange darken-3">
-
-          <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large brand-logo center">System Monitoring Purchasing</a>
+          <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large brand-logo center" style="font-family: ogresse">System Monitoring Purchasing</a>
         </div>
       </nav>
       <!-- Page Layout here -->
@@ -47,7 +46,7 @@
           </div>
           <div class="row">
             <div class="input-field col l8 push-l4">
-              <a href="<?= base_url().'user/forgot_password';?>">Lupa Password?</a>
+              <a href="<?= base_url().'forgot_password';?>">Lupa Password?</a>
               <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
               <button class="waves-effect waves-light btn" type="submit" id="login">Login</button>
             </div>

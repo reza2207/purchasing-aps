@@ -150,6 +150,8 @@ div.fixed
 
 .collapsible-header, .collapsible-body{
     padding-left: 30px !important;
+    
+
 }
 .collapsible-header:hover , .bold a:hover{
     border-left: 6px solid #ff6f69;
@@ -157,9 +159,11 @@ div.fixed
     font-weight: bolder;
 }
 
+
 .user-view{
      display: block !important;padding-left: 10px !important;
 }
+
 
 #img-user{
     text-transform: capitalize;
@@ -171,9 +175,6 @@ div.fixed
     
 }
 
-#img-user:hover{
-    filter:grayscale(70%);
-}
 
 .collapsible-body ul li a:hover {
     font-weight: bolder;

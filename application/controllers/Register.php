@@ -32,6 +32,7 @@ class Register extends CI_Controller {
 		date_default_timezone_set("Asia/Bangkok");
 		$this->load->model('Warkat_model');
 		$this->load->model('Bg_model');
+		$this->load->model('Task_model');
 		$this->load->library("excel");
 
 	}	
@@ -1364,6 +1365,42 @@ class Register extends CI_Controller {
 		$this->load->view('header', $data);
 		$this->load->view('my_task');
 	}
+
+	public function get_data_task()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$list = $this->Task_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $field) {
+				$no++;
+				$row = array();
+				$row['no'] = $no;
+				$row['id_task'] = $field->id_task;
+				$row['date'] = tanggal($field->date);
+				$row['perihal'] = $field->perihal;
+				$row['due_date'] = tanggal($field->due_date);
+				$row['status'] = $field->status;
+				$row['id_user'] = $field->id_user;
+			
+				$data[] = $row;
+				
+			}
+
+			$output = array(
+				"draw"=> $_POST['draw'], 
+				"recordsTotal" =>$this->Task_model->count_all(),
+				"recordsFiltered"=>$this->Task_model->count_filtered(),
+				"data"=>$data,
+			);
+			echo json_encode($output);
+		}else{
+			$this->load->helper('form');
+			$this->load->view('login');
+		}
+	}
+
+
 
 	
 }

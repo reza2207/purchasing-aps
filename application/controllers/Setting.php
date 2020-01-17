@@ -120,6 +120,7 @@ class Setting extends CI_Controller {
 			foreach ($list as $field) {
 				$no++;
 				$row = array();
+				$row['id'] = $field->id_tgl;
 				$row['no'] = $no;
 				$row['tgl'] = tanggal_indo($field->tgl);
 				$row['keterangan'] = $field->keterangan;

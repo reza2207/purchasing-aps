@@ -33,7 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function tanggal_indo($tanggal){
 
-		if($tanggal == '0000-00-00'){
+		if($tanggal == '0000-00-00' || $tanggal == null){
 			return '-';
 		}else{
 			$bulan = array (1 =>   'Januari',
@@ -51,6 +51,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				);
 			$split = explode('-', $tanggal);
 			return (int) $split[2] . ' ' . $bulan[ (int)$split[1] ] . ' ' . $split[0];
+		}
+	}
+
+	function tgl_indo($tanggal){
+
+		if($tanggal == '0000-00-00' || $tanggal == null){
+			return '-';
+		}else{
+			$bulan = array (1 =>   'Jan',
+					'Feb',
+					'Mar',
+					'Apr',
+					'Mei',
+					'Jun',
+					'Jul',
+					'Aug',
+					'Sep',
+					'Oct',
+					'Nov',
+					'Dec'
+				);
+			$split = explode('-', $tanggal);
+			return $split[2] . ' ' . $bulan[ (int)$split[1] ] . ' ' . $split[0];
 		}
 	}
 

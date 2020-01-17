@@ -68,7 +68,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     function current_active($page , $pages){
 
-
         if($page == NULL){
             return '';
         }elseif($page == $pages){
@@ -86,4 +85,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
 
         return $read;
+    }
+
+    function strip($x)
+    {
+        if(strpos($x, "_") > 0){
+            $words = str_replace("_", " ", $x);
+        }else{
+            $words = $x;
+        }
+        return $words;
     }

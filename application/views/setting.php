@@ -32,19 +32,22 @@
           <div id="menu2" class="col s12" style="padding-top: 50px">
             <?= form_open_multipart('', array('id'=>'form_pict'));?>
               <div class="row">
-                <div class="input-field col s6" id="image-old">
-                  <img class="responsive-img circle" src="<?= base_url().$user->profil_pict;?>" style='height:150px;width: 150px'><br>
+                <div class="input-field col s5 center-align" id="image-old">
+                  <img class="responsive-img circle" src="<?= base_url().$user->profil_pict;?>" style='height:300px;width: 300px'><br>
                   <label>Old Photo</label>
                 </div>
-                <div class="input-field col s6" id="image-preview">
-                  <label for="image-upload" id="image-label"><i class='fa fa-camera'></i></label>
-                  <input type="file" id="image-upload" name="image" >
+                <div class="input-field col s5 center-align">
+                  <div id="image-preview">
+                  
+                    <label for="image-upload" id="image-label"><i class='fa fa-camera'></i><span>Upload New</span></label>
+                    <input type="file" id="image-upload" name="image" >
+                  </div>
                 </div>
               </div>
               <div class="row">
-                <div class="file-field input-field col s6">
+                <div class="col push-s5 s4 center-align">
                   
-                  <button class="btn teal" type="submit" id="btn-upload">Upload</button>
+                  <button class="btn teal hide" type="submit" id="btn-upload"><i class="fa fa-upload"></i> Upload</button>
                 </div>
               </div>
             <?= form_close();?>
@@ -65,17 +68,55 @@
       </div>
 
     </div>
+
+    <div id="modal_add" class="modal modal-fixed-footer">
+      <div class="modal-content">
+           
+        <div class="col s12 l12">
+          <?= form_open('', array('id'=>'form_tanggal'));?>
+          <div class="row">
+            <div class="input-field col s12 l2">
+              <input type="text" name="no" placeholder="nomor surat">
+              <input type="text" name="idpks" id="idpks" class="hide">
+            </div>
+            <div class="input-field col s12 l2">
+              <input type="text" name="tgl" class="datepicker" placeholder="tgl. Surat">
+            </div>
+            <div class="input-field col s12 l4">
+              <input type="text" name="perihal" placeholder="perihal">
+            </div>
+            <div class="input-field col s12 l2">
+              <input type="text" name="file" placeholder="file scan">
+            </div>
+            <div class="input-field col s12 l2">
+              <button type="submit" class="waves-effect waves-green white-text btn-flat green">Save</button>
+            </div>
+          </div>
+          <?= form_close();?>
+        </div>
+      
+      </div>
+      <div class="modal-footer">
+        <button class="modal-close waves-effect waves-yellow btn-flat">CLOSE</button>
+        
+      </div>
+    </div>
 <script src="<?= base_url().'assets/js/jquery.uploadPreview.min.js';?>"></script>
 <script>
   $(document).ready(function(){
+    
     $('.tabs').tabs();
+    
      $.uploadPreview({
       input_field: "#image-upload",   // Default: .image-upload
       preview_box: "#image-preview",  // Default: .image-preview
       label_field: "#image-label",    // Default: .image-label
       label_default: "Choose File",   // Default: Choose File
       label_selected: "Change File",  // Default: Change File
-      no_label: false                 // Default: false
+      no_label: false,                // Default: false
+      success_callback: function() {
+        $('#btn-upload').removeClass('hide');
+      }
     });
 
     $('#form_cp').on('submit', function(e){
@@ -150,6 +191,7 @@
                 showCancelButton:true
               }).then(function(){
                 window.location.href="<?=base_url().'setting';?>"; 
+                $('.tabs').tabs('select','menu2');
               })
             }else{
               swal({
@@ -195,7 +237,9 @@
         {"data": ['no']},
         {"data": ['tgl']},
         {"data": ['keterangan']},
-        {"data": ['no']},
+        {"data": function(data){
+          return "<button class='btn btn-small orange darken-3 edit' data-id='"+data.id_tgl+"'>Edit</button>";
+        }},
       ],
       "dom": 'Bflrtip',
               buttons: [
@@ -250,7 +294,10 @@
     $('#reload').on('click', function(){ //reload
       $('#table').DataTable().ajax.reload();
     })
-    
+    $('.modal').modal();
+    $('#add_data').on('click', function(e){
+      $('#modal_add').modal('open');
+    })
     $("[name='table_length']").formSelect();
 
   });

@@ -10,7 +10,7 @@ class Warkat_model extends CI_Model {
 
 	var $table = 'register_warkat';
 	var $column_order = array('id_warkat', 'no_warkat', 'perihal', 'b.nama_pemutus', 'c.nama','nominal','tanggal','catatan','status');//,'status');//field yang ada di table user
-	var $column_search = array('id_warkat', 'no_warkat', 'perihal', 'pemutus', 'petugas','nominal','tanggal','catatan','status');//,'status');//field yang dizinkan untuk pencarian
+	var $column_search = array('id_warkat', 'no_warkat', 'perihal', 'pemutus', 'petugas','nominal','tanggal','catatan');//,'status');//field yang dizinkan untuk pencarian
 	var $order = array('id_warkat'=>'desc'); //default sort
 
 	public function __construct() {
@@ -28,7 +28,7 @@ class Warkat_model extends CI_Model {
 		$this->db->join('user AS c', 'a.petugas = c.username', 'LEFT');
 
 		if($this->input->post('tahun') == null){
-			$this->db->where('a.tahun_warkat', date('Y'));
+			//$this->db->where('a.tahun_warkat', date('Y'));
 		}elseif($this->input->post('tahun') != 'All'){
 	    	$this->db->where('a.tahun_warkat', $this->input->post('tahun'));
 	    }
@@ -99,7 +99,14 @@ class Warkat_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	
+	public function get_year()	
+	{
+		$this->db->select('tahun_warkat as tahun');
+		$this->db->from($this->table);
+		$this->db->group_by('tahun_warkat');
+		$this->db->order_by('tahun_warkat', 'DESC');
+		return $this->db->get();
+	}
 
 	public function get_data_pengolahan($id){
 		$this->db->select('sirkulasi.id_surat, sirkulasi.no_srt, sirkulasi.perihal, sirkulasi.dari_kelompok, sirkulasi.tgl_petugas_kirim, sirkulasi.tgl_terima_doc, sirkulasi.tahun, sirkulasi.divisi, sirkulasi.print');
@@ -118,9 +125,6 @@ class Warkat_model extends CI_Model {
 		$this->db->where('id_surat', $id);
 	}
 
-	
-
-	
 
 	public function hapus_pengolahan($id)
 	{
@@ -140,7 +144,7 @@ class Warkat_model extends CI_Model {
 		$this->db->from($this->table);
 		$this->db->where('tahun_warkat', $tahun);
 		$this->db->order_by('id_warkat', 'DESC');
-		$this->db->limit('1');
+		$this->db->limit(1);
 		return $this->db->get();
 	}
 

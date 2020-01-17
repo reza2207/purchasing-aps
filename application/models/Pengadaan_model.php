@@ -103,6 +103,33 @@ class Pengadaan_model extends CI_Model {
 		return $this->db->count_all_results();
 	}
 
+	public function update_row($idp, $id, $item, $ukuran, $bahan, $jumlah, $satuan, $hpsusd, $hpsidr, $hpssatuan, $penawaran, $realisasiusd, $realisasirp, $realisasiqty, $nokontrak, $tglkontrak, $vendor)
+	{
+		$data = array(
+					  'item'=>$item,
+					  'ukuran'=>$ukuran,
+					  'bahan'=>$bahan,
+					  'jumlah'=>$jumlah,
+					  'satuan'=>$satuan,
+					  'hps_usd'=>$hpsusd,
+					  'hps_idr'=>$hpsidr,
+					  'hps_satuan'=>$hpssatuan,
+					  'penawaran'=>$penawaran,
+					  'realisasi_nego_usd'=>$realisasiusd,
+					  'realisasi_nego_rp'=>$realisasirp,
+					  'realisasi_qty_unit'=>$realisasiqty,
+					  'no_kontrak'=>$nokontrak,
+					  'tgl_kontrak'=>$tglkontrak,
+					  'id_vendor'=>$vendor);
+		$this->db->where('id_pengadaan_uniq',$id);
+		return $this->db->update('detail_item_pengadaan', $data);
+	}
+
+	public function hapus_row($id)
+	{
+		return $this->db->delete('detail_item_pengadaan', array('id_pengadaan_uniq'=>$id));
+	}
+
 	public function get_pengadaan($id)
 	{
 		$this->db->select('pengadaan.id_pengadaan, pengadaan.kewenangan, pengadaan.tgl_notin, pengadaan.jenis_notin_masuk, pengadaan.tgl_disposisi, pengadaan.no_notin, pengadaan.perihal, pengadaan.no_usulan, pengadaan.tgl_usulan, pengadaan.jenis_pengadaan, pengadaan.divisi, pengadaan.kelompok, LEFT(pengadaan.id_pengadaan,4) AS tahun, pengadaan.file, settings.defaultnya, pengadaan.keterangan');

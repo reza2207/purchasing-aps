@@ -1,60 +1,67 @@
 <style>
-	#table-detail tr td {
-			padding-top:0px;padding-bottom:0px;font-size: 12px
+	#table-doc tr > th, #table-doc tr > td{
+		height: 10px !important;
+		padding-bottom: 0;
+		padding-top: 0;
 	}
-
-	/*#table-detail td:nth-child(2)::before{
-			content: ':';
-			padding-right: 15px
-		}*/
-	
-	#table-detail td:first-of-type{
-		width: 100px;
-		font-weight: bolder
-	}
-	#table-detail td:nth-child(2), #table-detail td:nth-child(5), #table-detail td:nth-child(8){
-		width: 10px;
-	}
-	#table-detail td:nth-child(3){
-		width: 20%;
-	}
-	#table-detail td:nth-child(6){
-		width: 13%;
-	}
-	#table-detail td:nth-child(4){
-		width: 80px;
-		font-weight: bolder;
-	}
-	#table-detail td:nth-child(7){
-		width: 105px;
-		font-weight: bolder;
+	#table-detail tr > td{
+		height: 10px !important;
+		padding-top: 0;
+		padding-bottom: 0;
 	}
 	#table-detail tr:hover{
-	background: #FFA500;
-	color:white;
+		background-color: yellow;
 	}
-	#d_perihal{
-		background-color: #009CFF;font-family: comfortaa;text-align: center;color:white;
+	#table-detail tr td:first-of-type{
+		font-weight: bolder;
 	}
-	
+	#d_id_register{
+		text-decoration-line: underline
+	}
+	#d_status_data{
+		font-style: italic;
+		font-weight: bolder
+	}
 </style>
+
+<div class="waiting hide" id="waiting">
+  <div class="warning-alert">
+    <div class="loader">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="warning-text">Loading...<i class='fa fa-smile-o'></i></div>
+  </div>
+</div>
+
 <div class="row first">
 
 	<div class="col s12 offset-l3 l9">
 		<div class="row hide" id="filter">
 			<div class="col l2">
-				<label class="active">My Task</label>
+				<label class="active">Status</label>
 				<select class="select-m" id="my_task">
 					<option value="">--Pilih--</option>
 					<option value="On Process">On Process</option>
 					<option value="Finished">Finished</option>
-					<option value="All">All</option>
+					<option value="All">Semua</option>
 				</select>
 			</div>
 			<div class="col l2">
 				<label class="active">Divisi</label>
 				<select class="select-m" id="divisi-select">
-					<option value="All">All</option>
+					<option value="All">Semua</option>
 					<option value="BSK">BSK</option>
 					<option value="PDM">PDM</option>
 					<option value="EBK">EBK</option>
@@ -64,17 +71,17 @@
 			<div class="col l2">
 			<label class="active">Tahun</label>
 				<select class="select-m" id="year-select">
+					<option value="All">Semua</option>
 					<?php foreach($year as $y):?>
 					<option value="<?= $y->tahun;?>"><?= $y->tahun;?></option>
 					<?php endforeach;?>
-					<option value="All">All</option>
 				</select>
 			</div>
 		</div>
 		
-		<table class="table display" id="table" style="width: 100%">
+		<table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
 			<thead class="teal white-text">
-				<tr class="rowhead">
+				<tr>
 					<th class="center align-middle">#</th>
 					<th class="center align-middle">Tgl. Surat</th>
 					<th class="center align-middle">No. Surat</th>
@@ -92,8 +99,7 @@
 <div id="modal_tambah" class="modal modal-fixed-footer"> 
 	<div class="modal-content">
 		<h6 id="title-modal"></h6>
-		<?php $attrf = array('id'=>'formtambah');?>
-		<?= form_open('',$attrf);?>
+		<?= form_open('',array('id'=>'formtambah'));?>
 			<div class="col s12 l12">
 				<div class="row">
 					<div class="input-field col s12 l4">
@@ -115,8 +121,9 @@
 						<label class="active">Jenis Surat</label>
 						<select name="jenis_surat" class="select-m" id="jenis_surat">
 							<option value="">--pilih--</option>
-							<option value="Permintaan Urgent">Permintaan Urgent</option>
+							
 							<option value="Permintaan Reguler">Permintaan Reguler</option>
+							<option value="Permintaan Urgent">Permintaan Urgent</option>
 							<option value="Permintaan Ulang">Permintaan Ulang</option>
 							<option value="Email">Email</option>
 							<option value="Pemberitahuan">Pemberitahuan</option>
@@ -177,116 +184,175 @@
 	<div class="modal-content">
 		
 		<div class="col s12 l12">
-			<div class="row">
-				<div id="d_perihal"></div>
-				<table id="table-detail">
-					
-					<tr>
-						<td>Jenis Surat</td>
-						<td>:</td>
-						<td colspan="4" id="d_jenis_surat"></td>
-						<td class='d_tempat'>Tempat Pengadaan</td>
-						<td class='d_tempat'>:</td>
-						<td class='d_tempat' id="d_tempat_pengadaan"></td>
-					</tr>
-					<tr>
-						<td>Divisi</td>
-						<td>:</td>
-						<td id="d_divisi"></td>
-					
-						<td style="font-weight: bold">Kelompok</td>
-						<td>:</td>
-						<td id="d_kelompok"></td>
-					
-						<td style="font-weight: bold">User</td>
-						<td>:</td>
-						<td id="d_user"></td>
-					</tr>
-					<tr class="row-email">
-						<td>Email</td>
-						<td>:</td>
-						<td id="d_email"></td>
-						<td style="font-weight: bold">Tgl. Email</td>
-						<td>:</td>
-						<td id="d_tgl_email"></td>
-						<td style="font-weight: bold">Tgl. Terima Email</td>
-						<td>:</td>
-						<td id="d_tgl_t_email"></td>
-					</tr>
-					
-					<tr class="row-surat">
-						<td>No. Surat</td>
-						<td>:</td>
-						<td id="d_no_surat"></td>
-						<td style="font-weight: bold">Tgl. Surat</td>
-						<td>:</td>
-						<td id="d_tgl_surat"></td>
-						<td style="font-weight: bold">Tgl. Terima Surat</td>
-						<td>:</td>
-						<td id="d_terima_surat"></td>
-					</tr>
-					
-					<tr>
-						<td class="ddpimkel">Tgl. Disposisi Pimkel</td>
-						<td class="ddpimkel">:</td>
-						<td class="ddpimkel"id="d_disposisi_pimkel"></td>
-						<td class="ddmanager" style="font-weight: bold">Tgl. Disposisi Manager</td>
-						<td class="ddmanager">:</td>
-						<td class="ddmanager" id="d_disposisi_manager"></td>
-						<td class="ddpembuat" style="font-weight: bold">Pembuat Pekerjaan</td>
-						<td class="ddpembuat">:</td>
-						<td class="ddpembuat" id="d_pembuat"></td>
-					</tr>
-					<tr class="hide">
-						<td>Username Pembuat</td>
-						<td>:</td>
-						<td id="d_unamepembuat"></td>
-					</tr>
-					<tr>
-						<td>Metode Pengadaan</td>
-						<td>:</td>
-						<td id="d_jenis_pengadaan" colspan="7"></td>
-					</tr>
-					<tr class='spk'>
-						<td>Nama Vendor</td>
-						<td>:</td>
-						<td id="ds_vendor"></td>
-						<td>No. SPK</td>
-						<td>:</td>
-						<td id="d_no_spk"></td>
-						<td>Tgl. SPK</td>
-						<td>:</td>
-						<td id="d_tgl_spk"></td>
-						
-					</tr>
-					<tr>
-						<td>Status Data</td>
-						<td>:</td>
-						<td style="font-style: italic;font-weight: bolder" colspan="7"><div id="d_status_data"></div></td>
-					</tr>
-				</table>
-			</div>
+			<ul class="collapsible popout" data-collapsible="expandable">
+			    <li class="active">
+			      	<div class="collapsible-header"><i class="material-icons">list</i><b>Detail</b>
+			      	</div>
+			      	<div class="collapsible-body">
+			      		<table id="table-detail">
+							<tr>
+								<td>ID Pengadaan</td>
+								<td>:</td>
+								<td id="d_id_register"></td>
+							</tr>
+							<tr>
+								<td>Nama Pengadaan</td>
+								<td>:</td>
+								<td id="d_perihal"></td>
+							</tr>
+							<tr class="row-email hide">
+								<td>Email</td>
+								<td>:</td>
+								<td id="d_email"></td>
+							</tr>
+							<tr class="row-email hide">
+								<td>Tgl. Email</td>
+								<td>:</td>
+								<td id="d_tgl_email"></td>
+							</tr>
+							<tr class="row-email hide">
+								<td>Tgl. Terima Email</td>
+								<td>:</td>
+								<td id="d_tgl_t_email"></td>
+							</tr>
+							<tr class="row-surat hide">
+								<td>No. Surat</td>
+								<td>:</td>
+								<td id="d_no_surat"></td>
+							</tr>
+							<tr class="row-surat hide">
+								<td>Tgl. Surat</td>
+								<td>:</td>
+								<td id="d_tgl_surat"></td>
+							</tr>
+							<tr>
+								<td>Tgl. Terima Surat</td>
+								<td>:</td>
+								<td id="d_terima_surat"></td>
+							</tr>
+							<tr>
+								<td>Jenis Surat</td>
+								<td>:</td>
+								<td id="d_jenis_surat"></td>
+							</tr>
+							<tr>
+								<td>Divisi</td>
+								<td>:</td>
+								<td id="d_divisi"></td>
+							</tr>
+							<tr>
+								<td>Kelompok</td>
+								<td>:</td>
+								<td id="d_kelompok"></td>
+							<tr>
+								<td>User</td>
+								<td>:</td>
+								<td id="d_user"></td>
+							</tr>
+							<tr class="ddpimkel">
+								<td>Tgl. Disposisi Pimkel</td>
+								<td>:</td>
+								<td id="d_disposisi_pimkel"></td>
+							</tr>
+							<tr class="ddmanager hide">
+								<td>Tgl. Disposisi Manager</td>
+								<td>:</td>
+								<td id="d_disposisi_manager"></td>
+							</tr>
+							<tr class="ddpembuat hide">
+								<td>Pembuat Pekerjaan</td>
+								<td>:</td>
+								<td id="d_pembuat"></td>
+							</tr>
+							<tr class='d_tempat hide'>
+								<td>Tempat Pengadaan</td>
+								<td>:</td>
+								<td id="d_tempat_pengadaan"></td>
+							</tr>
+							<tr class="d_metode hide">
+								<td>Metode Pengadaan</td>
+								<td>:</td>
+								<td id="d_jenis_pengadaan"></td>
+							</tr>
+							<tr class="row-lelang hide">
+								<td>No. Surat Pengumuman Lelang</td>
+								<td>:</td>
+								<td id="d_no_lelang"></td>
+							</tr>
+							<tr class="row-lelang hide">
+								<td>Tgl. Surat Pengumuman Lelang</td>
+								<td>:</td>
+								<td id="d_tgl_lelang"></td>
+							</tr>
+								<span id="d_unamepembuat" class="hide"></span>
+							<tr>
+								<td>Status Data</td>
+								<td>:</td>
+								<td id="d_status_data"></td>
+							</tr>
+							<tr class="alasan hide">
+								<td>Alasan Pengembalian / Pembatalan</td>
+								<td>:</td>
+								<td id="d_alasan"></td>
+							</tr>
+						</table>
+					</div>
+			    </li>
+			    <li class="hide active" id="pfa">
+			      <div class="collapsible-header"><i class="material-icons">question_answer</i><b>Persuratan Ke PFA</b></div>
+			      <div class="collapsible-body">
+			      	<div id="tblpfa">
+			      	</div>
+			      </div>
+			    </li>
+			    <li class="hide active" id="aanwijzing">
+			      <div class="collapsible-header"><i class="material-icons">question_answer</i><b>Aanwijzing</b></div>
+			      <div class="collapsible-body">
+			      	<div id="tblaanwijzing">
+			      	</div>
+			      </div>
+			    </li>
+			    <li id="eauction" class="hide active">
+			      	<div class="collapsible-header"><i class="material-icons">people_alt</i><b>E-Auction</b></div>
+			      	<div class="collapsible-body">
+				      	<div id="tblauction">
+						</div>
+					</div>
+			    </li>
+			    <li id="document" class="active">
+			      	<div class="collapsible-header"><i class="material-icons">library_books</i><b>Document</b></div>
+			      	<div class="collapsible-body">
+				      	<div id="detail-surat">
+						</div>
+					</div>
+			    </li>
+			    <li id="comment" class="active">
+			      	<div class="collapsible-header"><i class="material-icons">comment</i><b>Comments</b></div>
+			      	<div class="collapsible-body">
+				      	<div id="tblcomments" class="collection">
+						</div>
+					</div>
+			    </li>
+			 </ul>
 		</div>
-	
 	</div>
 	<div class="modal-footer">
-		<?php if($_SESSION['role'] == "admin" && $_SESSION['jabatan'] == 'mgr'){?>
-		<button class="waves-blue btn-flat left teal white-text" id="btn-disposisi">Disposisi</button>
-		<?php }
+		<?php if($_SESSION['role'] != "user"){?>
 		
-		elseif($_SESSION['role'] != "user"){?>
-		<button class="waves-blue btn-flat left teal white-text" id="update_surat">Update Surat</button>
-		<button class="waves-blue btn-flat left teal white-text" id="btn-disposisi">Disposisi</button>
-		<button class="waves-blue btn-flat left teal white-text" id="btn-jenis">Metode Pengadaan</button>
-		<button class="waves-blue btn-flat left teal white-text" id="btn-aanwijzing">Aanwijzing</button>
-		<button class="waves-effect yellow waves-green btn-flat" id="btn-return" aria-label="Return" data-balloon-pos="up"><i class="fa fa-rotate-left"></i></button>
-		<button class="waves-effect yellow waves-green btn-flat" id="btn-ubah" aria-label="Edit" data-balloon-pos="up"><i class="fa fa-pencil"></i></button>
-		<button class="waves-effect red waves-yellow btn-flat white-text" id="btn-hapus" title="delete" aria-label="Delete" data-balloon-pos="up"><i class="fa fa-trash"></i></button>
-		<button class="waves-effect green waves-green btn-flat white-text" id="btn-proses" aria-label="Proses" data-balloon-pos="up"><i class="fa fa-pencil-square-o"></i></button>
-		
-		<?php 
-		}
-		?>
+		<button class="waves-effect orange waves-green btn-flat left" id="btn-return" aria-label="Pengembalian / Pembatalan Memo/Notin" data-balloon-pos="up-left"><i class="fa fa-rotate-left"></i></button>
+		<button class="waves-effect red waves-yellow btn-flat white-text hide left" id="btn-hapus" title="Hapus Data" aria-label="Hapus Data" data-balloon-pos="up-left"><i class="fa fa-trash"></i></button>
+		<button class="waves-effect yellow waves-green btn-flat left" id="btn-ubah" aria-label="Ubah Data" data-balloon-pos="up-left"><i class="fa fa-pencil"></i></button>
+		<button class="waves-effect green white-text waves-green btn-flat left" id="btn-comments" aria-label="Comments" data-balloon-pos="up-left"><i class="fa fa-comments"></i></button>
+		<button class="waves-blue btn-flat teal white-text" id="update_surat">Update Surat</button>
+		<button class="waves-blue btn-flat teal white-text hide" id="btn-disposisi">Disposisi</button>
+		<button class="waves-blue btn-flat teal white-text hide" id="btn-jenis">Metode Pengadaan</button>
+		<button class="waves-blue btn-flat teal white-text hide" id="btn-lelang">Pengumuman Lelang</button>
+		<button class="waves-blue btn-flat teal white-text hide" id="btn-aanwijzing">Aanwijzing</button>
+		<button class="waves-blue btn-flat teal white-text hide" id="btn-eauction">E-Auction</button>
+		<button class="waves-effect green waves-green btn-flat white-text hide" id="btn-proses" aria-label="Input Berkas Dokumen" data-balloon-pos="up"><i class="fa fa-pencil-square-o"></i></button>
+
+	 	<button class="waves-effect green waves-green btn-flat white-text hide" id="btn-proses-pfa" aria-label="Input Berkas Dokumen" data-balloon-pos="up"><i class="fa fa-pencil-square-o"></i></button>
+		<?php }?>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
 	</div>
 </div>
@@ -294,12 +360,11 @@
 <!-- end modal detail-->
 <div id="modal_disposisi" class="modal modal-fixed-footer ">
 	<div class="modal-content">
-		<?php $attre = array('id'=>'formdisposisi');?>
-		<?= form_open('',$attre);?>
+		<?= form_open('',array('id'=>'formdisposisi'));?>
 			<div class="col s12 l12">
 				<div class="row">
 					<div class="input-field col l12 s12 dpim">
-						<input name="id_register" type="text" hidden id="idRegisterD">
+						<input name="id_register" type="text" class="idregister" hidden>
 						<input name="tgl_d_pimkel" type="text" class="datepicker" id="dtglDisposisiPimkel">
 						<label>Tgl. Disposisi Pimkel</label>
 					</div>
@@ -314,7 +379,7 @@
 		<?= form_close();?>
 	</div>
 	<div class="modal-footer">
-		<button class="waves-effect green waves-green btn-flat white-text left" id="tmbhrowpembuat">+Pembuat</button>
+		<button class="waves-effect green waves-green btn-flat white-text left hide" id="tmbhrowpembuat">+Pembuat</button>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
 		<button id="proses_disposisi" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
 
@@ -322,43 +387,51 @@
 </div>
 
 <!-- end modal detail-->
-<div id="modal_prosesSPK" class="modal modal-fixed-footer">
+<div id="modal_lelang" class="modal modal-fixed-footer ">
 	<div class="modal-content">
-		<?php $attrps = array('id'=>'formprosesSPK');?>
-		<?= form_open('',$attrps);?>
+		<?= form_open('',array('id'=>'formlelang'));?>
 			<div class="col s12 l12">
 				<div class="row">
-					<input name="id_register" type="text" hidden id="idRegisterP">
-					<div id="dspk">
-						<div class="input-field col l4 s12">
-							
-							<select name="id_vendor[]" type="text" class="select2" style="">
-								<option value="">--select--</option>
-								<?php foreach($select_vendor AS $v){?>
-								<option value="<?= $v->id_vendor;?>"><?= $v->nm_vendor;?></option>
-								<?php };?>
-							</select>
-							<label class="active" style="top: -14px;">Nama Vendor</label>
-						</div>
-						<div class="input-field col l4 s12">
-							<input name="tgl_spk[]" type="text" class="datepicker">
-							<label>Tgl. SPK</label>
-						</div>
-						<div class="input-field col l4 s12">
-							
-							<input name="no_spk[]" type="text">
-							<label>No. SPK</label>
-						</div>
+					<div class="input-field col l12 s12">
+						<input name="id_register" type="text" hidden id="idRegisterL">
+						<input name="tgl_surat" type="text" class="datepicker">
+						<label>Tgl. Surat</label>
 					</div>
-					<div id="ddetail">
-						
+				</div>
+				<div class="row">
+					<div class="input-field col l12 s12">
+						<input name="no_surat" type="text" class="validate">
+						<label>No. Surat</label>
 					</div>
 				</div> 
 			</div>
 		<?= form_close();?>
 	</div>
 	<div class="modal-footer">
-		<button class="grey darken-3 waves-effect waves-yellow btn-flat white-text left" id="btntmbhvendor">+ vendor</button>
+		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
+		<button id="proses_lelang" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
+
+	</div>
+</div>
+
+<!-- end modal detail-->
+<div id="modal_prosesSPK" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<?= form_open('',array('id'=>'formprosesSPK'));?>
+			<div class="col s12 l12">
+				<div class="row">
+					<input name="id_register" class="idregister" type="hidden">
+					<input type="hidden" name="jenis_pengadaan" id="jenis_pengadaans">
+					<div id="dspk">
+					</div>
+					<div id="ddetail">
+					</div>
+				</div> 
+			</div>
+		<?= form_close();?>
+	</div>
+	<div class="modal-footer">
+		<button class="grey darken-3 waves-effect waves-yellow btn-flat white-text left" id="btntmbhvendor">+ Row</button>
 		<button class="grey darken-3 waves-effect waves-yellow btn-flat white-text hide left" id="btntmbhitem">+ item</button>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
 		<button id="proses_spk" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
@@ -368,10 +441,9 @@
 <!-- modal jenis-->
 <div id="modal_jenis" class="modal modal-fixed-footer ">
 	<div class="modal-content">
-		<?php $attrj = array('id'=>'formjenis');?>
-		<?= form_open('',$attrj);?>
+		<?= form_open('',array('id'=>'formjenis'));?>
 			<div class="col s12 l12">
-				<input name="id_register" type="text" hidden id="idRegisterJ">
+				<input name="id_register" class="idregister" type="text" hidden>
 				<div class="row">
 					<div class="input-field col l12 s12">
 						<select name="tempat_pengadaan" class="select-m" id="tempat_pengadaan">
@@ -403,14 +475,155 @@
 	</div>
 </div>
 <!-- end-->
-<!-- end modal update-->
-<div id="modal_update_surat" class="modal modal-fixed-footer ">
+
+<!-- modal eauction -->
+<div id="modal_eauction" class="modal modal-fixed-footer ">
 	<div class="modal-content">
-		<?php $attru = array('id'=>'formsurat');?>
-		<?= form_open('',$attru);?>
+		<?= form_open('',array('id'=>'form-eauction'));?>
+			<div class="col s12 l12" id="eauction-row">
+				<div class="row">
+					<input name="id_register" type="text" class="idregister" hidden>
+					<div class="input-field col s12 l4">
+						<input name="tempat" class="validate">
+						<label class="active">Tempat Eauction</label>
+					</div>
+					<div class="input-field col s12 l4">
+						<input name="tanggal" class="validate datepicker">
+						<label class="active">Tgl. Eauction</label>
+					</div>
+					<div class="input-field col s12 l4">
+						<input name="jam" class="validate timepicker">
+						<label class="active">Jam Eauction</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 l11">
+						<label class="active" style="top: -14px;">Vendor</label>
+						<select name="vendor[]" class="select2">
+							<?php foreach ($select_vendor as $key) {?>
+								<option value="<?= $key->id_vendor;?>"><?= $key->nm_vendor;?></option>
+							<?php }?>
+						</select>
+					</div>
+					<div class="input-field col s12 l1">
+						<button class="btn-flat red btn-small white-text hapus-row">x</button>
+					</div>
+				</div>
+
+			</div>
+		<?= form_close();?>
+	</div>
+	<div class="modal-footer">
+		<button id="tmbh-peserta" class="waves-effect green waves-green btn-flat white-text left">[+] Peserta Vendor</button>
+		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
+		<button id="proses_eauction" class="waves-effect green waves-green btn-flat white-text">Submit</button>
+	</div>
+</div>
+<!-- end modal eauction-->
+
+
+<!-- modal return -->
+<div id="modal_return" class="modal modal-fixed-footer ">
+	<div class="modal-content">
+		<div class="row">
+			<div class="input-field">
+				<select id="tipe" name="" class="select-m">
+					<option value="Pengembalian">Pengembalian</option>
+					<option value="Pengembalian">Pembatalan</option>
+				</select>
+				<label>Tipe</label>
+			</div>
+		</div>
+		<?= form_open('',array('id'=>'form-return'));?>
+			<div class="col s12 l12">
+				
+				<div class="row">
+					<input name="id_register" type="text" class="idregister" hidden>
+					<div class="input-field col s12 l4">
+						<input name="tgl_kembali" class=" datepicker">
+						<label class="active">Tgl. Pengembalian</label>
+					</div>
+					<div class="input-field col s12 l4">
+						<input name="no_surat" class="validate">
+						<label class="active">No. Surat Pengembalian*</label>
+					</div>
+					<div class="input-field col s12 l4">
+						<input name="tgl_surat" class="validate datepicker">
+						<label class="active">Tgl. Surat Pengembalian*</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 l12">
+						<input name="alasan" class="validate">
+						<label class="active">Alasan Pengembalian</label>
+					</div>
+				</div>
+
+			</div>
+		<?= form_close();?>
+		<?= form_open('',array('id'=>'form-batal'));?>
+			<div class="col s12 l12">
+				
+				<div class="row">
+					<input name="id_register" type="text" class="idregister" hidden>
+					<div class="input-field col s12 l4">
+						<input name="tgl_kembali" class=" datepicker">
+						<label class="active">Tgl. Pembatalan</label>
+					</div>
+					<div class="input-field col s12 l4">
+						<input name="no_surat" class="validate">
+						<label class="active">No. Surat Pembatalan</label>
+					</div>
+					<div class="input-field col s12 l4">
+						<input name="tgl_surat" class="validate datepicker">
+						<label class="active">Tgl. Surat Pembatalan</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 l12">
+						<input name="alasan" class="validate">
+						<label class="active">Alasan</label>
+					</div>
+				</div>
+
+			</div>
+		<?= form_close();?>
+	</div>
+	<div class="modal-footer">
+			
+		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
+		<button id="proses_return" class="waves-effect green waves-green btn-flat white-text">Submit</button>
+	</div>
+</div>
+<!-- end modal return-->
+<!-- modal comments -->
+<div id="modal_comment" class="modal modal-fixed-footer ">
+	<div class="modal-content">
+		<?= form_open('',array('id'=>'form-comment'));?>
 			<div class="col s12 l12">
 				<div class="row">
-					<input name="id_register" type="text" hidden id="idRegisterJ">
+					<div class="input-field col s12 l12">
+						<input type="text" name="id_register" class="idregister" hidden>
+						<input name="comment" type="text" class="validate">
+						<label class="active">Comments</label>
+					</div>
+				</div>
+			</div>
+		<?= form_close();?>
+	</div>
+	<div class="modal-footer">
+		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
+		<button id="proses_comment" class="waves-effect green waves-green btn-flat white-text">Submit</button>
+	</div>
+</div>
+<!-- end modal comments-->
+<!-- modal update-->
+<div id="modal_update_surat" class="modal modal-fixed-footer ">
+	<div class="modal-content">
+		<?= form_open('',array('id'=>'formsurat'));?>
+			<div class="col s12 l12">
+				<div class="row">
+					<input name="id_register" type="text" class="idregister" hidden>
 					<div class="input-field col s12 l6">
 						<label class="active">Jenis Surat</label>
 						<select name="jenis_surat" class="validate select-m" id="jenis_surat">
@@ -444,22 +657,21 @@
 		<button id="proses_surat" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
 	</div>
 </div>
+<!-- end modal update-->
 
-
-<!-- end modal aanwijzing-->
+<!-- modal aanwijzing-->
 <div id="modal_aanwijzing" class="modal modal-fixed-footer ">
 	<div class="modal-content">
-		<?php $attre = array('id'=>'formanwijzing');?>
-		<?= form_open('',$attre);?>
+		<?= form_open('',array('id'=>'formanwijzing'));?>
 			<div class="col s12 l12">
 				<div class="row">
 					<div class="input-field col l12 s12">
-						<input name="id_register" type="text" hidden id="idRegisterA">
-						<input name="tgl_aanwijzing" type="text" class="datepicker">
+						<input name="id_register" type="text" class="idregister" hidden>
+						<input name="tgl" type="text" class="datepicker">
 						<label>Tgl. Aanwijzing</label>
 					</div>
 					<div class="input-field col l12 s12">
-						<input name="jam_aanwijzing" type="text" class="timepicker">
+						<input name="jam" type="text" class="timepicker">
 						<label>Jam Aanwizjing</label>
 					</div>
 					<div class="input-field col l12 s12">
@@ -479,22 +691,58 @@
 		<?= form_close();?>
 	</div>
 	<div class="modal-footer">
-		<button class="waves-effect green waves-green btn-flat white-text">PROSES</button>
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
 		<button id="proses_aanwijzing" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
 	</div>
 </div>
+<!-- end modal aanwijzing-->
 
+
+<!-- modal pfa-->
+<div id="modal_pfa" class="modal modal-fixed-footer ">
+	<div class="modal-content">
+		<?= form_open('',array('id'=>'form_pfa'));?>
+			<div class="col s12 l12">
+				<div class="row">
+					<div class="input-field col l4 s12">
+						<input name="tglkirim" type="text" class="datepicker">
+						<label>Tgl. Kirim Memo Ke PFA</label>
+					</div>
+					<div class="input-field col l4 s12">
+						<input name="no" type="text">
+						<label>No. Memo</label>
+					</div>
+					<div class="input-field col l4 s12">
+						<input name="id_register" type="text" class="idregister" hidden>
+						<input name="tgl" type="text" class="datepicker">
+						<label>Tgl. Memo</label>
+					</div>
+					<div class="input-field col l12 s12">
+						<input name="perihal" type="text">
+						<label>Perihal</label>
+					</div>
+				</div> 
+			</div>
+		<?= form_close();?>
+	</div>
+	<div class="modal-footer">
+		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
+		<button id="proses_pfa" class="waves-effect green waves-green btn-flat white-text">PROSES</button>
+	</div>
+</div>
+<!-- end modal pfa-->
 
 <script>
 	$(document).ready(function(){
 		$(".select2").select2({
 			placeholder: 'Select an option',
-			//theme: 'material'
-
 		},$('select').css('width','100%'));
-		
-		
+		setInterval(set_int, 60000);
+		var collaps = $('.collapsible').collapsible({
+		    accordion: false, // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+		    onOpenStart: function(el) { }, // Callback for Collapsible open
+		    onCloseEnd: function(el) { } // Callback for Collapsible close
+		});
 		$('.select-m').formSelect();
 		//$('.select2-selection__arrow').addClass("fa fa-spin");
 		$('.datepicker').datepicker({
@@ -505,8 +753,13 @@
 			firstDay:1
 
 		});
+		$('.timepicker').timepicker({
+			container: 'body',
+			twelveHour: false
+		});
 		$('.modal').modal();
 		$('.bg').hide();
+
 		var table = $('#table').DataTable({
 			"lengthMenu": [[5,10,25, 50, -1],[5,10,25,50, "All"]],
 			"stateSave": false,
@@ -515,12 +768,12 @@
 			"orderClasses": false,
 			"order": [],
 			"ajax":{
-				"url": "<?= site_url('Register/get_data_surat');?>",
+				"url": "<?= base_url('register/get_data_surat');?>",
 				"type": "POST",
 				"data": function ( data ) {
-								data.divisi = $('#divisi-select').val();
-								data.tahun = $('#year-select').val();
-								data.my_task = $('#my_task').val();
+					data.divisi = $('#divisi-select').val();
+					data.tahun = $('#year-select').val();
+					data.my_task = $('#my_task').val();
 				}
 
 			},
@@ -531,14 +784,13 @@
 				{"data": ['tgl_terima_surat']},
 				{"data": ['perihal']},
 				{"data": ['jenis_surat']},
-				{"data": ['status_data']},
+				{"data": ['status']},
 			],
 			"dom": 'Bflrtip',
 							buttons: [
 						{ className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
 						{ className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
 						{ extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
-						{ extend: 'csv', className: 'btn btn-small light-blue darken-4'},
 						{ extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
 						{ className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
 						],
@@ -547,7 +799,7 @@
 				"processing": "<div class='warning-alert'><i class='fa fa-circle-o-notch fa-spin'></i> Please wait........",
 				"buttons": {
 					"copyTitle": "<div class='row'><div class='col push-l3 l9' style='font-size:15px'>Copy to clipboard</div></div>",
-					"copyKeys":"Press <i>ctrl</i> or <i>\u2318</i> + <i>C</i> to copy the table data<br>to your system clipboard.<br>To cance, click this message or press escape.",
+					"copyKeys":"Press <i>ctrl</i> or <i>\u2318</i> + <i>C</i> to copy the table data<br>to your system clipboard.<br>To cancel, click this message or press escape.",
 					"copySuccess":{
 						"_": "%d line tercopy",
 						"1": "1 line tercopy"
@@ -558,10 +810,6 @@
 						{
 							"targets": [ 0, 1, 2, 3, 5, -1 ],
 							"className": 'center'
-						},
-						{
-							"targets": [1,3],
-							"width": '50px'
 						}
 				],
 			"createdRow" : function(row, data, index){
@@ -570,25 +818,25 @@
 				if(data['jenis_surat'] == 'Email'){
 					$(row).css({'background':'#65635D','color':'white'});//#140FF0
 				}
+
+				if(data['status_data'] == 'Done'){
+					$(row).css({'background':'#039be5','color':'white'});
+				}
 			}
-		
 		})
 		
-		//$('#table_filter label').hide();
-		 $('#table_filter input ').attr('placeholder', 'Search here...');
-	    //$('#table_filter label').hide();
 	    let tagsearch = "<div class='input-field'><label class='active'>Search</label>"+
 	    "<input type='text' class='validate' id='searchnew' style='margin-left: 0;'>"+
 	    "</div>";
 	    $('#table_filter label').html(tagsearch);
-		
+
+		$('#searchnew').on('keyup change', function(){
+			table
+				.search(this.value)
+				.draw();
+		})
 		$('#btn-filter').on('click', function(e){
 			$('#filter').toggleClass('hide');
-		})
-		$('#searchnew').on('keyup change', function(){
-				table
-					.search(this.value)
-					.draw();
 		})
 		$('#reload').on('click', function(){ //reload
 			$('#table').DataTable().ajax.reload();
@@ -597,33 +845,89 @@
 		$("[name='table_length']").formSelect();
 
 		$('tbody').on('click','.row', function(e){ //klik detail
-			$('#d_disposisi_pimkel').text('');
-			$('.row-email').hide();
-
-			$('#btn-disposisi, #btn-aanwijzing, #btn-jenis, .spk').hide();
-			 
-			$('#d_disposisi_pimkel, #d_disposisi_manager, #d_pembuat, #d_jenis_pengadaan, #d_unamepembuat, #d_jenis_surat, #d_no_surat, #d_tgl_surat, #d_terima_surat,#d_perihal, #d_tempat_pengadaan').text('');
-			$('.s-pembuat, #dpembuat').html('');
-			$(' #d_jenis_pengadaan,  #d_jenis_pengadaan').parent().hide();
-			$('.ddpimkel, .ddmanager, .ddpembuat').hide();
-
-			$('.modal').modal({
-				dismissible : false
-			});
 			$('#modal_detail').modal('open');
-
-			let id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
-			$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat, #proses_disposisi, #proses_spk').attr('data-id', id);
-			$('#idRegisterD, #idRegisterA, #idRegisterJ, #idRegisterP').val(id);
-			update_modal(id)
 			
+			let id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
+			update_modal(id)
 		}) //end tbody row click
-
-
 
 		$('#update_surat').on('click', function(e){
 			let id = $(this).attr('data-id');
 			$('#modal_update_surat').modal('open')
+		})
+		$('#btn-lelang').on('click', function(e){
+			$('#modal_lelang').modal('open');
+			let id = $(this).attr('data-id');
+			$('#idRegisterL').val(id);
+			$('#proses_lelang').attr('data-id', id);
+		})
+
+		$('#proses_lelang').on('click', function(e){
+			let id = $(this).attr('data-id');
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: 'TRUE',
+			}).then(function(e){
+				$.ajax({
+					type : 'POST',
+					data : $('#formlelang').serialize(),
+					dataType : 'JSON',
+					url : '<?= base_url()."register/add_pengumuman_lelang";?>',
+					success: function(data){
+						if(data.type == 'error'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+							})
+						}else{
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+							}).then(function(){
+								$('#modal_lelang').modal('close');
+								$('#formlelang input:not(#idRegisterL)').val('');
+								update_modal(id);
+							})
+							$('#table').DataTable().ajax.reload();
+						}
+					}
+
+				})
+
+			})
+		})
+
+		$('#proses_return').on('click', function(e){
+			let id = $(this).attr('data-id');
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showConfirmButton: true,
+				allowOutsideClick: false,
+				showCancelButton:true
+			}).then(function(){
+				$.ajax({
+					type: 'POST',
+					url: '<?= base_url()."register/proses_return";?>',
+					data: $('#form-return').serialize(),
+					dataType: 'JSON',
+					success: function(data){
+						swal({
+							type: data.type,
+							text: data.pesan,
+							showConfirmButton: true,
+							allowOutsideClick: false,
+						}).then(function(){
+							update_modal(id);
+							$('#modal_return').modal('close');
+							$('#table').DataTable().ajax.reload();	
+						})
+					}
+				})
+			})
 		})
 		$('#btn-hapus').on('click', function(e){
 			let id = $(this).attr('data-id');
@@ -638,8 +942,8 @@
 					type: 'POST',
 					url : '<?= base_url()."Register/hapus_data";?>',
 					data: {id: id},
-					success: function(result){
-						let data = JSON.parse(result);
+					dataType: 'JSON',
+					success: function(data){
 						swal({
 							type: data.type,
 							text: data.pesan,
@@ -653,19 +957,22 @@
 				})
 			})
 		})
-		$("#add_data").on('click', function(){
+		$('#add_data').on('click', function(){
 			$('#modal_tambah').modal('open');
-
 		})
-
 		$('#submit_new').on('click', function(e){
 			e.preventDefault();
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: 'TRUE',
+			}).then(function(e){
 				$.ajax({
 					type: 'POST',
 					url : '<?= base_url()."Register/add_data_masuk";?>',
 					data: $('#formtambah').serialize(),
-					success: function(response){
-						let data = JSON.parse(response);
+					dataType : 'JSON',
+					success: function(data){
 						if(data.type == 'error'){
 							swal({
 								type: data.type,
@@ -686,31 +993,29 @@
 						}
 					}
 				})
+			})
 		})
-
+		$('#formdisposisi').on('click','.hapusrow', function(e){
+			e.preventDefault();
+			$(this).parent().parent().remove();
+		})
 		$('#tmbhrowpembuat').on('click', function(e){
-
 			$.ajax({
 				url : "<?= base_url().'Register/get_user';?>",
-				success : function(result){
-					let data = JSON.parse(result);
+				dataType: 'JSON',
+				success : function(data){
 					let pembuat = "";
-					
-					pembuat += '<select name="pembuat[]" class="select-m s-pembuat">'+
-											'<option value="">--pilih--</option>';
+					pembuat += '<div class="row"><div class="col l11"><select name="pembuat[]" class="select-m s-pembuat"><option value="">--pilih--</option>';
 					for(i = 0;i < data.length;i++){
-					pembuat += '<option value="'+data[i].username+'">'+data[i].nama+'</option>';
-										
+						pembuat += '<option value="'+data[i].username+'">'+data[i].nama+'</option>';
 					}
 					pembuat += '</select>';
-					pembuat += '<label>Pembuat Pekerjaan</label>';
+					pembuat += '<label>Pembuat Pekerjaan</label></div><div class="col l1"><button class="btn red hapusrow">x</button></div></div>';
 				$('#dpembuat').append(pembuat);
 				$('.select-m').formSelect();
 				}
 			})	
-			
 		})
-
 		$('#jenis_surat').on('change', function(e){
 			e.preventDefault();
 			if(this.value == 'Email'){
@@ -738,35 +1043,120 @@
 			$('#dpembuat').html('');
 			let id = $(this).attr('data-id');
 			let jenis = $('#d_jenis_surat').text();
-			
-			let dpim = $('#d_disposisi_pimkel').text();
-			let dman = $('#d_disposisi_manager').text();
-			$('#dtglDisposisiPimkel').datepicker({
-				container: 'body',
-				format: 'dd-mm-yyyy',
-				autoClose: true,
-				disableWeekends:true,
-				firstDay:1
+			let dpim = tanggal_biasa($('#d_disposisi_pimkel').text());
+			let dman = tanggal_biasa($('#d_disposisi_manager').text());
+			let kel = $('#d_kelompok').text();
 
-			}).attr('readonly', false);
-			$('#dtglDisposisiManager').datepicker({
-				container: 'body',
-				format: 'dd-mm-yyyy',
-				autoClose: true,
-				disableWeekends:true,
-				firstDay:1
+			update_modal(id);
+			disposisi(kel, dpim, dman);
+		})
+		$('#proses_disposisi').on('click', function(e){
+			e.preventDefault();			
+			let id = $(this).attr('data-id');
+			$('#s-pembuat').formSelect();
+
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: 'TRUE',
+			}).then(function(e){
+				$.ajax({
+					type: 'POST',
+					data: $('#formdisposisi').serialize(),
+					url: '<?= base_url()."Register/submit_disposisi";?>',
+					dataType: 'JSON',
+					success: function(data){
+						
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false, //nihhh
+							}).then(function(){
+								$('#modal_disposisi').modal('close');
+								update_modal(id);
+							})
+						}else if(data.type == 'error'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								update_modal(id);
+							})
+						}
+					} //end
+				})
+			})
+		})
+		$('#btn-eauction').on('click', function(e){
+			e.preventDefault();
+			$('#modal_eauction').modal('open');
+			let id = $(this).attr('data-id');
+			$('.idregister').val(id);
+			$('#proses_eauction').attr('data-id', id);
+		})
+		$('#proses_eauction').on('click', function(e){
+			let id = $(this).attr('data-id');
+			swal({
+				type: 'question',
+				text: 'Are you Sure?',
+				showConfirmButton: true,
+				allowOutsideClick: false,
+				showCancelButton: true
+			}).then(function(){
+				$.ajax({
+					type: 'POST',
+					url : '<?= base_url()."register/submit_auction";?>',
+					data: $('#form-eauction').serialize(),
+					dataType: 'JSON',
+					success: function(data){
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false, //nihhh
+							}).then(function(){
+								$('#modal_eauction').modal('close');
+								update_modal(id);
+							})
+						}else if(data.type == 'error'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								update_modal(id);
+							})
+						}
+					}
+				})
 
 			})
-			let kel = $('#d_kelompok').text();
+		})
+		function disposisi(kel, dpim, dman){
+			
 			let rdman = '<input name="tgl_d_manager" type="text" class="datepicker" id="dtglDisposisiManager">'+
 						'<label>Tgl. Disposisi Manager</label>';
+
 			if(kel == 'STL' || kel == 'stl'){
-				if(dman ==''){//second //jika  dp manager kosong
-					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
-					$('.dpim').hide();
+				if(dman == ''){ //second jika  dp manager kosong
+					
 					$('.dman').show();
-					$('#dpembuat').hide();
+					$('#dpembuat, .dpim').hide();
 					$('.dman').html(rdman);
+					$('.datepicker').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					})
+					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').datepicker({
 						container: 'body',
 						format: 'dd-mm-yyyy',
@@ -775,35 +1165,67 @@
 						firstDay:1
 
 					}).attr('readonly', false);
-					$('#tmbhrowpembuat').show();
+					
+					if($('#tmbhrowpembuat').hasClass('hide')){
+						$('#tmbhrowpembuat').removeClass('hide');
+					}
 				}else if(dman !=''){//tri
 					$('.dpim').hide();
-					$('.dman').show();
-					$('#dpembuat').show();
+					
+					$('#dpembuat, .dman').show();
+					$('.datepicker').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					})
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
 					$('.dman').html(rdman);
-					$('#dpembuat').show();
-					$('#tmbhrowpembuat').show();
-
+					
+					if($('#tmbhrowpembuat').hasClass('hide')){
+						$('#tmbhrowpembuat').removeClass('hide');
+					}
+					
 				}else{
-					$('.dpim').hide();
+					$('.dpim, #dpembuat').hide();
+					$('.datepicker').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					})
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
 					$('.dman').html(rdman);
-					$('#dpembuat').hide();
-					$('#tmbhrowpembuat').hide();
+					$('#tmbhrowpembuat').addClass('hide');
+					
 				}
 			}else{
-				if(dpim == '' && dpim == ''){//awal
+				if(dpim == ''){//awal
 					$('.dpim').show();
 					$('.dman').children().remove();
-					//$('.dman input').val('');
 					$('#dtglDisposisiPimkel').val('');
-					$('#tmbhrowpembuat').hide();
-
-				}else if(dpim != '' && dman ==''){//second
+					$('#tmbhrowpembuat').addClass('hide');
+					$('#dtglDisposisiPimkel').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					}).attr('readonly', false);
+					
+				}else if(dpim != '' && dman == ''){//second
 					$('.dpim').show();
+					$('.datepicker').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					})
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 
 					$('.dman').html(rdman);
@@ -813,31 +1235,45 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-
 					}).attr('readonly', false);
-					//$('.dman').show();
-					$('#tmbhrowpembuat').show();
+					
+					$('#tmbhrowpembuat').removeClass('hide');
+					
 				}else if(dpim != '' && dman !=''){//tri
 
 					$('.dman').html(rdman);
 					$('.dpim').show();
-					$('.dman label').addClass('active')
-					//$('.dman').show();
+					$('.dman label').addClass('active');
+					$('.datepicker').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					})
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
-					$('#dtglDisposisiManager').val(dman).attr('readonly', true);
-					$('#tmbhrowpembuat').show();
-
+					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
+					
+					$('#tmbhrowpembuat').removeClass('hide');
+				
+					
 				}else{
 					$('.dpim').show();
 					$('.dman').html(rdman);
+					$('.datepicker').datepicker({
+						container: 'body',
+						format: 'dd-mm-yyyy',
+						autoClose: true,
+						disableWeekends:true,
+						firstDay:1
+					})
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
-					$('#tmbhrowpembuat').hide();
+					$('#tmbhrowpembuat').addClass('hide');
+					
 				}
 			}
-			
-		})
-
+		}
 		$('#proses_surat').on('click', function(e){
 			swal({
 				type: 'question',
@@ -860,16 +1296,11 @@
 							allowOutsideClick: false,
 						}).then(function(){
 							if(data.type=='success'){
-								$('#formsurat input').val('');
+								
 								$('#modal_update_surat').modal('close');
-								$('#d_jenis_surat').text(data.jenis);
-								$('#d_no_surat').text(data.no);
-								$('#d_tgl_surat').text(data.tgl);
-								$('#d_terima_surat').text(data.tgltrm);
-								$('#d_perihal').text(data.perihal);
 								$('#table').DataTable().ajax.reload();
-								$('.row-surat').show();
 								$('#update_surat').hide();
+								update_modal(id);
 							}
 						})
 					}
@@ -877,105 +1308,6 @@
 			})
 		})
 		
-
-		$('#proses_disposisi').on('click', function(e){
-			e.preventDefault();			
-			let id = $(this).attr('data-id');
-			$('#s-pembuat').formSelect();
-			 $.ajax({
-				type: 'POST',
-				data: $('#formdisposisi').serialize(),
-				url: '<?= base_url()."Register/submit_disposisi";?>',
-				dataType: 'JSON',
-				success: function(data){
-					
-					if(data.type == 'success' && data.pimkel != '' && data.manager == null){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-							$('#modal_disposisi').modal('close')
-							//$('.ddpimkel').show();
-							//$('#d_disposisi_pimkel').text(data.pimkel);
-							$('#table').DataTable().ajax.reload();
-							//$('#dpembuat').html('');
-							update_modal(id);
-						})
-					}else if(data.type == 'success' && data.manager != '' && data.pimkel != '' && data.pembuat == null){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-
-							$('#modal_disposisi').modal('close')
-							//$('#d_disposisi_pimkel').text(data.pimkel)
-							$('.ddmanager').show();
-							//$('#d_disposisi_manager').text(data.manager);
-							$('#table').DataTable().ajax.reload();
-							update_modal(id);
-						})
-						//	$('#btn-disposisi').hide();
-						
-					}else if(data.type == 'success' && data.manager != '' && data.pimkel != '' && data.pembuat != ''){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-							$('#modal_disposisi').modal('close')
-							//$('#d_disposisi_pimkel').text(data.pimkel);
-							$('.ddmanager').show();
-							//$('#d_disposisi_manager').text(data.manager);
-							$('.ddpembuat').show();
-							//$('#d_pembuat').text(data.pembuat);
-							$('#table').DataTable().ajax.reload();
-							$('#btn-disposisi').hide();
-
-							if(cek_similar(data.unamepembuat, '<?= $_SESSION['username'];?>')){
-								//$('#d_unamepembuat').text(data.unamepembuat);
-								$('#btn-jenis').show();
-								update_modal(id);
-							}else{
-								
-								$('#btn-jenis').hide();
-								update_modal(id);
-							}
-
-							//$('#btn-proses').show();
-						})
-
-					}else if(data.type == 'success' && data.pimkel == '' && data.pembuat == null && data.manager != ''){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false, //nihhh
-						}).then(function(){
-							$('#modal_disposisi').modal('close');
-							$('.ddmanager').show();
-							//$('#d_disposisi_manager').text(data.manager);
-							$('#table').DataTable().ajax.reload();
-							update_modal(id);
-						})
-					}else if(data.type == 'error'){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-							update_modal(id);
-						})
-					}
-				} //end
-			})
-		})
-
 		$('#btn-jenis').on('click', function(e){
 			$('#modal_jenis').modal('open');
 			$('#row-jenis').addClass('hide')
@@ -985,7 +1317,7 @@
 				if(value == 'BSK'){
 					$('#row-jenis').removeClass('hide');
 				}else if(value == "PFA"){
-					$('#jenis_pengadaan').find('option[value=""]').prop('selected', true)
+					$('#jenis_pengadaan').find('option[value=""]').prop('selected', true);
 					$('#row-jenis').addClass('hide');
 					$("#jenis_pengadaan").formSelect();
 				}else{
@@ -995,93 +1327,225 @@
 				}
 			})
 		})
-
-		$('#proses_jenis').on('click', function(e){
-			$.ajax({
-				type: 'POST',
-				url : '<?= base_url()."Register/submit_jenis";?>',
-				data: $('#formjenis').serialize(),
-				success : function(result){
-					let data = JSON.parse(result);
-					swal({
-						type: data.type,
-						text: data.pesan,
-						showConfirmButton: true,
-					}).then(function(){
-						$('#modal_jenis').modal('close');
-						$('#btn-jenis').hide();
-						$('#formjenis input').val('');
-						
-					})
-					if(data.type == 'success'){
-						$('#d_jenis_pengadaan').parent().show();
-						$('#d_jenis_pengadaan').text(data.jenis);
-						if(data.jenis == 'Pembelian Langsung'){
-							$('#btn-aanwijzing').hide();
-							
-							if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
-
-								$('#btn-proses').show();
-							}else{
-
-								$('#btn-proses').hide();
-							}
-
-						}else{
-							$('#btn-aanwijzing').show();
-							
-						}
-					}
-					$('#table').DataTable().ajax.reload();
-				}
-
+		$('#btn-return').on('click', function(e){
+			$('#modal_return').modal('open');
+		})
+		$('#tmbh-peserta').on('click', function(e){
+			no++;
+			let html = '';
+			$.post("<?= base_url()."tdr/get_tdr";?>", function(result){
+		        let idoption = '#selectvendora'+no;
+		        let options = $(idoption);
+		        $.each(JSON.parse(result), function() {
+		              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+		        });
+		        $(".select2").select2({
+					placeholder: 'Select an option',
+				},$('select').css('width','100%'));
+	  	    });
+			html = '<div class="row">'+
+						'<div class="input-field col s12 l11" id="vendor-eaction">'+
+						'<label class="active" style="top: -14px;">Vendor</label>'+
+						'<select name="vendor[]" class="select2" id="selectvendora'+no+'">'+
+						'</select>'+
+						'</div>'+
+						'<div class="input-field col s12 l1">'+
+							'<button class="btn-flat red btn-small white-text hapus-row">x</button>'+
+						'</div>'+
+					'</div>';
+			$('#eauction-row').append(html);
+			$('#modal_eauction .hapus-row').on('click', function(e){
+				e.preventDefault();
+				$(this).parent().parent().remove();
 			})
 		})
-
-		$('#btn-proses').on('click', function(e){
-			$('#modal_prosesSPK').modal('open');
+		$('#proses_jenis').on('click', function(e){
+			let id = $(this).attr('data-id');
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: true,
+				allowOutsideClick: false,
+			}).then(function(e){
+				$.ajax({
+					type: 'POST',
+					url : '<?= base_url()."Register/submit_jenis";?>',
+					data: $('#formjenis').serialize(),
+					dataType: 'JSON',
+					success : function(data){
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+							}).then(function(){
+								$('#modal_jenis').modal('close');
+								$('#formjenis input').val('');
+								update_modal(id)
+							})
+						}else{
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+							})
+						}
+					}
+				})
+			})
 		})
-
-
+		$('#proses_comment').on('click', function(e){
+			e.preventDefault();
+			let id = $(this).attr('data-id');
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: true,
+				allowOutsideClick: false,
+			}).then(function(e){
+				$.ajax({
+					type: 'POST',
+					url : '<?= base_url()."register/new_comment_register";?>',
+					data: $('#form-comment').serialize(),
+					dataType: 'JSON',
+					success: function(data){
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								$('#modal_comment').modal('close');
+								update_modal(id);
+								$('#form-comment input:not(.idregister)').val('');
+							})
+						}else{
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							})
+						}
+					}
+				})
+			})
+		})
+		$('#btn-proses').on('click', function(e){
+			let id = $(this).attr('data-id');
+			$('#modal_prosesSPK').modal('open');
+			$('#dspk').html('');
+			let jenis = $(this).attr('jenis');
+			let jenisp = $(this).attr('jenis-pengadaan');
+			$('#jenis_pengadaans').val(jenisp);
+			console.log(jenisp);
+			let html = 	'<div class="row"><div class="input-field col l4 s12 sp">'+
+							'<select name="id_vendor[]" id="selectvendor'+no+'" class="select2">'+
+							'<option value="">--select--</option>'+
+							'</select>'+
+							'<label class="active" style="top: -14px;">Nama Vendor</label>'+
+						'</div>'+
+						'<div class="input-field col l2 s12 sp" style="bottom: 18px;">'+
+							'<input class="datepicker" name="tgl_sp[]" type="text"  id="tglspk'+no+'">'+
+							'<label>Tgl. Surat</label>'+
+						'</div>'+
+						'<div class="input-field col l2 s12 sp" style="bottom: 18px;">'+
+							'<input name="no_sp[]" type="text">'+
+							'<label>No. Surat</label>'+
+						'</div>'+
+						'<div class="input-field col l3 s12 sp">'+
+							'<select name="id_jenis[]" type="text" id="selectjenis'+no+'" class="select2">'+
+							'<option value="">--select--</option>'+
+							'</select>'+
+						'</div>'+
+						'<div class="input-field col l1 s12">'+
+							'<button class="btn hapus-sk">x</button>'+
+						'</div></div>';
+			
+			if(jenis == 'auction'){
+				$.post("<?= base_url()."tdr/get_tdr/";?>"+id, function(result){
+			        let idoption = '#selectvendor'+no;
+			        let options = $(idoption);
+			        $.each(JSON.parse(result), function() {
+			              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+			        });
+			        $(".select2").select2({
+						placeholder: 'Select an option',
+					},$('select').css('width','100%'));
+		  	    });
+			}else{
+				$.post("<?= base_url()."tdr/get_tdr";?>", function(result){
+			        let idoption = '#selectvendor'+no;
+			        let options = $(idoption);
+			        $.each(JSON.parse(result), function() {
+			              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+			        });
+			        $(".select2").select2({
+						placeholder: 'Select an option',
+					},$('select').css('width','100%'));
+		  	    });
+			}
+	      	$.post("<?= base_url()."register/get_jenis";?>", function(result){
+		        let idoption = '#selectjenis'+no;
+		        let options = $(idoption);
+		        $.each(JSON.parse(result), function() {
+		              options.append($("<option />").val(this.id_surat).text(this.jenis_surat));
+		        });
+		        $(".select2").select2({
+					placeholder: 'Select an option',
+				},$('select').css('width','100%'));
+	      	});
+			$('#dspk').append(html);
+			$('.datepicker').datepicker({
+				container: 'body',
+				format: 'dd-mm-yyyy',
+				autoClose: true,
+				disableWeekends:true,
+				firstDay:1
+			})
+		})
 		$('#proses_spk').on('click', function(e){
 			let id = $(this).attr('data-id');
-			$.ajax({
-				type: 'POST',
-				data: $('#formprosesSPK').serialize(),
-				url: '<?= base_url()."Register/submit_spk";?>',
-				success: function(result){
-					let data = JSON.parse(result);
-					if(data.type == 'success'){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-							//$('.spk').show();
-							$('#modal_prosesSPK').modal('close');
-							update_modal(id);
-							
-							$('#table').DataTable().ajax.reload();
-						})
-					
-					}else{
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-							$('#table').DataTable().ajax.reload();
-						})
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: true,
+				allowOutsideClick: false,
+			}).then(function(e){
+				$.ajax({
+					type: 'POST',
+					data: $('#formprosesSPK').serialize(),
+					dataType: 'JSON',
+					url: '<?= base_url()."Register/submit_spk";?>',
+					success: function(data){
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								$('#modal_prosesSPK').modal('close');
+								update_modal(id);
+								$('#table').DataTable().ajax.reload();
+							})
+						}else{
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								$('#table').DataTable().ajax.reload();
+							})
+						}
 					}
-					
-
-				}
+				})
 			})
 		})
 		$('#btntmbhitem').on('click', function(e){
-			e.preventDefault()
+			e.preventDefault();
 			let html = '<div class="input-field col l4 s12">'+
 						 '<input name="no_spk[]" type="text">'+
 						 '<label>Item</label>'+
@@ -1104,23 +1568,66 @@
 						 '</div>';
 			$('#ddetail').append(html);
 		})
-		var no = 0;
+		let no = 0;
 		$('#btntmbhvendor').on('click', function(e){
+			let id = $(this).attr('data-id');
+			let jenis = $(this).attr('jenis');
+			if(jenis == 'auction'){
+				$.post("<?= base_url()."tdr/get_tdr/";?>"+id, function(result){
+			        let idoption = '#selectvendor'+no;
+			        let options = $(idoption);
+			        $.each(JSON.parse(result), function() {
+			              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+			        });
+			        $(".select2").select2({
+						placeholder: 'Select an option',
+					},$('select').css('width','100%'));
+		  	    });
+			}else{
+				$.post("<?= base_url()."tdr/get_tdr";?>", function(result){
+			        let idoption = '#selectvendor'+no;
+			        let options = $(idoption);
+			        $.each(JSON.parse(result), function() {
+			              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+			        });
+			        $(".select2").select2({
+						placeholder: 'Select an option',
+					},$('select').css('width','100%'));
+		  	    });
+			}
+	      	$.post("<?= base_url()."register/get_jenis";?>", function(result){
+			        let idoption = '#selectjenis'+no;
+			        let options = $(idoption);
+			        $.each(JSON.parse(result), function() {
+			              options.append($("<option />").val(this.id_surat).text(this.jenis_surat));
+			        });
+		        $(".select2").select2({
+					placeholder: 'Select an option',
+				},$('select').css('width','100%'));
+	      	});
+
 			no++;
-			let html = 	'<div class="input-field col l4 s12">'+
-						'<select name="id_vendor[]" type="text" class="select2" id="selectvendor'+no+'" style="">'+
-						'<option value="">--select--</option>'+
-						'</select>'+
-						'<label class="active" style="top: -14px;">Nama Vendor</label>'+
+			let html = 	'<div class="row"><div class="input-field col l4 s12 sp">'+'<select name="id_vendor[]" id="selectvendor'+no+'" class="select2">'+
+							'<option value="">--select--</option>'+
+							'</select>'+
+							'<label class="active" style="top: -14px;">Nama Vendor</label>'+
 						'</div>'+
-						'<div class="input-field col l4 s12">'+
-						'<input class="datepicker" name="tgl_spk[]" type="text"  id="tglspk'+no+'">'+
-						'<label>Tgl. SPK</label>'+
+						'<div class="input-field col l2 s12 sp" style="bottom: 18px;">'+
+							'<input class="datepicker" name="tgl_sp[]" type="text"  id="tglspk'+no+'">'+
+							'<label>Tgl. Surat</label>'+
 						'</div>'+
-						'<div class="input-field col l4 s12">'+
-						'<input name="no_spk[]" type="text">'+
-						'<label>No. SPK</label>'+
-						'</div>';
+						'<div class="input-field col l2 s12 sp" style="bottom: 18px;">'+
+							'<input name="no_sp[]" type="text">'+
+							'<label>No. Surat</label>'+
+						'</div>'+
+						'<div class="input-field col l3 s12 sp">'+
+							'<select name="id_jenis[]" type="text" id="selectjenis'+no+'" class="select2">'+
+							'<option value="">--select--</option>'+
+							'</select>'+
+						'</div>'+
+						'<div class="input-field col l1 s12">'+
+							'<button class="btn hapus-sk">x</button>'+
+						'</div></div>';
 			$('#dspk').append(html);
 			$('.datepicker').datepicker({
 				container: 'body',
@@ -1129,18 +1636,15 @@
 				disableWeekends:true,
 				firstDay:1
 			});
-			$.post("<?= base_url()."tdr/get_tdr";?>", function(result){
-		        let idoption = '#selectvendor'+no;
-		        var options = $(idoption);
-		        $.each(JSON.parse(result), function() {
-		              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
-		        });
-	        $(".select2").select2({
-				placeholder: 'Select an option',
-			},$('select').css('width','100%'));
-	      	});
+			$('.hapus-sk').on('click', function(e){
+				e.preventDefault();
+				$(this).parent().parent().remove();
+			})
 		})
-
+		$('.hapus-sk').on('click', function(e){
+			e.preventDefault();
+			$(this).parent().parent().remove();
+		})
 
 		$('#btn-aanwijzing').on('click', function(e){
 			e.preventDefault();
@@ -1148,18 +1652,114 @@
 			$('#modal_aanwijzing').modal('open');
 		})
 
-		$('#proses_aanwijzing').on('click', function(e){
+		$('#btn-proses-pfa').on('click', function(e){
+			e.preventDefault()
+			$('#modal_pfa').modal('open');
+		})
+		$('#btn-comments').on('click', function(e){
+			$('#modal_comment').modal('open');
+		
+		})
+		$('#modal_eauction .hapus-row').on('click', function(e){
 			e.preventDefault();
-			console.log($('#formanwijzing').serialize())
+			$(this).parent().parent().remove();
+		})
+		$('#proses_aanwijzing').on('click', function(e){
+			let id = $(this).attr('data-id');
+			e.preventDefault();
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: true,
+				allowOutsideClick: false,
+			}).then(function(e){
+				$.ajax({
+					type: 'POST',
+					url : '<?= base_url()."register/form_aanwijzing";?>',
+					data: $('#formanwijzing').serialize(),
+					dataType: 'JSON',
+					success: function(data){
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								$('#modal_aanwijzing').modal('close');
+								$('#form_aanwijzing input:not(.idregister)').val('');
+								update_modal(id);
+							})
+						}else{
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							})
+						}
+					}
+				})
+			})
+			
+		})
+
+		$('#proses_pfa').on('click', function(e){
+			let id = $(this).attr('data-id');
+			swal({
+				type: 'question',
+				text: 'Are you sure to submit this data?',
+				showCancelButton: true,
+				allowOutsideClick: false,
+			}).then(function(e){
+				$.ajax({
+					type: 'POST',
+					url: '<?= base_url()."register/submit_pfa";?>',
+					dataType: 'JSON',
+					data: $('#form_pfa').serialize(),
+					success: function(data){
+						if(data.type == 'success'){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								$('#modal_pfa').modal('close');
+								update_modal(id);
+								$('#form_pfa input:not(.idregister)').val('');
+							})
+						}else{
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							})
+						}
+					}
+				})
+			})
 		})
 	})
 	function update_modal(id){
+		$('#waiting').removeClass('hide');
+		$('#d_disposisi_pimkel, #d_disposisi_manager, #d_pembuat, #d_jenis_pengadaan, #d_unamepembuat, #d_jenis_surat, #d_no_surat, #d_tgl_surat, #d_terima_surat,#d_perihal, #d_tempat_pengadaan, ds_vendor_p, .s-pembuat, #dpembuat, #d_alasan, #tblcomments').html('');
+		$('.ddpimkel, .spk').hide();
+		$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat, #proses_disposisi, #proses_spk, #proses_jenis, #btn-eauction, #btn-proses, #btntmbhvendor, #btn-lelang, #proses_return, #proses_comment, #proses_pfa, #proses_aanwijzing').attr('data-id', id);
+		$('.idregister').val(id);
+		$('#btn-eauction, #eauction, #btn-lelang, #btn-jenis, .row-lelang, .d_tempat, .row-surat, .row-email, #btn-aanwijzing, #btn-proses, #aanwijzing, .d_metode, #btn-proses-pfa, #btn-proses, #btn-hapus, #btn-disposisi, .alasan, .ddpembuat, .ddmanager').addClass('hide');
+		$('#btn-eauction, #eauction').removeAttr('jenis');
+
+
 		$.ajax({
 			type:'GET',
-			url: '<?= base_url()."Register/get_detail_masuk/";	?>'+id,       
-			success: function(response){
-				
-				let data = JSON.parse(response);
+			url: '<?= base_url()."Register/get_detail_masuk/";?>'+id,
+			dataType: 'JSON',
+			success: function(result){
+				$('#waiting').addClass('hide');
+				//$('#pfa, #aanwijzing, #eauction, #document, #comment').open();
+				let data = result.register;
 				$('#d_divisi').text(strip(data.divisi));
 				$('#d_kelompok').text(strip(data.kelompok));
 				$('#d_user').text(strip(data.user));
@@ -1169,135 +1769,307 @@
 				$('#d_jenis_surat').html(data.jenis_surat);
 				$('#d_no_surat').text(strip(data.no_surat));
 				$('#d_perihal').text(strip(data.perihal));
+				$('#d_id_register').text(data.id_register)
 				$('#d_tgl_surat').text(tanggal_indo(data.tgl_surat));
 				$('#d_terima_surat').text(tanggal_indo(data.tgl_terima_surat));
 				$('#d_unamepembuat').text(data.username);
-				if(data.tempat_pengadaan === null){
-					
-					$('.d_tempat').hide();
-				}else{
+				if(data.tempat_pengadaan != null){
 					$('#d_tempat_pengadaan').text(strip(data.tempat_pengadaan));
-					$('.d_tempat').show();
+					$('.d_tempat').removeClass('hide');
 				}
-				
 				if(data.email != '' && data.no_surat == ''){
-					$('.row-email').show();
-					$('.row-surat').hide();
+					$('.row-surat').addClass('hide');
 					$('#update_surat').show();
+					$('.row-email').removeClass('hide');
 				}else if(data.email == '' && data.no_surat != ''){
-					$('.row-email').hide();
-					$('.row-surat').show();
-					$('#update_surat').hide();
+					$('#update_surat, .row-email').hide();
+					$('.row-surat').removeClass('hide');
 				}else{
-					$('.row-surat').hide();
-					$('.row-email').hide();
+					$('.row-email, .row-surat').addClass('hide');
 				}
 				if(data.tgl_disposisi_pimkel != '0000-00-00'){
-					$('#d_disposisi_pimkel').text(tanggal(data.tgl_disposisi_pimkel));
+					$('#d_disposisi_pimkel').text(tanggal_indo(data.tgl_disposisi_pimkel));
 					$('.ddpimkel').show();
+
 				}
 				
 				if(data.tgl_disposisi_manajer != '0000-00-00'){
-					$('#d_disposisi_manager').text(tanggal(data.tgl_disposisi_manajer));
-					$('.ddmanager').show();
-				}
-				if(data.jenis_pengadaan != null){
-					$('#d_jenis_pengadaan').parent().show();
-					$('#d_jenis_pengadaan').text(data.jenis_pengadaan);
-				}else{
-					$('#d_jenis_pengadaan').parent().hide();
-				}
-				if(data.jenis_pengadaan == 'Pembelian Langsung'){
-					$('.spk').show()
-					let nospk = data.no_spk.split("<br>");
-					let idnospk = data.id_detail_register.split(",");
-					let i;
-					let no_spk = '';
-					for(i = 0;i<nospk.length;i++){
-						if(i == nospk.length - 1){ 
-						 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a>";
-						}else{
-						 	no_spk += "<a href='#' data-id='"+idnospk[i]+"' class='idspk' aria-label='Klik untuk memasukkan item' data-balloon-pos='up'>"+nospk[i]+"</a><br>";
-						}
-					}
-				if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
-					$('#d_no_spk').html(strip(no_spk));
-				}else{
-					$('#d_no_spk').html(strip(data.no_spk));
+					$('#d_disposisi_manager').text(tanggal_indo(data.tgl_disposisi_manajer));
+					$('.ddmanager').removeClass('hide');
 				}
 
-					$('#d_tgl_spk').html(strip(data.tgl_spk));
-					$('#ds_vendor').html(strip(data.nm_vendor))
-				}else{
-					$('.spk').hide()
-					
+				if(data.jenis_pengadaan !== null && data.jenis_pengadaan != ''){
+					$('.d_metode').removeClass('hide')
+					$('#d_jenis_pengadaan').text(data.jenis_pengadaan);
 				}
-				if((strip(data.status_data) == 'Done' && '<?= $_SESSION['role'];?>' == 'user') || (strip(data.status_data) == 'On Process' && '<?= $_SESSION['role'];?>' == 'user')){
+				let html = '';
+				let i;
+				
+				if(data.no_kontrak !== null){
+					$('#document').removeClass('hide');
+					let no = 0;
+					let jmldspk = data.no_kontrak.split("&");
+					html += '<table id="table-doc">'+
+								'<tr>'+
+									'<th>#</th>'+
+									'<th>Doc</th>'+
+									'<th>Nama Vendor</th>'+
+									'<th>No. Surat</th>'+
+									'<th>Tgl. Surat</th>'+
+								'</tr>';
+					for(i = 0;i < jmldspk.length;i++){
+						no ++;
+					let dspk = jmldspk[i].split('|');
+						if(i < jmldspk.length){
+							html += '<tr class="rowsp"><td>'+no+'</td><td class="d_tgl_spk">'+dspk[2]+'</td>'+
+								'<td class="ds_vendor">'+dspk[3]+'</td>'+
+								'<td class="d_no_spk">'+dspk[0]+'</td>'+
+								'<td class="d_tgl_spk">'+tanggal_indo(dspk[1])+'</td>'+
+								'</tr>';
+						}else if(i == jmldspk.length){
+							html += '<tr class="rowsp"><td>'+no+'</td><td class="d_tgl_spk">'+dspk[2]+'</td>'+
+								'<td class="ds_vendor">'+dspk[3]+'</td>'+
+								'<td class="d_no_spk">'+dspk[0]+'</td>'+
+								'<td class="d_tgl_spk">'+tanggal_indo(dspk[1])+'</td>'+
+								'</tr></table>';
+						}
+
+					}
+					$('#detail-surat').html(html)
+					//$('#table-detail tr:eq(5)').after(html);
+				}else{
+					//$('#detail-surat').html('Tidak ada data');
+					$('#document').addClass('hide');
+					//$('.rowsp').remove();
+				}
+
+				let comment = result.comment;
+				let tblc = '';
+
+				if(comment.length > 0)
+				{
+					$('#comment').removeClass('hide');
+					let no = 0;
+					
+					for(i = 0; i < comment.length ;i++){
+						no++;
+						 tblc += '<a class="collection-item"><span class="new badge" data-badge-caption="'+comment[i].created_at+'">'+comment[i].nama+' on </span>'+comment[i].comment+'</a>';
+					}
+					$('#tblcomments').html(tblc);	
+				}else{
+					$('#comment').addClass('hide');
+					//tblc = 'Tidak ada data';
+				}
+				//$('#tblcomments').html(tblc);
+				//aanwijzing
+				let aanw = result.aanwijzing;
+				let tblaan = "";
+
+				if(aanw.length > 0){
+					$('#aanwijzing').removeClass('hide');
+					
+					let no = 0;
+					tblaan += '<table id="table-aan">'+
+									'<tr>'+
+										'<th>#</th>'+
+										'<th>Perihal</th>'+
+										'<th>Tempat</th>'+
+										'<th>Tgl. Aanwijzing</th>'+
+										'<th>Peserta</th>'+
+									'</tr>';
+					
+					for(i = 0; i < aanw.length ;i++){
+						no++;
+						 tblaan += '<tr>'+
+										'<td>'+no+'</td>'+
+										'<td>'+aanw[i].perihal+'</td>'+
+										'<td>'+aanw[i].tempat+'</td>'+
+										'<td>'+tanggal_indo(aanw[i].tgl)+' '+aanw[i].jam+'</td>'+
+										'<td>'+aanw[i].peserta+'</td>'+
+									'</tr>';
+					}
+					tblaan += '</table>';
+				}else{
+
+					tblaan = 'Tidak ada data';
+				}
+
+				$('#tblaanwijzing').html(tblaan);
+				let auc = result.auction;
+				let tblauc = "";
+
+				if(auc.length > 0){
+					$('#eauction').removeClass('hide');
+					let no = 0;
+					tblauc += '<table id="table-auc">'+
+									'<tr>'+
+										'<th>#</th>'+
+										'<th>Tempat</th>'+
+										'<th>Tgl. Auction</th>'+
+										'<th>Vendor Peserta</th>'+
+									'</tr>';
+					
+					for(i = 0; i < auc.length ;i++){
+						no++;
+						 tblauc += '<tr>'+
+										'<td>'+no+'</td>'+
+										'<td>'+auc[i].tempat+'</td>'+
+										'<td>'+tanggal_indo(auc[i].tanggal)+' '+auc[i].jam+'</td>'+
+										'<td>'+auc[i].vendor+'</td>'+
+									'</tr>';
+					}
+					tblauc += '</table>';
+				}else{
+					tblauc = "Tidak ada data.";
+				}
+
+				$('#tblauction').html(tblauc);
+
+				if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
+					//$('#d_no_spk').html(strip(no_spk));
+				}else{
+					//$('#d_no_spk').html(strip(data.no_spk));
+				}
+				if(data.nama !== null){
+					
+					$('.ddpembuat').removeClass('hide');
+					$('#d_pembuat').html(data.nama);
+				}
+				
+				
+				if(data.tempat_pengadaan == 'PFA'){
+
+					$('#pfa').removeClass('hide');
+				}else{
+					$('#pfa').addClass('hide');
+				}
+				if(data.status_data == 'Done' || '<?= $_SESSION['role'];?>' == 'user'){
 					$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
-					$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').hide();
-					
+					$('#btn-ubah, #btn-disposisi, #btn-return').addClass('hide');
+					$('#btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-comments').addClass('hide');
+					console.log('as')
+
 				}else{ // jika status masih on proses
-					$('#btn-ubah, #btn-disposisi,#btn-jenis, #btn-aanwijzing, #btn-hapus, #btn-return, #btn-proses').show();
-					$('#d_status_data').text(strip(data.status_data)).css({'color':'red'});
+					$('#btn-ubah, #btn-return').removeClass('hide');
 					
-					if(data.nama != null){ //jika pembuat ada dan bukan user yang mengakses
-						$('.ddpembuat').show();
-						$('#d_pembuat').html(data.nama);
-						$('#btn-disposisi, #btn-jenis, #btn-aanwijzing, #btn-proses').hide();
+					$('#btn-comments, #btn-hapus').removeClass('hide');
+
+					if(data.nama != null){ //jika pembuat ada 
+
+						$('#btn-jenis').removeClass('hide');
+						
 						//$('#btn-disposisi').hide();
 						if(cek_similar(data.username, '<?= $_SESSION['username'];?>'))
 						{
-							$('#btn-ubah, #btn-hapus, #btn-return').show();
-							if(data.tempat_pengadaan !== null){ //jika tempat pengadaan sudah diisi
-								
-								if(data.tempat_pengadaan == 'BSK'){
-									$('#btn-jenis').hide();	
-									
-									if(data.jenis_pengadaan == null){
-										$('#btn-proses').hide();
-									}else	if(data.jenis_pengadaan == 'Pembelian Langsung'){
 
-										$('#btn-proses').show();
-										$('#btn-aanwijzing').hide();
-									}else if(data.jenis_pengadaan == 'Penunjukan Langsung')
-									{
-										$('#btn-aanwijzing').show();
-										$('#btn-proses').hide();
-									}else if(data.jenis_pengadaan == 'Pemilihan Langsung')
-									{
-										$('#btn-aanwijzing').show();
-										$('#btn-proses').hide();
-									}else if(data.jenis_pengadaan == 'Pelelangan')
-									{
-										$('#btn-aanwijzing').show();
-										$('#btn-proses').hide();
+							$('#btn-jenis').removeClass('hide');
+							$('#btn-ubah, #btn-return').show();
+
+							if(data.tempat_pengadaan !== null){ 
+							//jika tempat pengadaan sudah diisi
+								$('#btn-jenis').addClass('hide');
+								
+
+								if(data.tempat_pengadaan == 'BSK'){
+									
+									if(data.jenis_pengadaan == 'Pembelian Langsung'){
+										$('#btn-proses, #btntmbhvendor').attr('jenis-pengadaan', data.jenis_pengadaan);
+										$('#modal_prosesSPK .spk').show();
+										$('#btn-proses').removeClass('hide');
+										$('#btn-eauction').removeAttr('jenis');
+
+									}else if(data.jenis_pengadaan == 'Penunjukan Langsung'){
+										$('#btn-aanwijzing').removeClass('hide');
+										$('#btn-proses, #btntmbhvendor').attr('jenis-pengadaan', data.jenis_pengadaan);
+										$('#btn-eauction, #eauction').removeAttr('jenis');
+										$('#btn-proses').removeClass('hide');
+										$('#modal_prosesSPK .spk').hide();
+										
+									}else if(data.jenis_pengadaan == 'Pemilihan Langsung'){
+										
+										$('#btn-proses, #btntmbhvendor').attr('jenis', 'auction');
+										$('#btn-proses, #btntmbhvendor').attr('jenis-pengadaan', data.jenis_pengadaan);
+										$('#btn-aanwijzing, #btn-eauction').removeClass('hide');
+										$('#btn-lelang').addClass('hide');
+										if(result.auction.length > 0){
+											$('#btn-proses').removeClass('hide');
+										}else{
+											$('#btn-proses').addClass('hide');
+										}
+
+									}else if(data.jenis_pengadaan == 'Pelelangan'){
+										$('#btn-proses, #btntmbhvendor').attr('jenis-pengadaan', data.jenis_pengadaan);
+										if(data.no_srt_llg == null && data.tgl_srt_llg == null){
+											$('#btn-proses').addClass('hide');
+											$('#btn-lelang').addClass('hide');//disini
+											$('#btn-aanwijzing').removeClass('hide');
+
+										}else{
+
+											$('#d_no_lelang').text(data.no_srt_llg);
+											$('#d_tgl_lelang').text(tanggal_indo(data.tgl_srt_llg));
+											$('#btn-lelang').addClass('hide');
+											$('#btn-aanwijzing').removeClass('hide');
+											if(auc.length > 0){
+												$('#btn-proses').removeClass('hide');
+											}
+											
+											$('#btn-proses, #btntmbhvendor').attr('jenis', 'auction');
+											$('#btn-eauction').removeClass('hide');
+											$('.row-lelang').removeClass('hide');
+											
+										}
+
 									}
 
 								}else{ // jika pengadaan nya di pfa
 									//tambahin btn memo ke pfa
-									$('#btn-proses').hide();
+									$('#btn-eauction').addClass('hide');
+									$('#btn-proses-pfa').removeClass('hide');
+									
+									
 								}
-							}else{ //jika tempat pengadaannya tidak diisi
-								
-								$('#btn-jenis').show();
-								$('#btn-aanwijzing').hide();
-								$('#btn-proses').hide();
 							}
 
-						}else{
-							
-							$('#btn-aanwijzing').hide();
-							$('#btn-jenis').hide();
-							$('#btn-proses').hide();
+						}else{//jika petugasnya orang lain
+							$('#btn-aanwijzing, #btn-eauction, #btn-proses, #btn-lelang, #btn-proses-pfa, #btn-jenis').addClass('hide');
+							$('#btn-eauction, #eauction').removeAttr('jenis');
 						}
 						
 					}else{
-						$('#btn-aanwijzing, #btn-proses, #btn-jenis').hide();
+						$('#btn-disposisi').removeClass('hide')
+					}
+
+					if(data.alasan != null){
+						let tp = 'Tgl. Pengembalian: '+tanggal(data.tgl_kembali)+'|No. Surat Pengembalian: '+data.no_pengembalian+'|Tgl. Surat Pengembalian: '+tanggal(data.tgl_srt_pengembalian);
+						let status = "<span aria-label='"+tp+"' data-balloon-pos='up'>"+data.alasan+"</span>";
+
+						$('#d_status_data').text('Memo / Notin Dikembalikan').css({'color':'red'});
+						$('.alasan').removeClass('hide');
+						$('#d_alasan').html(status);
+						$('#btn-return, #btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-ubah, #btn-comments').addClass('hide');
+						
+					}else{
+						console.log('a');
+						$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
+						/*if(data.tempat_pengadaan == 'BSK'){
+							
+							$('.alasan').addClass('hide');
+							$('#btn-ubah, #btn-return, #btn-aanwijzing, #btn-hapus').removeClass('hide');
+						}else{
+							$('#btn-ubah, #btn-return, #btn-aanwijzing, #btn-hapus').removeClass('hide');
+							$('#btn-eauction').addClass('hide');
+						}*/
 					}
 				}
 
 			}
 		})
+	}
+	function set_int()
+	{
+		$('#table').DataTable().ajax.reload();
+		
 	}
 
 </script>

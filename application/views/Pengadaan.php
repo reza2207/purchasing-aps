@@ -65,6 +65,17 @@ background: #D7A42B;color:white;
         <label>Divisi</label>
       </div>
       <div class="input-field col s12 l2">
+        
+        <select name="jenis_pengadaan" class="select-m" id="n_jenis_pengadaan_e" >
+            <option value="Pembelian Langsung">Pembelian Langsung</option>
+            
+            <option value="Penunjukan Langsung">Penunjukan Langsung</option>
+            <option value="Pemilihan Langsung">Pemilihan Langsung</option>
+            <option value="Pelelangan">Pelelangan</option>
+          </select>
+        <label>Jenis Pengadaan</label>
+      </div>
+      <div class="input-field col s12 l2">
         <button class="waves-effect green waves-blue btn-flat" id="btn-filter"><i class="fa fa-filter"></i></button>
       </div>
     </div>
@@ -370,6 +381,8 @@ background: #D7A42B;color:white;
         </table>
       </div>
       <div class="row" style="max-height: 300px;overflow: scroll;min-height: 210px" border="1">
+        <?= form_open('', array('id'=>'form-row'));?>
+          
         <table border="1" class="highlight stripped" id="tbisiinvoice" style="font-size: 10px;table-layout: fixed;">
           <thead>
             <tr class='teal white-text' style="font-size: 10px">
@@ -396,7 +409,8 @@ background: #D7A42B;color:white;
               <th class="center" width='38'>Action</th>
             </tr>
           </thead>
-          <tbody class="rowisi">
+          
+          <tbody class="rowisi" id="rowisi">
           </tbody>
           
           <tfoot>
@@ -404,6 +418,7 @@ background: #D7A42B;color:white;
             <td class="center teal white-text" id="t_total">Total</td>
           </tfoot>
         </table>
+        <?= form_close();?>
       </div>
     </div>
   
@@ -412,6 +427,7 @@ background: #D7A42B;color:white;
     <?php 
     if(isset($_SESSION['role'])){
       if($_SESSION['role'] != "user"){?>
+        <button class="waves-effect green white-text waves-green btn-flat hide" id="saving-row"><i class="fa fa-save"></i></button>
         <button class="waves-effect blue white-text waves-green btn-flat" id="btn-tambah-row" aria-label="Tambah Row"data-balloon-pos="up" ><i class="fa fa-plus"></i></button>
         <button class="waves-effect yellow waves-green btn-flat" id="btn-ubah" aria-label="Edit Data" data-balloon-pos="up"><i class="fa fa-pencil"></i></button>
         <button class="waves-effect red waves-yellow btn-flat white-text" id="btn-hapus" aria-label="Hapus Data"data-balloon-pos="up"><i class="fa fa-trash"></i></button>
@@ -487,7 +503,7 @@ background: #D7A42B;color:white;
             </blockquote>
           </div>
         <div class="row" style="margin-bottom: 0px;">
-          <table class="" style="font-size: 10px">
+          <table id="tbl_list_inv" style="font-size: 10px">
             <thead>
               <tr style="font-weight: bolder;" class="center">
                 <td>No</td>
@@ -522,6 +538,7 @@ background: #D7A42B;color:white;
         <div class="row">
           <div class="input-field col s12 l4">
             <input name="item" type="text" id="item_e">
+            <input name="id" type="text" id="id_e" class="hide">
             <input type="text" name="id_row" id="id_row" hidden>
             <label>Item</label>
           </div>
@@ -596,6 +613,10 @@ background: #D7A42B;color:white;
         </div>
       </div>
     <?= form_close();?>
+  </div>
+  <div class="modal-footer">
+    <button class="modal-close waves-effect waves-yellow btn-flat">CLOSE</button>
+    <button id="btn-update-row" class="waves-effect blue waves-green  white-text btn-flat">Update</button>    
   </div>
 </div>
 
@@ -766,20 +787,35 @@ background: #D7A42B;color:white;
       $('#waiting').removeClass('hide');
       let id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
       
-      $('#btn-ubah').attr('data-id', id);
-      $('#btn-hapus').attr('data-id', id);
-      $('#btn-comment').attr('data-id', id);
-      $('#proses').attr('data-id', id);
+      $('#btn-ubah, #btn-tambah-row, #btn-hapus, #btn-comment, #proses, #saving-row').attr('data-id', id);
+      if($('#saving-row').hasClass('hide') !== true){
+        $('#saving-row').addClass('hide');  
+      }
+      
       data_tabel(id)
       
     })
+    $('#saving-row').on('click', function(e){
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        dataType: 'JSON',
+        url: '<?= base_url()."pengadaan/add_row";?>',
+        data: $('#form-row').serialize(),
+        success: function(data){
+          console.log(data)
+        }
+      })
+      ;
+    })
     //proses invoice di row detail
-    $('#tbisiinvoice tbody').on('click', '.proses-inv',function(e){
+    $('#tbisiinvoice tbody').on('click', '.proses-inv', function(e){
       let no_kontrak = $(this).attr('data-id');
       let tahun = $(this).attr('data-tahun');
       let id = $(this).attr('data-pengadaan');
       let idvendor = $(this).attr('data-vendor');
       let nmvendor = $(this).attr('data-nm_vendor');
+      
       $('#kolominv').hide();
       $('#tambahdata').attr('data-kontrak', no_kontrak);
       $('#prosesinv').attr('data-id', id);
@@ -956,7 +992,7 @@ background: #D7A42B;color:white;
                       "<td><input type='text' placeholder='no. kontrak' name='nokontrak[]' style='width: 200px'></td>"+
                       "<td><input type='text' placeholder='tgl. kontrak' class='datepicker' id='tglkontrak"+nomor+"' name='tglkontrak[]' style='width: 200px'></td>"+
                       "<td><select name='vendor[]' style='width: 200px' id='"+idselect+"'><option value=''>--pilih--</option></select></td>"+
-                      "<td></td></tr>";
+                      "<td><span class='hapus-row-tbh'>X</span></td></tr>";
       $('.rowitem').append(rowitem);
 
       $(idselects).select2({
@@ -968,9 +1004,10 @@ background: #D7A42B;color:white;
         container: 'body',
         format: 'dd-mm-yyyy',
         autoClose: true,
-
       });
-
+      $('.hapus-row-tbh').on('click', function(e){
+        $(this).parent().parent().remove();
+      })
       $('.realisasirp, .realisasiqty').on('change', function(){
         let nomorid = $(this).attr('data-id');
         let idjml = '#jumlah'+nomorid;
@@ -1010,7 +1047,6 @@ background: #D7A42B;color:white;
       $('#tp_sisa').val(sisaakhir);
     })
     $('#prosesinv').on('click', function(e){
-      //let no = $('.rowinv tr:last td:first').text();
       e.preventDefault();
       
       let html = '';
@@ -1062,7 +1098,115 @@ background: #D7A42B;color:white;
       
     })
 
+    $('#btn-tambah-row').on('click', function(e){
+      let nomor = $('.rowisi').children().length+1;
+      e.preventDefault();
+      if($('#saving-row').hasClass('hide')){
+        $('#saving-row').removeClass('hide');
+      }
+      let id = $(this).attr('data-id');
+      let idselect = 'selecta'+nomor;
+      let idselects = '#'+idselect;
+      
+      let html = "<tr height='20'><td>"+nomor+"</td>"+
+                      "<td><input type='hidden' name='idpengadaan[]' style='width: 200px' value='"+id+"'><input type='text' placeholder='item' name='item[]' style='width: 200px'></td>"+
+                      "<td><input type='text' placeholder='ukuran' name='ukuran[]' style='width: 200px'></td>"+
+                      "<td><input type='text' placeholder='bahan' name='bahan[]' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='jumlah' name='jumlah[]' style='width: 80px'></td>"+
+                      "<td><input type='text' placeholder='satuan' name='satuan[]' style='width: 80px'></td>"+
+                      "<td><input type='number' placeholder='hps usd' name='hpsusd[]' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='hps idr' name='hpsidr[]' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='hps satuan' name='hpssatuan[]' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='penawaran' name='penawaran[]' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='realisasi (usd)' name='realisasiusd[]' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='realisasi (rp)' name='realisasirp[]' id='realisasirpa"+nomor+"' data-id='"+nomor+"' class='realisasirp' style='width: 200px'></td>"+
+                      "<td><input type='number' placeholder='realisasi (qty)' name='realisasiqty[]' id='realisasiqtya"+nomor+"' data-id='"+nomor+"' class='realisasiqty' style='width: 200px'></td>"+
+                      "<td><span id='jumlah"+nomor+"' class='jml'>qty x rp</span></td>"+
+                      "<td><input type='text' placeholder='no. kontrak' name='nokontrak[]' style='width: 200px'></td>"+
+                      "<td><input type='text' placeholder='tgl. kontrak' class='datepicker ' id='tglkontrak"+nomor+"' name='tglkontrak[]' style='width: 200px'></td>"+
+                      "<td><select name='vendor[]' style='width: 200px' id='"+idselect+"'><option value=''>--pilih--</option></select></td>"+
+                      "<td><span class='hapus-row-tbh'>X</span></td></tr>";
+      $('#rowisi').append(html);
+      $(idselects).select2({
+        placeholder: 'Select an option',
+          //theme: 'material'
+      },$('select').css('width','200px'));
+      $('.realisasirp, .realisasiqty').on('change', function(){
+        let nomorid = $(this).attr('data-id');
+        let idjml = '#jumlah'+nomorid;
+        let rpreal = '#realisasirpa'+nomorid;
+        let qtyreal = '#realisasiqtya'+nomorid;
+        let jml = $(rpreal).val() * $(qtyreal).val();
+        $(idjml).attr('data-id', jml);
+        $(idjml).text('Rp.'+formatNumber(jml));
 
+        let sum = 0;
+        $(".jml").each(function(){
+        //var value = $(this).text();
+          let value = $(this).attr('data-id');
+          if(!isNaN(value) && value.length != 0){
+            sum += parseFloat(value);
+            $('#total').text('Rp.'+formatNumber(sum));
+          }
+          
+        })
+      })
+      $('.datepicker').datepicker({
+        container: 'body',
+        format: 'dd-mm-yyyy',
+        autoClose: true,
+
+      });
+      $.post("<?= base_url()."tdr/get_tdr";?>", function(result){
+          
+        let options = $(idselects);
+
+        $.each(JSON.parse(result), function() {
+              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+        });
+      });
+    })
+
+    $('#modal_inv #tbl_list_inv .rowinv').on('click', ' .hapus-inv', function(e){
+      e.preventDefault();
+      let idp = $(this).attr('data-idp');
+      let id = $(this).attr('data-id');
+      let no_kontrak = $(this).attr('data-kontrak');
+      let tahun = $(this).attr('data-tahun');
+
+      swal({
+        type: 'question',
+        text: 'yakin untuk menghapus data ini? :(',
+        showCancelButton: 'TRUE',
+        allowOutsideClick: 'FALSE',
+
+      }).then(function(e){
+        $.ajax({
+          type: 'POST',
+          dataType: 'JSON',
+          url: '<?= base_url()."pengadaan/hapus_data_inv";?>',
+          data: {id:id},
+          success: function(data){
+            swal({
+              type: data.type,
+              text: data.pesan,
+              showConfirmButton: true,
+              allowOutsideClick: false,
+            }).then(function(){
+              data_tabel(idp);
+              rowinv(no_kontrak, tahun, id)
+            })
+          }
+        })
+      }, function(e){
+        if(e == 'cancel'){
+          swal({
+            type: 'success',
+            text: 'okay :)'
+          })
+        }
+      })
+    })
     function rowinv(no_kontrak, tahun, id){
       $.ajax({
         type: 'POST',
@@ -1105,7 +1249,7 @@ background: #D7A42B;color:white;
                         "<td>"+tanggal(r['data'][i].tgl_invoice_diantar)+"</td>"+
                         "<td contenteditable='true' class='edit-tgl' data-id='"+r['data'][i].id_invoice+"' data-idp='"+id+"' data-j='tk'>"+tanggal(r['data'][i].tgl_invoice_kembali)+"</td>"+
                         "<td contenteditable='true' class='edit-tgl' data-id='"+r['data'][i].id_invoice+"' data-idp='"+id+"' data-j='tp'>"+tanggal(r['data'][i].tgl_kebagian_pembayaran)+"</td>"+
-                        "<td>"+formatNumber(r['data'][i].nominal)+"</td><td>hapus</td></tr>";
+                        "<td>"+formatNumber(r['data'][i].nominal)+"</td><td><a href='#' class='hapus-inv' data-id='"+r['data'][i].id_invoice+"' data-idp='"+id+"' data-kontrak='"+no_kontrak+"' data-tahun='"+tahun+"'>hapus</a></td></tr>";
 
             }
             $('.rowinv').html(html);
@@ -1186,10 +1330,13 @@ background: #D7A42B;color:white;
           url : '<?= base_url()."pengadaan/get_detail";?>',
           success: function(result){
             let data = JSON.parse(result);
+            $('#btn-update-row').attr('data-id', data.id_pengadaan);
             $('#modal_edit_row').modal('open');
             $('#modal_edit_row label').addClass('active');
             $('#item_e').val(data.item);
             $('#id_row').val(data.id_pengadaan_uniq);
+            $('#id_e').val(data.id_pengadaan);
+
             $('#ukuran_e').val(data.ukuran);
             $('#bahan_e').val(data.bahan);
             $('#jml_e').val(data.jumlah);
@@ -1203,7 +1350,7 @@ background: #D7A42B;color:white;
             $('#realisasiqty_e').val(data.realisasi_qty_unit);
             $('#nokontrak_e').val(data.no_kontrak);
             $('#tglkontrak_e').val(tanggal(data.tgl_kontrak));
-            $('#vendor_e').val(data.id_vendor);
+            $('#vendor_e').select2().val(data.id_vendor).trigger('change.select2');
           }
         })
       })
@@ -1223,13 +1370,59 @@ background: #D7A42B;color:white;
           data: {id:id},
           url : '<?= base_url()."pengadaan/hapus_row";?>',
           success: function(result){
-            let data = JSON.parse(result);
-
+            if(data.type == 'success'){
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              }).then(function(){
+                data_tabel(id)
+                $('#table').DataTable().ajax.reload();
+              })
+            }else{
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              })
+            }
           }
         })
       })
     })
 
+    $('#btn-update-row').on('click', function(e){
+      let id = $(this).attr('data-id');
+      $.ajax({
+        type: 'POST',
+        url : '<?= base_url()."pengadaan/update_row";?>',
+        data: $('#form-edit-row').serialize(),
+        success: function(data){
+          if(data.type == 'success'){
+            swal({
+              type: data.type,
+              text: data.pesan,
+              showConfirmButton: true,
+              allowOutsideClick: false,
+            }).then(function(){
+              data_tabel(id)
+              $('#modal_edit_row').modal('close');
+              $('#table').DataTable().ajax.reload();
+            })
+          }else{
+            swal({
+              type: data.type,
+              text: data.pesan,
+              showConfirmButton: true,
+              allowOutsideClick: false,
+            })
+          }
+        }
+      })
+      
+    })
 
 
     function data_tabel(id){

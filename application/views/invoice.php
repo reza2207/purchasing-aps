@@ -10,16 +10,6 @@
           <?php endforeach;?>
         </select>
       </div>
-      <!-- <div class="col l2">
-        <label class="active">Divisi</label>
-        <select class="select-m" id="divisi-select">
-          <option value="All">All</option>
-          <option value="BSK">BSK</option>
-          <option value="PDM">PDM</option>
-          <option value="EBK">EBK</option>
-          <option value="Others">Lain-lain</option>
-        </select>
-      </div> -->
       <div class="col l2">
       <label class="active">Tahun</label>
         <select class="select-m" id="year-select">

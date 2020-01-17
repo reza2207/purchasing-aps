@@ -111,8 +111,7 @@ class Pengadaan extends CI_Controller {
 				$this->form_validation->set_rules('jenis_surat', 'Jenis Surat', 'required');//
 				$this->form_validation->set_rules('jenis_pengadaan', 'Jenis Pengadaan', 'required');
 				if(($this->input->post('jenis_pengadaan')!= 'Pembelian Langsung') &&	 ($this->input->post('jenis_pengadaan')!= '')){
-					$this->form_validation->set_rules('no_usulan', 'No. Usulan', 'required');
-					$this->form_validation->set_rules('tgl_usulan', 'Tgl. Usulan', 'required');
+					
 				}
 				$this->form_validation->set_rules('kewenangan', 'Kewenangan', 'required');
 
@@ -569,6 +568,40 @@ class Pengadaan extends CI_Controller {
 		{
 			if($this->input->post(null))
 			{
+				$data = new stdClass();
+
+				$item = $this->input->post('item');
+				$id = $this->input->post('id_row');
+				$idp = $this->input->post('id');
+				$ukuran = $this->input->post('ukuran');
+				$bahan = $this->input->post('bahan');
+				$jumlah = $this->input->post('jumlah');
+				$satuan = $this->input->post('satuan');
+				$hpsusd = $this->input->post('hpsusd');
+				$hpsidr = $this->input->post('hpsidr');
+				$hpsatuan = $this->input->post('hpssatuan');
+				$penawaran = $this->input->post('penawaran');
+				$realisasiusd = $this->input->post('realisasiusd');
+				$realisasirp = $this->input->post('realisasirp');
+				$realisasiqty = $this->input->post('realisasiqty');
+				$nokontrak = $this->input->post('nokontrak');
+				$tglkontrak = $this->input->post('tglkontrak');
+				$vendor = $this->input->post('vendor');
+
+				if($this->Pengadaan_model->update_row($idp, $id, $item, $ukuran, $bahan, $jumlah, $satuan, $hpsusd, $hpsidr, $hpssatuan, $penawaran, $realisasiusd, $realisasirp, $realisasiqty, $nokontrak, $tglkontrak, $vendor))
+				{
+
+					$data->type = 'success';
+					$data->pesan = 'Success';
+					
+				}else{
+					
+					$data->type = 'error';
+					$data->pesan = 'Failed';
+					
+				}
+
+				echo json_encode($data); 
 
 			}else{
 				show_404();
@@ -584,7 +617,21 @@ class Pengadaan extends CI_Controller {
 		{
 			if($this->input->post(null))
 			{
+				$this->input->post('id');
+				$data = new stdClass();
+				if($this->Pengadaan_model->hapus_row($id))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Success';
+					
+				}else{
+					
+					$data->type = 'error';
+					$data->pesan = 'Failed';
+					
+				}
 
+				echo json_encode($data); 
 			}else{
 				show_404();
 			}
@@ -659,6 +706,76 @@ class Pengadaan extends CI_Controller {
 			}
 		}else{
 			show_404();
+		}
+	}
+
+	public function add_row()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				$this->load->library('form_validation');
+				$data = new stdClass();
+				//validate array
+				$this->form_validation->set_rules('item[]', 'Item', 'required');
+				$this->form_validation->set_rules('ukuran[]', 'Ukuran', 'required');
+				$this->form_validation->set_rules('bahan[]', 'Bahan', 'required');
+				$this->form_validation->set_rules('jumlah[]', 'Jumlah', 'required');
+				$this->form_validation->set_rules('satuan[]', 'Satuan', 'required');
+				$this->form_validation->set_rules('hpssatuan[]', 'Hps Satuan', 'required');
+				$this->form_validation->set_rules('penawaran[]', 'Harga Penawaran', 'required|trim|numeric');
+				$this->form_validation->set_rules('realisasirp[]', 'Harga Realisasi', 'required');
+				$this->form_validation->set_rules('realisasiqty[]', 'Qty Realisasi', 'required');
+				$this->form_validation->set_rules('nokontrak[]', 'No. Kontrak', 'required');
+				$this->form_validation->set_rules('tglkontrak[]', 'Tgl. Kontrak', 'required');
+				$this->form_validation->set_rules('vendor[]', 'Vendor', 'required');
+
+				if ($this->form_validation->run() == false) 
+				{
+					
+					$errors = validation_errors();
+					$data->type = 'error';
+		            $data->pesan = $errors;
+		            
+					
+				}else{
+					$data->type = 'success';
+		            $data->pesan = 'Berhasil';
+
+				}
+
+				echo json_encode($data);
+
+			}
+		}
+	}
+
+	public function hapus_data_inv()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{	
+			if($this->input->post(null)){
+
+				$id = $this->input->post('id');
+				$data = new stdClass();
+				if($this->Invoice_model->hapus_inv($id))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Success';
+					echo json_encode($data);
+					
+				}else{
+				
+					$data->type = 'error';
+					$data->pesan = 'Failed';
+				}
+				echo json_encode($data);
+
+			}else{
+				show_404();
+			}
+		}else{
+			redirect('');
 		}
 	}
 

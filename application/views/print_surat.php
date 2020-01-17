@@ -8,7 +8,6 @@
 	position: relative;
 	box-sizing: border-box;
 	page-break-after: always;
-
 }
 
 @media print{
@@ -17,7 +16,9 @@
 	#print, #close{
 		display: none;
 	}
-	
+	#contawal{
+		margin-top: 30px;margin-left: 20px;
+	}
 	
 }
 
@@ -101,7 +102,7 @@
 
 if($result->num_rows() == 1){?>
 	<?php $row = $result->row_array();?>
-	<div class="container">
+	<div class="container" id="contawal">
 		<div class="header">Lembar <b>TANDA TERIMA</b> Dokumen Pengadaan Barang dan-atau Jasa</div>
 		<div class="isi">
 			<table>

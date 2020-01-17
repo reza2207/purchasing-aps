@@ -10,7 +10,7 @@ class Invoice_model extends CI_Model {
 
 	var $table = 'invoice';
 	var $column_order = array('a.tgl_input', 'tdr.nm_vendor', 'a.no_invoice','a.tgl_invoice', 'a.no_kontrak','a.nominal','a.perihal','a.tgl_invoice_diantar','a.tgl_invoice_kembali','a.tgl_kebagian_pembayaran','a.status');//,'status');//field yang ada di table user
-	var $column_search = array('a.tgl_input', 'tdr.nm_vendor', 'a.no_invoice','a.tgl_invoice', 'a.memo_keluar', 'a.no_kontrak','a.nominal','a.perihal','a.tgl_invoice_diantar','a.tgl_invoice_kembali','a.tgl_kebagian_pembayaran','a.status');//,'status');//field yang dizinkan untuk pencarian
+	var $column_search = array(	'tdr.nm_vendor', 'a.no_invoice','a.tgl_invoice', 'a.memo_keluar', 'a.no_kontrak','a.nominal','a.perihal','a.status');//,'status');//field yang dizinkan untuk pencarian
 	var $order = array('tgl_input'=>'desc'); //default sort
 
 	public function __construct() {
@@ -140,6 +140,12 @@ class Invoice_model extends CI_Model {
 		$this->db->where('id_status !=', '11');
 		
 		return $this->db->get();
+	}
+
+	public function hapus_inv($id)
+	{
+		return $this->db->delete('invoice', array('id_invoice'=>$id));
+
 	}
 	
 	

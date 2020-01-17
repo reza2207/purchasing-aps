@@ -61,6 +61,7 @@ class Register extends CI_Controller {
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
 			
 			$data->select_vendor = $this->Tdr_model->select_tdr();
+			$data->select_jenis = $this->Register_masuk_model->select_jenis_surat()->result();
 			$this->load->view('header', $data);
 			$this->load->view('register_masuk');
 		}else{
@@ -85,14 +86,15 @@ class Register extends CI_Controller {
 				$row['tgl_email'] = tanggal($field->tgl_email);
 				$row['tgl_terima_email'] = tanggal($field->tgl_terima_email);
 				$row['kelompok'] = $field->kelompok;
-				$row['no_surat'] = $field->no_surat;
-				$row['tgl_surat'] = tanggal($field->tgl_surat);
+				$row['no_surat'] = $field->no_surat_masuk;
+				$row['tgl_surat'] = tgl_indo($field->tgl_surat_masuk);
 				$row['perihal'] = $field->perihal;
-				$row['tgl_terima_surat'] = tanggal($field->tgl_terima_surat);
+				$row['tgl_terima_surat'] = tgl_indo($field->tgl_terima_surat);
 				$row['jenis_surat'] = $field->jenis_surat;
 				$row['tgl_disposisi_pimkel'] = tanggal($field->tgl_disposisi_pimkel);
 				$row['tgl_disposisi_manajer'] = tanggal($field->tgl_disposisi_manajer);
 				$row['status_data'] = $field->status_data;
+				$row['status'] = $field->status;
 			
 				$data[] = $row;
 				
@@ -209,15 +211,17 @@ class Register extends CI_Controller {
 			$lastq = $pecah[1];
 			$id = $year.'-'.str_pad((int) $lastq+1,4,"0",STR_PAD_LEFT);
 		}
-
 		return $id;
-		
 	}
 
 	public function get_detail_masuk(){
 		$id = $this->uri->segment(3);
 		if($id != NULL){
-			echo json_encode($this->Register_masuk_model->get_data_register($id));
+			$data['register'] = $this->Register_masuk_model->get_data_register($id);
+			$data['aanwijzing'] = $this->get_aanwijzing($id);
+			$data['auction'] = $this->get_auction($id);
+            $data['comment'] = $this->get_comment($id);
+			echo json_encode($data);
 		}else{
 			echo 'tidak ada data.';
 		}
@@ -342,40 +346,47 @@ class Register extends CI_Controller {
 
 			if($this->input->post(null)){
 
-				
+				$data = new stdClass();
 				$this->form_validation->set_rules('tempat_pengadaan', 'Tempat Pengadaan', 'required');
 				if($this->input->post('tempat_pengadaan') == 'BSK')
 				{
 					$this->form_validation->set_rules('jenis', 'Metode Pengadaan', 'required');
 				}
 				if ($this->form_validation->run() == false) {
-					$data = new stdClass();
+					
 					$errors = validation_errors();
 
 		            $data->type = 'error';
 		            $data->pesan = $errors;
-		            echo json_encode($data);
 					
 				} else {
 					$id = $this->input->post('id_register', TRUE);
 					$jenis = $this->input->post('jenis', TRUE);
 					$tempat = $this->input->post('tempat_pengadaan');
 
-					if($this->Register_masuk_model->jenis($id, $jenis, $tempat)){
-						$data = new stdClass();
-						$data->type = 'success';
-			            $data->pesan = 'Berhasil';
-			            $data->tempat = $tempat;	
-			            $data->jenis = $jenis;
-			            echo json_encode($data);
+					if($this->Register_masuk_model->cek_jenis($id)->num_rows() > 0){
+						if($this->Register_masuk_model->update_jenis($id, $jenis, $tempat)){
+							$data->type = 'success';
+				            $data->pesan = 'Berhasil';
+						}else{
+							$data->type = 'error';
+				            $data->pesan = 'Failed';
+				    
+						}
 					}else{
-						$data = new stdClass();
-						$data->type = 'error';
-			            $data->pesan = 'Failed';
-			            $data->jenis = '';
-			            echo json_encode($data);
+						if($this->Register_masuk_model->jenis($id, $jenis, $tempat)){
+							
+							$data->type = 'success';
+				            $data->pesan = 'Berhasil';
+						}else{
+							$data->type = 'error';
+				            $data->pesan = 'Failed';
+				    
+						}
 					}
 				}
+
+				echo json_encode($data);
 				
 			}else{
 				show_404();
@@ -394,60 +405,67 @@ class Register extends CI_Controller {
 
 			if($this->input->post(null))
 			{
-				$this->form_validation->set_rules('no_spk[]', 'No. SPK', 'required');
-				$this->form_validation->set_rules('tgl_spk[]', 'Tgl. SPK', 'required');
+				$data = new stdClass();
 				$this->form_validation->set_rules('id_vendor[]', 'Nama Vendor', 'required');
+
+				$this->form_validation->set_rules('no_sp[]', 'No. SPK', 'required');
+				$this->form_validation->set_rules('tgl_sp[]', 'Tgl. Surat', 'required');
+				$this->form_validation->set_rules('id_jenis[]','Jenis Surat', 'required');
+				
 				if ($this->form_validation->run() == false) 
 				{
-					$data = new stdClass();
+					
 					$errors = validation_errors();
 
 		            $data->type = 'error';
 		            $data->pesan = $errors;
-		            echo json_encode($data);
+		            
 				}else{
 					$id = $this->input->post('id_register');
-					$nospk = $this->input->post('no_spk');
-					$tgl = $this->input->post('tgl_spk');
+					$nospk = $this->input->post('no_sp');
+					$tgl = $this->input->post('tgl_sp');
 					$idvendor = $this->input->post('id_vendor');
+					$idjenis = $this->input->post('id_jenis');
 
-					$no = 0;
+					$no = $this->get_last_id_register($id);
 					foreach($nospk AS $key => $val){
 						$no++;
 						$res[] = array(
 							'id_detail_register'=> $id.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT),
 							'id_register'=>$id,
-							'no_spk'=>$nospk[$key],
-							'tgl_spk'=>tanggal1($tgl[$key]),
+							'tgl_surat'=>tanggal1($tgl[$key]),
+							'no_surat'=>$nospk[$key],
+							'id_surat'=>$idjenis[$key],
 							'id_vendor'=>$idvendor[$key]
-						);
-						$idno[] = $id.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT);
-						$nama[] = $this->_get_nama_vendor($idvendor[$key]);
+						);						
 					}//pending
 
-					if($this->db->insert_batch('detail_register_masuk', $res) && $this->Register_masuk_model->update_status($id)){
-						$data = new stdClass();
+                    
+					if($this->db->insert_batch('detail_register_masuk', $res)){
 						$data->type = 'success';
 			            $data->pesan = 'Berhasil';
-			            $data->nospk = implode('<br>',$nospk);
-			            $data->idspk = implode('<br>', $idno);
-			            $data->tgl = implode('<br>',$tgl);
-			            $data->status = 'Done';
-			            $data->svendor = implode('<br>',$nama);
-						echo json_encode($data);
-						
+                        if($this->input->post('jenis_pengadaan') == 'Pembelian Langsung'){
+                            $this->Register_masuk_model->update_status($id);   
+                        }
+			            if($this->Register_masuk_model->cek_status_done($id)->num_rows() > 0)
+			            {
+			            	$this->Register_masuk_model->update_status($id);
+			            }
 					}else{
-						$data = new stdClass();
 						$data->type = 'error';
 			            $data->pesan = 'Failed';
-						echo json_encode($data);
-					
 					}
 				}
+
+				echo json_encode($data);
 			}
 		}
 	}
 
+	public function update_status_done($id)
+	{
+		return $this->Register_masuk_model->update_status($id);
+	}
 	public function get_user()
 	{
 		echo json_encode($this->User_model->select_user(array('amgr','asst'))->result());
@@ -458,28 +476,95 @@ class Register extends CI_Controller {
 		return $this->User_model->get_name($username)->row('nama');
 	}
 
-	public function hapus_data(){
+	protected function get_last_id_register($id)
+	{
+		if($this->Register_masuk_model->get_last_id($id)->num_rows() > 0)
+		{
+			$r = $this->Register_masuk_model->get_last_id($id)->row();
+			$idlast = $r->id_detail_register;
+			$pecah = explode('-',$idlast);
+			$urut = (int) $pecah[2];
+
+		}else{
+			$urut = 0;
+		}
+
+		return $urut;
+	}
+
+	public function proses_return()
+	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
 		{
 
 			if($this->input->post(null))
 			{
+				$data = new stdClass();
+				$this->form_validation->set_rules('tgl_kembali', 'Tanggal kembali', 'required');
+
+				//$this->form_validation->set_rules('no_surat', 'Nomor Surat', 'required');
+				//$this->form_validation->set_rules('tgl_surat', 'Tanggal Surat', 'required');
+				$this->form_validation->set_rules('alasan','Alasan', 'required|max_length[200]');
+				
+				if ($this->form_validation->run() == false) 
+				{
+					
+					$errors = validation_errors();
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+		            
+				}else{
+
+					$id = uniqid();
+					$idr = $this->input->post('id_register');
+					$tglk = tanggal1($this->input->post('tgl_kembali'));
+					$no = $this->input->post('no_surat');
+					$tgls = tanggal1($this->input->post('tgl_surat'));
+					$alasan = $this->input->post('alasan');
+
+					if($this->Register_masuk_model->new_return($id, $idr, $tglk, $no, $tgls, $alasan)){
+						$data->type = 'success';
+			            $data->pesan = 'Berhasil';
+					}else{
+						$data->type = 'error';
+			            $data->pesan = 'Failed';
+			    
+					}
+				}
+
+				echo json_encode($data);
+			}
+
+
+		}else{
+			show_404();
+		}
+
+	}
+
+	public function hapus_data(){
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+
+			if($this->input->post(null))
+			{	
+
+				$data = new stdClass();
 				$id = $this->input->post('id');
 
-				if($this->Register_masuk_model->hapus_register($id) && $this->Register_masuk_model->hapus_detail($id) && $this->Register_masuk_model->hapus_pembuat_register($id) && $this->Register_masuk_model->hapus_jenis_reg($id) )
+				/*if($this->Register_masuk_model->hapus_register($id) && $this->Register_masuk_model->hapus_detail($id) && $this->Register_masuk_model->hapus_pembuat_register($id) && $this->Register_masuk_model->hapus_jenis_reg($id) )
+				{*/
+
+				if($this->Register_masuk_model->hapus_register($id))
 				{
-					$data = new stdClass();
 					$data->type = 'success';
 		            $data->pesan = 'Berhasil';
-					echo json_encode($data);
-					
 				}else{
-					$data = new stdClass();
 					$data->type = 'error';
 		            $data->pesan = 'Failed';
-					echo json_encode($data);
-				
 				}
+
+				echo json_encode($data);
 			}else{
 				show_404();
 			}
@@ -496,7 +581,7 @@ class Register extends CI_Controller {
 
 			if($this->input->post(null))
 			{
-				
+				$data = new stdClass();
 				$this->form_validation->set_rules('jenis_surat', 'Jenis Surat', 'required');
 				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
 				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');
@@ -504,12 +589,10 @@ class Register extends CI_Controller {
 				$this->form_validation->set_rules('tgl_terima_surat', 'Tgl. Terima Surat', 'required');
 
 				if ($this->form_validation->run() == false) {
-					$data = new stdClass();
 					$errors = validation_errors();
-
 		            $data->type = 'error';
 		            $data->pesan = $errors;
-		            echo json_encode($data);
+		            
 					
 				} else {
 					$id = $this->input->post('id_register');
@@ -520,24 +603,22 @@ class Register extends CI_Controller {
 					$tgltrm =  tanggal1($this->input->post('tgl_terima_surat'));
 
 					if($this->Register_masuk_model->update_surat($id, $jenis, $no, $tgl, $perihal, $tgltrm)){
-						$data = new stdClass();
+						
 						$data->type = 'success';
 			            $data->pesan = 'Berhasil';
 			            $data->no = $no;
 			            $data->tgl = $this->input->post('tgl_surat');
 			            $data->perihal = $perihal;
 			            $data->jenis = $jenis;
-			            $data->tgltrm = $this->input->post('tgl_terima_surat');
-						echo json_encode($data);
-						
+			            $data->tgltrm = $this->input->post('tgl_terima_surat');					
 					}else{
-						$data = new stdClass();
+						
 						$data->type = 'error';
-			            $data->pesan = 'Failed';
-						echo json_encode($data);
-					
+			            $data->pesan = 'Failed';	
 					}
 				}
+
+				echo json_encode($data);
 
 			}else{
 				show_404();
@@ -608,11 +689,57 @@ class Register extends CI_Controller {
 		}
 	}
 
+	public function add_pengumuman_lelang()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			if($this->input->post(null))
+			{
+				$data = new stdClass();
+				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
+				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');
+
+				if ($this->form_validation->run() == false) {
+
+					$errors = validation_errors();
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+				
+				}else{
+					$id = uniqid();
+					$no_surat = $this->input->post('no_surat');
+					$tgl_surat = tanggal1($this->input->post('tgl_surat'));
+					$idr = $this->input->post('id_register');
+
+					if($this->Register_masuk_model->add_pengumuman_lelang($id, $idr, $no_surat, $tgl_surat))
+					{
+						$data->type = 'success';
+						$data->pesan = 'Success!';
+						
+					}else{
+
+						$data->type = 'error';
+						$data->pesan = 'Failed!';
+						
+					}
+
+				}
+
+				echo json_encode($data);
+
+			}else{
+
+			}
+		}else{
+			show_404();
+		}
+	}
 	public function add_pengolahan()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			if($this->input->post(null))
 			{
+
+				$data = new stdClass();
 				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
 				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
 				$this->form_validation->set_rules('perihal', 'Perihal', 'required|max_length[250]');
@@ -620,12 +747,9 @@ class Register extends CI_Controller {
 				$this->form_validation->set_rules('tgl_kirim', 'Tgl. Kirim', 'required');
 				if ($this->form_validation->run() == false) {
 
-					$data = new stdClass();
 					$errors = validation_errors();
-
 		            $data->type = 'error';
 		            $data->pesan = $errors;
-		            echo json_encode($data);
 				
 				}else{
 
@@ -642,19 +766,18 @@ class Register extends CI_Controller {
 					if($this->Pengolahan_model->add_pengolahan($id_register, $no_surat, $perihal, $dari, $tgl_kirim, $divisi, $tahun))
 					{
 						
-						$data = new stdClass();
 						$data->type = 'success';
 						$data->pesan = 'Success!';
-						echo json_encode($data);
+						
 					}else{
 
-						$data = new stdClass();
 						$data->type = 'error';
 						$data->pesan = 'Failed!';
-						echo json_encode($data);
+						
 					}
-
 				}
+
+				echo json_encode($data);
 			}else{
 				show_404();
 			}
@@ -688,9 +811,9 @@ class Register extends CI_Controller {
 				$this->load->model('Pengolahan_model');
 
 				$id = $this->input->post('id');
-				$data = $this->input->post('data');
+				$datas = $this->input->post('data');
 
-				if($data == 'data'){
+				if($datas == 'data'){
 					if($this->Pengolahan_model->get_data_pengolahan($id))
 					{
 						$data = $this->Pengolahan_model->get_data_pengolahan($id)->row();
@@ -789,6 +912,66 @@ class Register extends CI_Controller {
 		}
 	}
 
+	public function submit_auction()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			if($this->input->post(null)){
+				
+				$data = new stdClass();
+				$this->form_validation->set_rules('tempat', 'Tempat', 'required');
+				$this->form_validation->set_rules('tanggal', 'Tanggal', 'required');
+				$this->form_validation->set_rules('jam', 'Jam', 'required');
+				$this->form_validation->set_rules('vendor[]', 'Vendor', 'required');
+				if ($this->form_validation->run() == false) {
+
+					$errors = validation_errors();
+		            $data->type = 'error';
+		            $data->pesan = $errors;
+				
+				}else{
+					$id = uniqid();
+					$idregister = $this->input->post('id_register');
+					$tempat = $this->input->post('tempat');
+					$tanggal = tanggal1($this->input->post('tanggal'));
+					$jam = $this->input->post('jam');
+					$vendor = $this->input->post('vendor');
+
+					foreach($vendor AS $key => $val){
+					
+						$res[] = array(
+							'id'=> uniqid(),
+							'id_auction'=>$id,
+							'id_vendor'=>$vendor[$key],
+							'id_register'=> $idregister
+						);						
+					}
+
+					if($this->Register_masuk_model->add_auction($id, $idregister, $tempat, $tanggal, $jam) && $this->db->insert_batch('vendor_auction', $res)){
+						$data->type = 'success';
+						$data->pesan = 'Berhasil';
+
+					}else{
+
+						$data->type = 'error';
+						$data->pesan = 'Gagal';
+
+					}
+
+				}
+
+				echo json_encode($data);
+
+			}else{
+				show_404();
+			}
+		
+
+		}else{
+			show_404();
+		}
+	}
+
 	public function addstatus()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
@@ -868,7 +1051,7 @@ class Register extends CI_Controller {
 		{
 			$data = new stdClass();
 			$data->title = 'Warkat Purchasing';
-			$data->year = $this->Register_masuk_model->get_year()->result();
+			$data->year = $this->Warkat_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
 			$data->pemutus = $this->User_model->pemutus_warkat('active')->result();
 			$data->petugas = $this->list_pemutus(array('asst'));
@@ -1075,6 +1258,206 @@ class Register extends CI_Controller {
 		}
 	}
 
+    public function new_comment_register()
+    {
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+
+            $data = new stdClass();
+            $this->form_validation->set_rules('comment', 'Comment', 'required|min_length[1]|max_length[200]');
+
+            if ($this->form_validation->run() == false) {
+
+                $errors = validation_errors();
+                $data->type = 'error';
+                $data->pesan = $errors;
+                
+            }else{
+
+                $idr = $this->input->post('id_register');
+                $id = uniqid();
+                $comment = $this->input->post('comment');
+                $comment_by = $_SESSION['username'];
+
+                if($this->Register_masuk_model->new_comment_register($id, $idr, $comment, $comment_by))
+                {
+                        $data->type = 'success';
+                        $data->pesan = 'Success!';
+                            
+                }else{
+
+                        $data->type = 'error';
+                        $data->pesan = 'Failed!';
+                        
+                }
+            }
+
+            echo json_encode($data);
+
+        }else{
+            show_404();
+        }
+    }
+
+    private function get_comment($id)
+    {
+        return $this->Register_masuk_model->get_comment($id)->result();
+        
+    }
+
+	public function my_task()
+	{	
+		$data = new stdClass();
+		$data->title = 'My Task';
+		$this->load->view('header', $data);
+		$this->load->view('my_task');
+	}
+
+	public function get_data_task()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+			$list = $this->Task_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $field) {
+				$no++;
+				$row = array();
+				$row['no'] = $no;
+				$row['id_task'] = $field->id_task;
+				$row['date'] = tanggal($field->date);
+				$row['perihal'] = $field->perihal;
+				$row['due_date'] = tanggal($field->due_date);
+				$row['status'] = $field->status;
+				$row['id_user'] = $field->id_user;
+			
+				$data[] = $row;
+				
+			}
+
+			$output = array(
+				"draw"=> $_POST['draw'], 
+				"recordsTotal" =>$this->Task_model->count_all(),
+				"recordsFiltered"=>$this->Task_model->count_filtered(),
+				"data"=>$data,
+			);
+			echo json_encode($output);
+		}else{
+			$this->load->helper('form');
+			$this->load->view('login');
+		}
+	}
+
+	public function get_jenis()
+	{
+		echo json_encode($this->Register_masuk_model->select_jenis_surat()->result());
+	}
+
+	public function form_aanwijzing()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{
+			$data = new stdClass();
+			$this->form_validation->set_rules('id_register', 'ID. Register', 'required');
+			$this->form_validation->set_rules('tgl', 'Tgl. Aanwijzing', 'required');
+			$this->form_validation->set_rules('jam', 'Jam Aanwijzing', 'required');
+			$this->form_validation->set_rules('tempat', 'Tempat Aanwijzing', 'required');
+			$this->form_validation->set_rules('perihal', 'Perihal', 'required');
+			$this->form_validation->set_rules('peserta', 'Peserta', 'required');
+
+			if ($this->form_validation->run() == false) {
+
+				$errors = validation_errors();
+	            $data->type = 'error';
+	            $data->pesan = $errors;
+	            
+			}else{
+				$id = uniqid();
+				$idp = $this->input->post('id_register');
+				$tgl = tanggal1($this->input->post('tgl'));
+				$jam = $this->input->post('jam');
+				$tempat = $this->input->post('tempat');
+				$perihal = $this->input->post('perihal');
+				$peserta = $this->input->post('peserta');
+
+				if($this->Register_masuk_model->new_aanwijzing($id, $idp, $tgl, $jam, $tempat, $perihal, $peserta))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Success!';
+						
+				}else{
+
+					$data->type = 'error';
+					$data->pesan = 'Failed!';
+					
+				}
+			}
+
+			echo json_encode($data);
+
+
+		}else{
+			show_404();
+		}
+	}
+
+	protected function get_aanwijzing($id)
+	{
+		return $this->Register_masuk_model->get_aanwijzing($id)->result();
+	}
+
+	private function get_auction($id)
+	{
+		
+		//$data['auction'] = $this->Register_masuk_model->get_ven_auc($id)->result();
+		return $this->Register_masuk_model->get_auction($id)->result();
+	}
+
+    public function submit_pfa()
+    {
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+        {
+
+            if($this->input->post(null))
+            {
+
+                $data = new stdClass();
+                $this->form_validation->set_rules('tglkirim', 'Tanggal Kirim Surat', 'required');
+                $this->form_validation->set_rules('no', 'No. Memo', 'required');
+                $this->form_validation->set_rules('tgl', 'Tanggal Memo', 'required');
+                $this->form_validation->set_rules('tglkirim', 'Tanggal Kirim Surat', 'required');
+                $this->form_validation->set_rules('perihal', 'Perihal', 'required');
+
+                if ($this->form_validation->run() == false) {
+
+                    $errors = validation_errors();
+                    $data->type = 'error';
+                    $data->pesan = $errors;
+                
+                }else{
+                    $id = uniqid();
+
+                    $tglkirim = tanggal1($this->input->post('tglkirim'));
+                    $no = $this->input->post('no');
+                    $idr = $this->input->post('id_register');
+                    $tgl = tanggal1($this->input->post('tgl'));
+                    $perihal = $this->input->post('perihal');
+
+                    if($this->Register_masuk_model->new_pfa($id, $idr, $tglkirim, $no, $tgl, $perihal))
+                    {
+                        $data->type = 'success';
+                        $data->pesan = 'Success!';
+                            
+                    }else{
+
+                        $data->type = 'error';
+                        $data->pesan = 'Failed!';
+                        
+                    }
+                }
+            }
+
+            echo json_encode($data);
+        }
+    }
 	public function add_gb()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
@@ -1358,47 +1741,6 @@ class Register extends CI_Controller {
 		$object_writer->save('php://output');
 	}
 
-	public function my_task()
-	{	
-		$data = new stdClass();
-		$data->title = 'My Task';
-		$this->load->view('header', $data);
-		$this->load->view('my_task');
-	}
-
-	public function get_data_task()
-	{
-		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-			$list = $this->Task_model->get_datatables();
-			$data = array();
-			$no = $_POST['start'];
-			foreach ($list as $field) {
-				$no++;
-				$row = array();
-				$row['no'] = $no;
-				$row['id_task'] = $field->id_task;
-				$row['date'] = tanggal($field->date);
-				$row['perihal'] = $field->perihal;
-				$row['due_date'] = tanggal($field->due_date);
-				$row['status'] = $field->status;
-				$row['id_user'] = $field->id_user;
-			
-				$data[] = $row;
-				
-			}
-
-			$output = array(
-				"draw"=> $_POST['draw'], 
-				"recordsTotal" =>$this->Task_model->count_all(),
-				"recordsFiltered"=>$this->Task_model->count_filtered(),
-				"data"=>$data,
-			);
-			echo json_encode($output);
-		}else{
-			$this->load->helper('form');
-			$this->load->view('login');
-		}
-	}
 
 
 

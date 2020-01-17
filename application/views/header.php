@@ -60,45 +60,46 @@
           </div>
 
         </li>
-        <ul class="collapsible">
-          <li class="">
-            <div class="collapsible-header waves-effect">PKS<span class="new badge red" data-badge-caption=""><?= $_SESSION['pks'];?></span></div>
-            <div class="collapsible-body">
-              <ul>
-                <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="collapsible-header waves-effect">Pengadaan</div>
-            <div class="collapsible-body">
-              <ul>
-                <li><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
-                <li><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <div class="collapsible-header waves-effect">Register</div>
-            <div class="collapsible-body">
-              <ul>
-                <li><a href="<?= base_url().'register/masuk';?>">Surat Masuk</a></li>
-                <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li>
-                <li><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
-                <li><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
-                <li><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-        <li class="bold">
-            <a href="<?= base_url().'tdr';?>" class="waves-effect waves-teal">TDR</a>
-        </li>
-        <li class="bold">
-            <a href="<?= base_url().'pengumuman';?>" class="waves-effect waves-teal">Pengumuman</a>
-        </li>
+        <div id="header-side">
+          <ul class="collapsible">
 
-        <div style="" id="jam"></div>
+            <li>
+              <div class="collapsible-header waves-effect">PKS<span class="new badge red" data-badge-caption=""><?= $_SESSION['pks'];?></span></div>
+              
+                <ul class="collapsible-body">
+                  <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
+                </ul>
+              
+            </li>
+            <li>
+              <div class="collapsible-header waves-effect">Pengadaan</div>
+              
+                <ul class="collapsible-body">
+                  <li><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
+                  <li><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
+                </ul>
+              
+            </li>
+            <li>
+              <div class="collapsible-header waves-effect">Register</div>
+                <ul class="collapsible-body">
+                  <li><a href="<?= base_url().'register/masuk';?>">Surat Masuk</a></li>
+                  <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li>
+                  <li><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
+                  <li><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
+                  <li><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
+                </ul>
+            </li>
+          </ul>
+          <li class="bold">
+              <a href="<?= base_url().'tdr';?>" class="waves-effect waves-teal">TDR</a>
+          </li>
+          <li class="bold">
+              <a href="<?= base_url().'pengumuman';?>" class="waves-effect waves-teal">Pengumuman</a>
+          </li>
+
+          <div style="margin-top: 150px" id="jam"></div>
+        </div>
         
       </ul>
       <!-- Page Layout here -->

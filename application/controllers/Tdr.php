@@ -142,9 +142,15 @@ class Tdr extends CI_Controller {
 		return $dir.$file;
 	}
 
-	public function get_tdr(){
-		echo json_encode($this->Tdr_model->select_tdr());
+	public function get_tdr($id = null){
+		if($id === null){
+			echo json_encode($this->Tdr_model->select_tdr());
+		}else{
+			$this->load->model('Register_masuk_model');
+			echo json_encode($this->Register_masuk_model->get_ven_auc($id)->result());
+		}
 	}
+
 
 	public function edit_tdr()
 	{

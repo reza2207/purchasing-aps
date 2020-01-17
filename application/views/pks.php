@@ -207,7 +207,7 @@ background: #D7A42B;color:white;
           <tr>
             <td>Status</td>
             <td>:</td>
-            <td id="d_status" style="font-style: italic;"></td>
+            <td id="d_status"></td>
           </tr>
           <tr>
             <td>File</td>
@@ -215,7 +215,7 @@ background: #D7A42B;color:white;
             <td id="d_file" style="font-style: italic;"></td>
           </tr>
           <tr>
-            <td>Last Reminder</td>
+            <td>Reminder Terakhir</td>
             <td>:</td>
             <td id="d_reminder" style="font-style: italic;"></td>
           </tr>
@@ -581,13 +581,7 @@ background: #D7A42B;color:white;
 
     $('#proses').on('click', function(){ //proses 
       $('#modal_proses').modal('open');
-      $('#pdraft_dr_legal, #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('');
-      $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
-              container: 'body',
-              format: 'dd-mm-yyyy',
-              autoClose: true,
-              disableWeekends:true,
-            });
+      
       let id = $('#proses').attr('data-id');
       $.ajax({
         type: 'POST',
@@ -680,8 +674,8 @@ background: #D7A42B;color:white;
         type: 'POST',
         url:'<?= base_url()."pks/proses_pks";?>',
         data: $('#formproses').serialize(),
-        success: function(response){
-          let data = JSON.parse(response);
+        dataType: 'JSON',
+        success: function(data){
           swal({
             type: data.type,
             text: data.message,
@@ -830,8 +824,19 @@ background: #D7A42B;color:white;
         }
       })
     })
-
+    
+    
     function proses_pks(response, id){
+
+      $('#pdraft_dr_legal, #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('').attr('readonly', false);
+      $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
+        container: 'body',
+        format: 'dd-mm-yyyy',
+        autoClose: true,
+        disableWeekends:true,
+      });
+       $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().show();
+
       let data = JSON.parse(response);
           $('#formproses label').addClass('active');
           $('#pid_pks').val(id);
@@ -846,6 +851,7 @@ background: #D7A42B;color:white;
           let tgl7 = data.tgl_ke_vendor_kedua;
           let tgl8 = data.tgl_pks;
           let nopks = data.no_pks;
+
           if(tgl1 == '0000-00-00'){
 
             $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().hide();
@@ -958,10 +964,10 @@ background: #D7A42B;color:white;
             $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
             $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
             $('#p_serahterima').val(tanggal(tgl7)).attr('readonly', true);
-
+console.log('a')
           }else{
             
-             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin,#p_serahterima,#ptgl_pks').datepicker({
+             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
                 container: 'body',
                 format: 'dd-mm-yyyy',
                 autoClose: true,
@@ -982,6 +988,7 @@ background: #D7A42B;color:white;
 
             $('#btncancel').text('CLOSE');
             $('#prosespks').hide();
+            console.log('b');
           }
     }
 
@@ -1062,10 +1069,15 @@ background: #D7A42B;color:white;
             $('#d_tglpks').parent().show();
             $('#d_tglpks').text(tanggal_indo(pks.tgl_pks));
           }
-          let statusexp = pks.segera == '' ? '' : '('+pks.segera+')';
-          let segera = "<i style='color:red'>"+statusexp+"</i>";
-          $('#d_status').html(pks.status+' '+segera);
+          let segera = pks.segera == "" ? "" : "<span style='color:red;font-weight:bolder;font-style:italic;'> ("+pks.segera+")</span>";
+          let status = "<span style='font-weight:bolder;color:green;font-style:italic;'>"+pks.status+"</span>"+segera;
+          $('#d_status').html(status);
           
+          if(pks.status == 'Done' || pks.status == 'On Process'){
+            $('#proses, #btn-hapus, #btn-ubah').hide();
+          }else{
+            $('#proses, #btn-hapus, #btn-ubah').show();
+          }
           
           if(pks.file != ''){
             let file = "<a href='pks/get_pdf/"+pks.id_pks+"' target='_blank'>"+pks.file+"</a>";            

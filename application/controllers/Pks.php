@@ -185,9 +185,6 @@ class Pks extends CI_Controller {
 					$data = $this->Pks_model->get_detail($id);
 					echo json_encode($data);
 						
-				}else{
-
-					echo json_encode($nopenunjukan);
 				}
 			}
 		}else{
@@ -208,6 +205,7 @@ class Pks extends CI_Controller {
 			}
 		}
 	}
+
 	public function add_comment()
 	{	
 		
@@ -358,7 +356,7 @@ class Pks extends CI_Controller {
 				$nopks = tanggal1($this->input->post('no_pks'));
 				$tglpks = tanggal1($this->input->post('tgl_pks'));
 
-				if($this->Pks_model->proses_pks($id,$tgldraftdarilegal,$tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks,$nopks,$tglpks, $id))
+				if($this->Pks_model->proses_pks($id,$tgldraftdarilegal,$tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks,$nopks,$tglpks))
 				{
 					$data = new stdClass();
 					$data->type = 'success';

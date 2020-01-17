@@ -2,7 +2,17 @@
   <!-- <div class="col s12"> -->
   
   <div class="col s12 offset-l3 l9">
-    
+    <div class="row hide" id="filter">
+      <div class="col l2">
+      <label class="active">Tahun</label>
+        <select class="select-m" id="year-select">
+          <?php foreach($year as $y):?>
+          <option value="<?= $y->tahun;?>"><?= $y->tahun;?></option>
+          <?php endforeach;?>
+          <option value="All">All</option>
+        </select>
+      </div>
+    </div>
     <table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
       <thead class="teal white-text">
         <tr class="rowhead">
@@ -184,6 +194,7 @@
         "url": "<?= site_url('Register/get_data_warkat');?>",
         "type": "POST",
         "data": function ( data ) {
+          data.tahun = $('#year-select').val();
         }
 
       },
@@ -218,6 +229,7 @@
             { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
             { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
             { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
             
             ],
       "processing": true,

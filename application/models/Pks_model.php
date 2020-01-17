@@ -177,7 +177,7 @@ class Pks_model extends CI_Model {
 		return $this->db->delete('pks', array('id_pks' => $id));
 	}
 
-	public function proses_pks($id,$tgldraftdarilegal,$tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks,$nopks,$tglpks, $id)
+	public function proses_pks($id,$tgldraftdarilegal,$tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks,$nopks,$tglpks)
 	{
 		$data = array(
 			'tgl_ke_legal' =>$tgldraftdarilegal,
@@ -224,12 +224,12 @@ class Pks_model extends CI_Model {
 
 	public function add_reminder($id, $idpks, $no, $tgl, $perihal, $file)
 	{
-		$data = array('id_perpanjangan'=>$id,
+		$data = array('id'=>$id,
 			          'id_pks'=> $idpks,
-			          'no_pks'=>$no,
-			          'perihal'=>$perihal,
+			          'no_surat'=>$no,
 			          'tgl_surat'=>$tgl,
+			          'perihal'=>$perihal,
 			          'file'=>$file);
-		return $this->db->insert('perpanjang_pks', $data);
+		return $this->db->insert('reminder_pks', $data);
 	}
 }

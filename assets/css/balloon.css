@@ -58,7 +58,8 @@ img[aria-label]{
     left: 50%;
     margin-bottom: 10px;
     transform: translate(-50%, var(--balloon-move));
-    transform-origin: top; }
+    transform-origin: top;
+    z-index: 9999 }
   [aria-label][data-balloon-pos="up"]:before {
     bottom: 100%;
     left: 50%;

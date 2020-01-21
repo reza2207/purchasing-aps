@@ -84,7 +84,7 @@
               <div class="collapsible-header waves-effect">Register</div>
                 <ul class="collapsible-body">
                   <li><a href="<?= base_url().'register/masuk';?>">Surat Masuk</a></li>
-                  <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li>
+                  <!-- <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li> -->
                   <li><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
                   <li><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
                   <li><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
@@ -94,9 +94,9 @@
           <li class="bold">
               <a href="<?= base_url().'tdr';?>" class="waves-effect waves-teal">TDR</a>
           </li>
-          <li class="bold">
+          <!-- <li class="bold">
               <a href="<?= base_url().'pengumuman';?>" class="waves-effect waves-teal">Pengumuman</a>
-          </li>
+          </li> -->
 
           <div style="margin-top: 150px" id="jam"></div>
         </div>

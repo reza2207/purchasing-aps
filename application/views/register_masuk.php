@@ -160,7 +160,7 @@
 						<label class="active">Kelompok</label>
 					</div>
 					<div class="input-field col s12 l6 beban hide">
-						<input name="anggaran" type="number" class="">
+						<input name="anggaran" type="number" class="" min="0">
 						<label class="active">Anggaran</label>
 					</div>
 					<div class="input-field col s12 l6 beban hide">
@@ -576,7 +576,7 @@
 					</div>
 					<div class="input-field col s12 l4">
 						<input name="tgl_surat" class="validate datepicker">
-						<label class="active">Tgl. Surat Pembatalan</label>
+						<label class="active">Tgl. Surat </label>
 					</div>
 				</div>
 				<div class="row">
@@ -819,7 +819,7 @@
 					$(row).css({'background':'#65635D','color':'white'});//#140FF0
 				}
 
-				if(data['status_data'] == 'Done'){
+				if(data['status'] == 'Done'){
 					$(row).css({'background':'#039be5','color':'white'});
 				}
 			}
@@ -1923,6 +1923,7 @@
 					tblauc = "Tidak ada data.";
 				}
 
+
 				$('#tblauction').html(tblauc);
 
 				if(cek_similar($('#d_unamepembuat').text(), '<?= $_SESSION['username'];?>')){
@@ -1938,8 +1939,16 @@
 				
 				
 				if(data.tempat_pengadaan == 'PFA'){
-
-					$('#pfa').removeClass('hide');
+					let pfa = result.pfa;
+					let tblpfa = "";
+					if(pfa.length > 0)
+					{
+						$('#pfa').removeClass('hide');
+						console.table(pfa)
+					}else{
+						$('#pfa').addClass('hide');
+					}
+					
 				}else{
 					$('#pfa').addClass('hide');
 				}

@@ -366,4 +366,11 @@ class Register_masuk_model extends CI_Model {
 		return $this->db->insert('surat_ke_pfa',$data);
 	}
 
+	public function get_pfa($idr)
+	{
+		$this->db->from('surat_ke_pfa');
+		$this->db->where('id_register', $idr);
+		return $this->db->get();
+	}
+
 }

@@ -221,6 +221,7 @@ class Register extends CI_Controller {
 			$data['aanwijzing'] = $this->get_aanwijzing($id);
 			$data['auction'] = $this->get_auction($id);
             $data['comment'] = $this->get_comment($id);
+            $data['pfa'] = $this->Register_masuk_model->get_pfa($id)->result();
 			echo json_encode($data);
 		}else{
 			echo 'tidak ada data.';

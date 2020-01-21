@@ -150,7 +150,7 @@
       </div>
       <div class="col push-s3 s9">
       </div>
-      <div class="col push-s3 s9">
+      <!-- <div class="col push-s3 s9">
         <div class="collection with-header">
           <li class="collection-header"><h4>Pengumuman</h4></li>
           <a href="#!" class="collection-item">tes</a>
@@ -161,7 +161,7 @@
           <li class="collection-item"></a>
         </div>
             
-      </div>
+      </div> -->
 
     </div>
 

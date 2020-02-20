@@ -186,5 +186,14 @@ class User_model extends CI_Model {
 		return $this->db->get();
 	}
 
+	public function update_log($kata, $iduser)
+	{
+		$tgl = date('Y-m-d H:i:s');
+		$data = array('user' => $iduser,
+					'kegiatan'=>$kata,
+					'tanggal'=>$tgl);
+		return $this->db->insert('log', $data);
+	}
+
 	
 }

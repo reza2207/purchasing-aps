@@ -249,8 +249,8 @@ nav ul li::after{
 #jamlogin{
     font-family: comfortaa;
     color: blue;
-    top: 93%;
-    margin-top: 370px;
+    
+    
     animation: mymovejam 10s infinite;
     animation-direction: alternate;
 }

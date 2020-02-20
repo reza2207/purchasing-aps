@@ -237,3 +237,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	        return count($hari)-1;
 	    }
 	}
+
+	function tgl_jam($val){
+		if($val === null || $val == ""){
+			return "-";
+		}else{
+			$ex = explode(" ",$val);
+			return tgl_indo($ex[0]).' '.$ex[1];
+		}
+	}

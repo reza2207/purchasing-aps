@@ -120,7 +120,9 @@
   </div>
   <div class="modal-footer">
     <button class="modal-close waves-effect waves-yellow btn-flat">CANCEL</button>
+    <?php if($_SESSION['role'] != 'user'):?>
     <button id="edit-button" class="orange white-text waves-effect waves-green btn-flat">EDIT</button>
+    <?php endif;?>
   </div>
 </div>
 <!-- end modal edit-->
@@ -201,7 +203,9 @@
       "dom": 'Bflrtip',
               buttons: [
             { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
+            <?php if($_SESSION['role'] != 'user'){?>
             { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
+            <?php }?>
             { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
             { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
             ],

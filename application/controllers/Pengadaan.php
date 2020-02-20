@@ -58,22 +58,24 @@ class Pengadaan extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$list = $this->Pengadaan_model->get_datatables();
 			$data = array();
-			$no = $_POST['start'];
+			$no = $this->input->post('start');
 			foreach ($list as $field) {
 				$no++;
 				$row = array();
 				$row['no'] = $no;
 				$row['no_notin'] = $field->no_notin;
-				$row['tgl_notin'] = tanggal($field->tgl_notin);
+				$row['tgl_notin'] = tgl_indo($field->tgl_notin);
 				$row['jenis_notin_masuk'] = $field->jenis_notin_masuk;
-				$row['tgl_disposisi'] = tanggal($field->tgl_disposisi);
+				$row['tgl_disposisi'] = tgl_indo($field->tgl_disposisi);
 				$row['perihal'] = $field->perihal;
 				$row['jenis_pengadaan'] = $field->jenis_pengadaan;
 				$row['divisi'] = $field->divisi;
 				$row['kewenangan'] = $field->kewenangan;
 				$row['id_pengadaan'] = $field->id_pengadaan;
 				$row['no_id'] = $field->no;
-			
+				$row['nego'] = $field->nego;
+				$row['realisasi'] = titik($field->realisasi);
+				$row['file'] = $field->file;
 				$data[] = $row;
 				
 			}
@@ -105,8 +107,12 @@ class Pengadaan extends CI_Controller {
 				$this->form_validation->set_rules('tahun_pengadaan', 'Tahun Pengadaan', 'required');
 				$this->form_validation->set_rules('perihal', 'Perihal', 'required');
 				$this->form_validation->set_rules('divisi', 'Divisi', 'required');
-				if($this->form_validation->set_rules('divisi', 'Divisi', 'required') == 'BSK'){
+				if($this->input->post('divisi') == 'BSK'){
 					$this->form_validation->set_rules('kelompok', 'Kelompok', 'required');
+				}
+
+				if($this->input->post('jenis_surat') == 'Permintaan Ulang'){
+					$this->form_validation->set_rules('id_pengadaan','Id Pengadaan Sebelumnya','required');
 				}
 				$this->form_validation->set_rules('jenis_surat', 'Jenis Surat', 'required');//
 				$this->form_validation->set_rules('jenis_pengadaan', 'Jenis Pengadaan', 'required');
@@ -123,7 +129,6 @@ class Pengadaan extends CI_Controller {
 				$this->form_validation->set_rules('satuan[]', 'Satuan', 'required');
 				$this->form_validation->set_rules('hpssatuan[]', 'Hps Satuan', 'required');
 				$this->form_validation->set_rules('penawaran[]', 'Harga Penawaran', 'required|trim|numeric');
-				$this->form_validation->set_rules('hpsidr[]', 'Hps', 'required');
 				$this->form_validation->set_rules('realisasirp[]', 'Harga Realisasi', 'required');
 				$this->form_validation->set_rules('realisasiqty[]', 'Qty Realisasi', 'required');
 				$this->form_validation->set_rules('nokontrak[]', 'No. Kontrak', 'required');
@@ -154,6 +159,7 @@ class Pengadaan extends CI_Controller {
 					$kelompok = $this->input->post('kelompok');
 					$keterangan = $this->input->post('keterangan');
 					$kewenangan = $this->input->post('kewenangan');
+					//$idr = $this->input->post('id_pengadaan');
 					$id = $this->_get_id_pengadaan($tahun);
 					//array
 					$item = $this->input->post('item');
@@ -161,8 +167,6 @@ class Pengadaan extends CI_Controller {
 					$bahan = $this->input->post('bahan');
 					$jumlah = $this->input->post('jumlah');
 					$satuan = $this->input->post('satuan');
-					$hpsusd = $this->input->post('hpsusd');
-					$hpsidr = $this->input->post('hpsidr');
 					$hpssatuan = $this->input->post('hpssatuan');
 					$penawaran = $this->input->post('penawaran');
 					$realisasiusd = $this->input->post('realisasiusd');
@@ -181,8 +185,6 @@ class Pengadaan extends CI_Controller {
 							"bahan" => $bahan[$key],
 							"jumlah" => $jumlah[$key],
 							"satuan" => $satuan[$key],
-							"hps_usd" =>$hpsusd[$key],
-							"hps_idr" =>$hpsidr[$key],
 							"hps_satuan"=> $hpssatuan[$key],
 							"penawaran" => $penawaran[$key],
 							"realisasi_nego_usd" => $realisasiusd[$key],
@@ -577,9 +579,7 @@ class Pengadaan extends CI_Controller {
 				$bahan = $this->input->post('bahan');
 				$jumlah = $this->input->post('jumlah');
 				$satuan = $this->input->post('satuan');
-				$hpsusd = $this->input->post('hpsusd');
-				$hpsidr = $this->input->post('hpsidr');
-				$hpsatuan = $this->input->post('hpssatuan');
+				$hpssatuan = $this->input->post('hpssatuan');
 				$penawaran = $this->input->post('penawaran');
 				$realisasiusd = $this->input->post('realisasiusd');
 				$realisasirp = $this->input->post('realisasirp');
@@ -588,7 +588,7 @@ class Pengadaan extends CI_Controller {
 				$tglkontrak = $this->input->post('tglkontrak');
 				$vendor = $this->input->post('vendor');
 
-				if($this->Pengadaan_model->update_row($idp, $id, $item, $ukuran, $bahan, $jumlah, $satuan, $hpsusd, $hpsidr, $hpssatuan, $penawaran, $realisasiusd, $realisasirp, $realisasiqty, $nokontrak, $tglkontrak, $vendor))
+				if($this->Pengadaan_model->update_row($idp, $id, $item, $ukuran, $bahan, $jumlah, $satuan, $hpssatuan, $penawaran, $realisasiusd, $realisasirp, $realisasiqty, $nokontrak, $tglkontrak, $vendor))
 				{
 
 					$data->type = 'success';
@@ -717,30 +717,88 @@ class Pengadaan extends CI_Controller {
 				$this->load->library('form_validation');
 				$data = new stdClass();
 				//validate array
-				$this->form_validation->set_rules('item[]', 'Item', 'required');
-				$this->form_validation->set_rules('ukuran[]', 'Ukuran', 'required');
+				
 				$this->form_validation->set_rules('bahan[]', 'Bahan', 'required');
-				$this->form_validation->set_rules('jumlah[]', 'Jumlah', 'required');
-				$this->form_validation->set_rules('satuan[]', 'Satuan', 'required');
 				$this->form_validation->set_rules('hpssatuan[]', 'Hps Satuan', 'required');
+				$this->form_validation->set_rules('item[]', 'Item', 'required');
+				$this->form_validation->set_rules('jumlah[]', 'Jumlah', 'required');
+				$this->form_validation->set_rules('ukuran[]', 'Ukuran', 'required');
+				$this->form_validation->set_rules('satuan[]', 'Satuan', 'required');
 				$this->form_validation->set_rules('penawaran[]', 'Harga Penawaran', 'required|trim|numeric');
 				$this->form_validation->set_rules('realisasirp[]', 'Harga Realisasi', 'required');
 				$this->form_validation->set_rules('realisasiqty[]', 'Qty Realisasi', 'required');
 				$this->form_validation->set_rules('nokontrak[]', 'No. Kontrak', 'required');
 				$this->form_validation->set_rules('tglkontrak[]', 'Tgl. Kontrak', 'required');
 				$this->form_validation->set_rules('vendor[]', 'Vendor', 'required');
-
-				if ($this->form_validation->run() == false) 
+//beloman
+				if ($this->form_validation->run() === false) 
 				{
 					
 					$errors = validation_errors();
 					$data->type = 'error';
 		            $data->pesan = $errors;
-		            
-					
+		            					
 				}else{
-					$data->type = 'success';
-		            $data->pesan = 'Berhasil';
+					$bahan = $this->input->post('bahan');
+					$hpssatuan = $this->input->post('hpssatuan');
+					$item = $this->input->post('item');
+					$ukuran = $this->input->post('ukuran');
+					$vendor = $this->input->post('vendor');
+					$jumlah = $this->input->post('jumlah');
+					$nokontrak = $this->input->post('nokontrak');
+					$tglkontrak = $this->input->post('tglkontrak');
+					$penawaran = $this->input->post('penawaran');
+					$realisasiqty = $this->input->post('realisasiqty');
+					$realisasirp = $this->input->post('realisasirp');
+					$realisasiusd = $this->input->post('realisasiusd');
+					$satuan = $this->input->post('satuan');
+					$idp = $this->input->post('idpengadaan');
+
+					if($this->Pengadaan_model->get_last_id_d($idp)->num_rows() > 0){
+						$idl =$this->Pengadaan_model->get_last_id_d($idp)->row('id_pengadaan_uniq');
+						$t = explode('-', $idl);
+						$urut = (int) $t[2];
+						//$idb = $idp.'-'.str_pad((int) $urut+1,4,"0",STR_PAD_LEFT);
+					}else{
+						$urut = 0;
+						//$idb = $idp.'-0001';
+					}
+
+					foreach($item AS $key => $val){
+						$urut++;
+						$result[] = array(
+							"id_pengadaan" => $idp,
+							"id_pengadaan_uniq" => $idp.'-'.str_pad($urut,3,"0",STR_PAD_LEFT),
+							"item" =>$item[$key],
+							"ukuran" =>$ukuran[$key],
+							"bahan" => $bahan[$key],
+							"jumlah" => $jumlah[$key],
+							"satuan" => $satuan[$key],
+							"hps_satuan"=> $hpssatuan[$key],
+							"penawaran" => $penawaran[$key],
+							"realisasi_nego_usd" => $realisasiusd[$key],
+							"realisasi_nego_rp" => $realisasirp[$key],
+							"realisasi_qty_unit"=>$realisasiqty[$key],
+							"no_kontrak" => $nokontrak[$key],
+							"tgl_kontrak"=> tanggal1($tglkontrak[$key]),
+							"id_vendor" => $vendor[$key]
+						);
+					}
+
+					if($this->db->insert_batch('detail_item_pengadaan', $result))
+					{
+						$data = new stdClass();
+						$data->type = 'success';
+						$data->pesan = 'Success';
+					
+						
+					}else{
+						$data = new stdClass();
+						$data->type = 'error';
+						$data->pesan = 'Failed';
+					
+					
+			        }
 
 				}
 
@@ -777,6 +835,63 @@ class Pengadaan extends CI_Controller {
 		}else{
 			redirect('');
 		}
+	}
+
+	public function get_report()
+	{
+		$tahun = '2017';
+		$divisi = '';
+		$jenis = '';
+		echo json_encode($this->Pengadaan_model->get_report($tahun, $divisi, $jenis)->result());
+	}
+
+	public function get_p()
+	{
+		$tahun = $this->input->post('tahun');
+		//$r = $this->Pengadaan_model->get_data_p($tahun)->result();
+		
+		/*for($i = 0;$i < count($r);$i++){
+			$row['a']['divisi'][] = $r[$i]->divisi;
+			$row['a']['jml'][] = $r[$i]->jml;
+			$row['a']['tahun'][] = $r[$i]->tahun;
+
+		}*/
+		//$j2 = 'Penunjukan Langsung';
+		//$j3 = 'Pemilihan Langsung';
+		
+		$row = $this->get_d_p($tahun);
+		//$row[$j2] = $this->get_d_p($tahun, $j2);
+		//$row[$j3] = $this->get_d_p($tahun, $j3);
+		$row['divisi'] = $this->get_div($tahun);
+
+		echo json_encode($row);
+	}
+
+	private function get_d_p($tahun)
+	{
+		
+		
+		$r = $this->Pengadaan_model->get_data_p_d($tahun)->result();
+		//$jmldiv = $this->Pengadaan_model->get_div($tahun)->num_rows();
+		for($i = 0;$i < count($r);$i++){
+				
+				$row['trans'][$r[$i]->jenis][] = $r[$i]->jml;
+				$row['jenis'][$r[$i]->jenis] = $r[$i]->jenis;
+			
+		}
+		return $row;
+		
+	}
+
+	private function get_div($tahun)
+	{
+		$r = $this->Pengadaan_model->get_div($tahun)->result();
+		for($i = 0;$i < count($r);$i++){
+				
+				$row[] = $r[$i]->divisi;
+			
+		}
+		return $row;
 	}
 
 }

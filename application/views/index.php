@@ -60,9 +60,9 @@
       <div class="col s12 offset-l3 l9">
         <div class="row">
           <?php if($_SESSION['role'] != 'user'){?>
-          <div class="col l3">
+          <div class="col l3 s12">
           <?php }else{?>
-            <div class="col l4">
+            <div class="col l4 s12">
           <?php }?>
             <div class="card hoverable">
               <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
@@ -84,9 +84,9 @@
             </div>
           </div>
           <?php if($_SESSION['role'] != 'user'){?>
-          <div class="col l3">
+          <div class="col l3 s12">
           <?php }else{?>
-            <div class="col l4">
+            <div class="col l4 s12">
           <?php }?>
             <div class="card hoverable">
               <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
@@ -108,9 +108,9 @@
             </div>
           </div>
           <?php if($_SESSION['role'] != 'user'){?>
-          <div class="col l3">
+          <div class="col l3 s12">
           <?php }else{?>
-            <div class="col l4">
+            <div class="col l4 s12">
           <?php }?>
             <div class="card hoverable">
               <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
@@ -132,7 +132,7 @@
             </div>
           </div>
           <?php if($_SESSION['role'] != 'user'){?>
-          <div class="col l3">
+          <!-- <div class="col l3">
             <div class="card hoverable">
               <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
                 <div class="white-text activator" style="text-align: center;padding-top: 10px;font-size: 2em"><a href="<?= base_url().'register/my_task';?>" class="white-text">My Task</a></div>
@@ -144,24 +144,30 @@
                 <p>Here is some more information about this product that is only revealed once clicked on.</p>
               </div>
             </div>
-          </div>
+          </div> -->
           <?php }?>
         </div>
       </div>
-      <div class="col push-s3 s9">
+      <div class="col push-sl s9">
       </div>
-      <!-- <div class="col push-s3 s9">
-        <div class="collection with-header">
-          <li class="collection-header"><h4>Pengumuman</h4></li>
-          <a href="#!" class="collection-item">tes</a>
-          <a href="#!" class="collection-item">tes</a>
-          <a href="#!" class="collection-item">tes</a>
-          <a href="#!" class="collection-item">tes</a>
-          <a href="#!" class="collection-item">tes</a>
-          <li class="collection-item"></a>
+      <div class="col push-l3 l9 s12">
+        <div class="row">
+          <div class="col s12 l1">
+
+            <select class="select-m" id="thn">
+              <?php foreach($this->Pengadaan_model->get_tahun() as $t){ ;?>
+                <option><?= $t->tahun;?></option>
+              <?php }?>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12" style="position: relative; height:70vh;">
+            <canvas id="myChart"></canvas>
+          </div>
         </div>
             
-      </div> -->
+      </div>
 
     </div>
 
@@ -172,11 +178,12 @@
   $(document).ready(function(){
       $('.slider').slider();
       $('.carousel').carousel();
-
+      $('.select-m').formSelect();
     function loader(){
       $('.waiting').hide();
     }
     setTimeout(loader, 1000);
+    setInterval(chart(<?= $this->Pengadaan_model->get_cur_y();?>),10000);
       if(<?= $pks->num_rows();?> > 0){
         swal({
           type: 'warning',
@@ -186,4 +193,124 @@
       }
 
     });
+
+    $('#thn').on('change', function(e){
+      let thn = this.value;
+      chart(thn);
+    })
+    
+    function chart(thn)
+    {
+      $.ajax({
+        type: 'POST',
+        data: {tahun: thn},
+        url: '<?= base_url()."pengadaan/get_p";?>',
+        dataType: 'JSON',
+        success: function(data){
+          let ctx = document.getElementById('myChart').getContext('2d');
+
+          if(window.bar != undefined)
+            bar.destroy(); 
+
+            bar = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: data.divisi,
+                  datasets: [
+                  {
+                      label: data.jenis['Pembelian Langsung'],
+                      data: data.trans['Pembelian Langsung'],
+                      backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+                          'rgba(204, 134, 30, 0.2)',
+                          
+                      ],
+                      borderColor: [
+                          'rgba(255, 99, 132, 1)',
+                          'rgba(54, 162, 235, 1)',
+                          'rgba(204, 134, 30, 1)',
+                          
+                      ],
+                      borderWidth: 1
+                  },
+                  {
+                      label: data.jenis['Penunjukan Langsung'],
+                      data: data.trans['Penunjukan Langsung'],
+                      backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+                          'rgba(204, 134, 30, 0.2)',
+                          
+                      ],
+                      borderColor: [
+                          'rgba(255, 99, 132, 1)',
+                          'rgba(54, 162, 235, 1)',
+                          'rgba(204, 134, 30, 1)',
+                          
+                      ],
+                      borderWidth: 1
+                  },
+                  {
+                      label: data.jenis['Pemilihan Langsung'],
+                      data: data.trans['Pemilihan Langsung'],
+                      backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+                          'rgba(204, 134, 30, 0.2)',
+                          
+                      ],
+                      borderColor: [
+                          'rgba(255, 99, 132, 1)',
+                          'rgba(54, 162, 235, 1)',
+                          'rgba(204, 134, 30, 1)',
+                          
+                      ],
+                      borderWidth: 1
+                  },
+                   {
+                      label: data.jenis['Pelelangan'],
+                      data: data.trans['Pelelangan'],
+                      backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+                          'rgba(204, 134, 30, 0.2)',
+                          
+                      ],
+                      borderColor: [
+                          'rgba(255, 99, 132, 1)',
+                          'rgba(54, 162, 235, 1)',
+                          'rgba(204, 134, 30, 1)',
+                          
+                      ],
+                      borderWidth: 1
+                  }
+
+                  ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true
+                          }
+                      }]
+                    },
+                    title: {
+                      display: true,
+                      text: 'Pengadaan'
+                    },
+                  legend: {
+                      display: false,
+                      labels: {
+                          fontColor: 'rgb(255, 99, 132)',
+
+                      }
+                  },
+
+              }
+            });
+        }
+      })
+    }
 </script>

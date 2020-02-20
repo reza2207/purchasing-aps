@@ -21,27 +21,27 @@ class Register_masuk_model extends CI_Model {
 	}
 	private function _get_datatables_query() 
 	{	
-		$this->db->select('a.id_register, a.tgl_register, a.divisi, a.email, a.tgl_email, a.tgl_terima_email, a.kelompok, a.no_surat_masuk, a.tgl_surat_masuk, a.perihal, a.tgl_terima_surat, a.jenis_surat, a.tgl_disposisi_pimkel, a.tgl_disposisi_manajer, a.keterangan, a.tahun, a.jenis_pengadaan, a.user, a.status_data, a.tgl_surat, a.no_surat, a.id_surat, a.username, a.nama, a.no_srt_pengembalian, a.tgl_srt_pengembalian, a.alasan, a.jmldoc, b.keterangan as status, a.type_surat');
-		$this->db->from('(SELECT `register_masuk`.`id_register`, `register_masuk`.`tgl_register`, `register_masuk`.`divisi`, `register_masuk`.`email`, `register_masuk`.`tgl_email`, `register_masuk`.`tgl_terima_email`, `register_masuk`.`kelompok`, `register_masuk`.`no_surat` as `no_surat_masuk`, `register_masuk`.`tgl_surat` as `tgl_surat_masuk`, `register_masuk`.`perihal`, `register_masuk`.`tgl_terima_surat`, `register_masuk`.`jenis_surat`, `tgl_disposisi_pimkel`, `register_masuk`.`tgl_disposisi_manajer`, `register_masuk`.`keterangan`, `register_masuk`.`tahun`, `jenis_pengadaan_reg`.`jenis_pengadaan`, `register_masuk`.`user`, `register_masuk`.`status_data`, `a`.`tgl_surat`, `a`.`no_surat`, `a`.`id_surat`, `b`.`username`, `b`.`nama`, `d`.`no_surat` as `no_srt_pengembalian`, `d`.`tgl_surat` as `tgl_srt_pengembalian`, `d`.`alasan`, `c`.`jmldoc`, IF(jenis_pengadaan_reg.jenis_pengadaan = "Pembelian Langsung" AND c.jmldoc > 0, 8, IF(d.tgl_kembali is not null, 18, IF(c.jmldoc > 0, 8, 7))) as status, c.type_surat FROM `register_masuk` LEFT JOIN `jenis_pengadaan_reg` ON `register_masuk`.`id_register` = `jenis_pengadaan_reg`.`id_register` LEFT JOIN (SELECT a.id_register, GROUP_CONCAT(a.tgl_surat) AS tgl_surat, GROUP_CONCAT(a.no_surat) AS no_surat, GROUP_CONCAT(a.id_surat) AS id_surat, GROUP_CONCAT(b.jenis_surat) AS jenis FROM detail_register_masuk a LEFT JOIN jenis_surat b ON b.id_surat = a.id_surat GROUP BY a.id_register) AS a ON `a`.`id_register` = `register_masuk`.`id_register` LEFT JOIN (SELECT id_register, GROUP_CONCAT(pembuat_pekerjaan.username) AS username, GROUP_CONCAT(user.nama) AS nama FROM pembuat_pekerjaan LEFT JOIN user ON pembuat_pekerjaan.username = user.username GROUP BY id_register) AS b ON `register_masuk`.`id_register` = `b`.`id_register` LEFT JOIN (SELECT count(*) AS jmldoc, id_register, id_surat as type_surat FROM detail_register_masuk GROUP BY id_register ORDER BY id_surat DESC) c ON `register_masuk`.`id_register` = `c`.`id_register` LEFT JOIN `pengembalian_surat` `d` ON `register_masuk`.`id_register` = `d`.`id_register`) a');
+		$this->db->select('a.id_register, a.tgl_register, a.divisi, a.email, a.tgl_email, a.tgl_terima_email, a.kelompok, a.no_surat_masuk, a.tgl_surat_masuk, a.perihal, a.tgl_terima_surat, a.jenis_surat, a.tgl_disposisi_pimkel, a.tgl_disposisi_manajer, a.keterangan, a.tahun, a.jenis_pengadaan, a.user, a.status_data, a.tgl_surat, a.no_surat, a.id_surat, a.username, a.nama, a.no_srt_pengembalian, a.tgl_srt_pengembalian, a.alasan, a.jmldoc, b.keterangan as status, a.type_surat, a.divisi, c.comment, c.created_at');
+		$this->db->from('(SELECT `register_masuk`.`id_register`, `register_masuk`.`tgl_register`, `register_masuk`.`divisi`, `register_masuk`.`email`, `register_masuk`.`tgl_email`, `register_masuk`.`tgl_terima_email`, `register_masuk`.`kelompok`, `register_masuk`.`no_surat` as `no_surat_masuk`, `register_masuk`.`tgl_surat` as `tgl_surat_masuk`, `register_masuk`.`perihal`, `register_masuk`.`tgl_terima_surat`, `register_masuk`.`jenis_surat`, `tgl_disposisi_pimkel`, `register_masuk`.`tgl_disposisi_manajer`, `register_masuk`.`keterangan`, `register_masuk`.`tahun`, `jenis_pengadaan_reg`.`jenis_pengadaan`, `register_masuk`.`user`, `register_masuk`.`status_data`, `a`.`tgl_surat`, `a`.`no_surat`, `a`.`id_surat`, `b`.`username`, `b`.`nama`, `d`.`no_surat` as `no_srt_pengembalian`, `d`.`tgl_surat` as `tgl_srt_pengembalian`, `d`.`alasan`, `c`.`jmldoc`, IF(e.id is not null, 20,IF(d.tgl_kembali is not null, 21, IF(jenis_pengadaan_reg.jenis_pengadaan = "Pembelian Langsung" AND c.jmldoc > 0, 19, IF(c.jmldoc > 0, 19, 18)))) as status, c.type_surat FROM `register_masuk` LEFT JOIN `jenis_pengadaan_reg` ON `register_masuk`.`id_register` = `jenis_pengadaan_reg`.`id_register` LEFT JOIN (SELECT a.id_register, GROUP_CONCAT(a.tgl_surat) AS tgl_surat, GROUP_CONCAT(a.no_surat) AS no_surat, GROUP_CONCAT(a.id_surat) AS id_surat, GROUP_CONCAT(b.jenis_surat) AS jenis FROM detail_register_masuk a LEFT JOIN jenis_surat b ON b.id_surat = a.id_surat GROUP BY a.id_register) AS a ON `a`.`id_register` = `register_masuk`.`id_register` LEFT JOIN (SELECT id_register, GROUP_CONCAT(pembuat_pekerjaan.username) AS username, GROUP_CONCAT(user.nama) AS nama FROM pembuat_pekerjaan LEFT JOIN user ON pembuat_pekerjaan.username = user.username GROUP BY id_register) AS b ON `register_masuk`.`id_register` = `b`.`id_register` LEFT JOIN (SELECT count(*) AS jmldoc, id_register, id_surat as type_surat FROM detail_register_masuk GROUP BY id_register ORDER BY id_surat DESC) c ON `register_masuk`.`id_register` = `c`.`id_register` LEFT JOIN `pengembalian_surat` `d` ON `register_masuk`.`id_register` = `d`.`id_register` LEFT JOIN pembatalan e ON register_masuk.id_register = e.id_register) a');
 		
 		$this->db->join('status b', 'a.status = b.id_status', 'LEFT');
+		$this->db->join('(SELECT * FROM `comment_register` WHERE created_at in (SELECT MAX(created_at) from comment_register GROUP BY id_register) ) c', 'a.id_register = c.id_register', 'LEFT');
 	    if($this->input->post('divisi') != 'All'){
-	    	$this->db->where('register_masuk.divisi', $this->input->post('divisi'));
+	    	$this->db->where('divisi', $this->input->post('divisi'));
 	    
 
 	    }
 	    if($this->input->post('tahun') != 'All'){
-	    	$this->db->where('register_masuk.tahun', $this->input->post('tahun'));
+	    	$this->db->where('tahun', $this->input->post('tahun'));
 	    }
 	    
 	    if($this->input->post('my_task') != '' && $this->input->post('my_task') == "All"){
-	    	$session = $_SESSION['username'];
-	    	$this->db->like('b.username',$session);
-	    }elseif($this->input->post('my_task') != '' && $this->input->post('my_task') != "All"){
-	    	$session = $_SESSION['username'];
+	    	$this->db->where('status !=','');
+	    	
+	    }elseif($this->input->post('my_task') != "All"){
 	    	$status = $this->input->post('my_task');
-	    	$this->db->like('b.username',$session);
-	    	$this->db->where('register_masuk.status_data',$status);
+	    	
+	    	$this->db->where('status',$status);
 	    }
 
 		$i = 0;
@@ -108,7 +108,7 @@ class Register_masuk_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	public function add_data_masuk($id,  $divisi, $jenis, $email, $tglemail, $nosurat, $tglsurat, $perihal, $user, $kelompok,$tglterimasurat, $tglterimaemail, $tahun, $status, $beban, $anggaran){
+	public function add_data_masuk($id,  $divisi, $jenis, $email, $tglemail, $nosurat, $tglsurat, $perihal, $user, $kelompok,$tglterimasurat, $tglterimaemail, $tahun, $status, $beban, $anggaran, $idr){
 		$data = array('id_register'=>$id,
 					  'divisi'=>$divisi,
 					  'jenis_surat'=>$jenis,
@@ -124,7 +124,8 @@ class Register_masuk_model extends CI_Model {
 					  'tahun'=>$tahun,
 					  'anggaran'=>$anggaran,
 					  'beban_anggaran'=>$beban,
-					  'status_data'=>$status);
+					  'status_data'=>$status,
+					  'id_register_sebelum'=>$idr);
 		return $this->db->insert($this->table, $data);
 	}
 
@@ -140,10 +141,13 @@ class Register_masuk_model extends CI_Model {
 
 	public function get_data_register($id)
 	{	
-		$this->db->select('a.id_register, a.tgl_register, a.divisi, a.email, a.tgl_email, a.tgl_terima_email, a.kelompok, a.no_surat, a.tgl_surat, a.perihal, a.tgl_terima_surat, a.jenis_surat, a.tgl_disposisi_pimkel, a.tgl_disposisi_manajer, a.keterangan, a.tahun, a.nama, a.username, a.id_detail_register, a.no_kontrak, a.nm_vendor, a.jenis_pengadaan, a.user, b.keterangan as status_data, a.tempat_pengadaan, a.no_srt_llg, a.tgl_srt_llg, a.tgl_kembali, a.no_pengembalian, a.tgl_srt_pengembalian, a.alasan');
-		$this->db->from('(SELECT `register_masuk`.`id_register`, `register_masuk`.`tgl_register`, `register_masuk`.`divisi`, `register_masuk`.`email`, `register_masuk`.`tgl_email`, `register_masuk`.`tgl_terima_email`, `register_masuk`.`kelompok`, `register_masuk`.`no_surat`, `register_masuk`.`tgl_surat`, `register_masuk`.`perihal`, `register_masuk`.`tgl_terima_surat`, `register_masuk`.`jenis_surat`, `register_masuk`.`tgl_disposisi_pimkel`, `register_masuk`.`tgl_disposisi_manajer`, `register_masuk`.`keterangan`, `register_masuk`.`tahun`, `b`.`nama`, `b`.`username`, `id_detail_register`, `a`.`no_kontrak`, `a`.`nm_vendor`, `jenis_pengadaan_reg`.`jenis_pengadaan`, `register_masuk`.`user`, IF(jenis_pengadaan_reg.jenis_pengadaan = "Pembelian Langsung" AND e.jmldoc > 0, 8, IF(d.tgl_kembali is not null, 18, IF(e.jmldoc > 0, 8,7))) as status_data, `jenis_pengadaan_reg`.`tempat_pengadaan`, `c`.`no_surat` as `no_srt_llg`, `c`.`tgl_surat` as `tgl_srt_llg`, `d`.`tgl_kembali`, `d`.`no_surat` as `no_pengembalian`, `d`.`tgl_surat` as `tgl_srt_pengembalian`, `d`.`alasan` FROM `register_masuk` LEFT JOIN (SELECT id_register, GROUP_CONCAT(pembuat_pekerjaan.username) AS username, GROUP_CONCAT(user.nama SEPARATOR ", ") AS nama FROM pembuat_pekerjaan LEFT JOIN user ON pembuat_pekerjaan.username = user.username GROUP BY id_register) AS b ON `register_masuk`.`id_register` = `b`.`id_register` LEFT JOIN (SELECT a.id_register, GROUP_CONCAT(a.id_detail_register) id_detail_register, GROUP_CONCAT( CONCAT(a.no_surat,"|", a.tgl_surat,"|", b.jenis_surat, "|", tdr.nm_vendor) SEPARATOR "&") no_kontrak, GROUP_CONCAT(tdr.nm_vendor SEPARATOR "
-") nm_vendor FROM detail_register_masuk a LEFT JOIN tdr ON a.id_vendor = tdr.id_vendor LEFT JOIN jenis_surat b ON b.id_surat = a.id_surat GROUP BY id_register) a ON `register_masuk`.`id_register` = `a`.`id_register` LEFT JOIN `pengumuman_lelang` `c` ON `register_masuk`.`id_register` = `c`.`id_register` LEFT JOIN `jenis_pengadaan_reg` ON `register_masuk`.`id_register` = `jenis_pengadaan_reg`.`id_register` LEFT JOIN (SELECT count(*) AS jmldoc, id_register FROM detail_register_masuk GROUP BY id_register) e ON `register_masuk`.`id_register` = `e`.`id_register` LEFT JOIN `pengembalian_surat` `d` ON `register_masuk`.`id_register` = `d`.`id_register`) as a');
+		$this->db->select('a.id_register, a.tgl_register, a.divisi, a.email, a.tgl_email, a.tgl_terima_email, a.kelompok, a.no_surat, a.tgl_surat, a.perihal, a.tgl_terima_surat, a.jenis_surat, a.tgl_disposisi_pimkel, a.tgl_disposisi_manajer, a.keterangan, a.tahun, a.nama, a.username, a.id_detail_register, a.no_kontrak, a.nm_vendor, a.jenis_pengadaan, a.user, b.keterangan as status_data, a.tempat_pengadaan, a.no_srt_llg, a.tgl_srt_llg, a.perihal_llg, a.tgl_kembali, a.no_pengembalian, a.tgl_srt_pengembalian, a.alasan, a.alasan_batal, a.tgl_pembatalan, a.tgl_srt_btl, a.no_srt_btl, e.jmlp');
+		$this->db->from('(SELECT `register_masuk`.`id_register`, `register_masuk`.`tgl_register`, `register_masuk`.`divisi`, `register_masuk`.`email`, `register_masuk`.`tgl_email`, `register_masuk`.`tgl_terima_email`, `register_masuk`.`kelompok`, `register_masuk`.`no_surat`, `register_masuk`.`tgl_surat`, `register_masuk`.`perihal`, `register_masuk`.`tgl_terima_surat`, `register_masuk`.`jenis_surat`, `register_masuk`.`tgl_disposisi_pimkel`, `register_masuk`.`tgl_disposisi_manajer`, `register_masuk`.`keterangan`, `register_masuk`.`tahun`, `b`.`nama`, `b`.`username`, `id_detail_register`, `a`.`no_kontrak`, `a`.`nm_vendor`, `jenis_pengadaan_reg`.`jenis_pengadaan`, `register_masuk`.`user`, IF(f.id is not null, 20, IF(d.tgl_kembali is not null, 21, IF(jenis_pengadaan_reg.jenis_pengadaan = "Pembelian Langsung" AND e.jmldoc > 0, 19, IF(e.jmldoc > 0, 19,18)))) as status_data, `jenis_pengadaan_reg`.`tempat_pengadaan`, `c`.`no_surat` as `no_srt_llg`, `c`.`tgl_surat` as `tgl_srt_llg`, 
+			`c`.`perihal` as `perihal_llg`,
+			`d`.`tgl_kembali`, `d`.`no_surat` as `no_pengembalian`, `d`.`tgl_surat` as `tgl_srt_pengembalian`, `d`.`alasan`, f.alasan as alasan_batal, f.tgl_pembatalan, f.tgl_surat as tgl_srt_btl, f.no_surat as no_srt_btl FROM `register_masuk` LEFT JOIN (SELECT id_register, GROUP_CONCAT(pembuat_pekerjaan.username) AS username, GROUP_CONCAT(user.nama SEPARATOR ", ") AS nama FROM pembuat_pekerjaan LEFT JOIN user ON pembuat_pekerjaan.username = user.username GROUP BY id_register) AS b ON `register_masuk`.`id_register` = `b`.`id_register` LEFT JOIN (SELECT a.id_register, GROUP_CONCAT(a.id_detail_register) id_detail_register, GROUP_CONCAT( CONCAT(a.no_surat,"|", a.tgl_surat,"|", b.jenis_surat, "|", tdr.nm_vendor) SEPARATOR "&") no_kontrak, GROUP_CONCAT(tdr.nm_vendor SEPARATOR "
+") nm_vendor FROM detail_register_masuk a LEFT JOIN tdr ON a.id_vendor = tdr.id_vendor LEFT JOIN jenis_surat b ON b.id_surat = a.id_surat GROUP BY id_register) a ON `register_masuk`.`id_register` = `a`.`id_register` LEFT JOIN `pengumuman_lelang` `c` ON `register_masuk`.`id_register` = `c`.`id_register` LEFT JOIN `jenis_pengadaan_reg` ON `register_masuk`.`id_register` = `jenis_pengadaan_reg`.`id_register` LEFT JOIN (SELECT count(*) AS jmldoc, id_register FROM detail_register_masuk GROUP BY id_register) e ON `register_masuk`.`id_register` = `e`.`id_register` LEFT JOIN `pengembalian_surat` `d` ON `register_masuk`.`id_register` = `d`.`id_register` LEFT JOIN pembatalan f ON register_masuk.id_register = f.id_register) as a');
 		$this->db->join('status b', 'a.status_data = b.id_status', 'LEFT');
+		$this->db->join('(SELECT id_register, count(username) as jmlp FROM pembuat_pekerjaan GROUP BY id_register) e','a.id_register = e.id_register','LEFT');
 		$this->db->where('a.id_register', $id);
 		return $this->db->get()->row();
 	}
@@ -186,7 +190,7 @@ class Register_masuk_model extends CI_Model {
 	}
 	public function update_status($id)
 	{
-		$data = array('status_data'=>'8');
+		$data = array('status_data'=>'19');
 		$this->db->where('id_register', $id);
 		
 		return $this->db->update($this->table, $data);
@@ -194,7 +198,6 @@ class Register_masuk_model extends CI_Model {
 
 	public function hapus_register($id)
 	{	
-		//return $this->db->delete('register_masuk', array('id_register' => $id));
 		$this->db->where('id_register', $id);
 		return $this->db->update('register_masuk', array('deleted_at'=>date('Y-m-d')));
 	}
@@ -218,7 +221,8 @@ class Register_masuk_model extends CI_Model {
 					  'no_surat'=>$no,
 					  'tgl_surat'=>$tgl,
 					  'perihal'=>$perihal,
-					  'tgl_terima_surat'=>$tgltrm);
+					  'tgl_terima_surat'=>$tgltrm,
+					  'email'=>'');
 		$this->db->where('id_register', $id);
 		return $this->db->update($this->table, $data);
 	}
@@ -289,12 +293,13 @@ class Register_masuk_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	public function add_pengumuman_lelang($id, $idr, $no_surat, $tgl_surat)
+	public function add_pengumuman_lelang($id, $idr, $no_surat, $tgl_surat, $perihal)
 	{	
 		$data = array('id'=>$id,
 					'id_register'=>$idr,
 					'no_surat'=>$no_surat,
-					'tgl_surat'=>$tgl_surat);
+					'tgl_surat'=>$tgl_surat,
+					'perihal'=>$perihal);
 		return $this->db->insert('pengumuman_lelang', $data);
 	}
 
@@ -372,5 +377,47 @@ class Register_masuk_model extends CI_Model {
 		$this->db->where('id_register', $idr);
 		return $this->db->get();
 	}
+
+	public function pembatalan($id, $idr, $tglb, $no, $tgls, $alasan)
+	{
+		$data = array('id'=>$id,
+			'id_register'=>$idr,
+			'tgl_pembatalan'=>$tglb,
+			'no_surat'=>$no,
+			'tgl_surat'=>$tgls,
+			'alasan'=>$alasan);
+		return $this->db->insert('pembatalan', $data);
+	}
+
+	public function get_list_status()
+	{
+		$this->db->from('status');
+		$this->db->where('menu', 'Register Masuk');
+		return $this->db->get();
+	}
+
+	public function get_my_task($user, $status = 18)
+	{
+		$this->db->select('a.id_register, a.username, a.status_data');
+		$this->db->from('(SELECT `register_masuk`.`id_register`, `b`.`username`,
+		IF(f.id is not null, 20, 
+		IF(d.tgl_kembali is not null, 21, 
+		IF(jenis_pengadaan_reg.jenis_pengadaan = "Pembelian Langsung" AND e.jmldoc > 0, 19, IF(e.jmldoc > 0, 19, 18)))) as status_data FROM `register_masuk` 
+		LEFT JOIN pembuat_pekerjaan AS b ON `register_masuk`.`id_register` = `b`.`id_register` LEFT JOIN `jenis_pengadaan_reg` ON `register_masuk`.`id_register` = `jenis_pengadaan_reg`.`id_register` 
+		LEFT JOIN (SELECT count(*) AS jmldoc, id_register FROM detail_register_masuk GROUP BY id_register) e ON `register_masuk`.`id_register` = `e`.`id_register` LEFT JOIN `pengembalian_surat` `d` ON `register_masuk`.`id_register` = `d`.`id_register` LEFT JOIN pembatalan f ON register_masuk.id_register = f.id_register) a');
+		$this->db->where('a.username', $user);
+		$this->db->where('a.status_data', $status);
+		return $this->db->get();
+	}
+
+	public function cek_pembuat($id)
+	{
+		$this->db->select('id_register, id_pembuat');
+		$this->db->from('pembuat_pekerjaan');
+		$this->db->where('id_register', $id);
+		return $this->db->get();
+	}
+
+	
 
 }

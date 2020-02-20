@@ -110,14 +110,15 @@ class User extends CI_Controller {
 					$_SESSION['icon'] = $user->profil_pict == '' ? '/gambar/profile/user.png' : $user->profil_pict ;
 					$_SESSION['jabatan'] = $user->jabatan;
 					$respons_ajax['status'] = 'success';
-					$respons_ajax['pesan'] = 'Welcome <b>'.$user->nama.'</b>!';
+					$respons_ajax['pesan'] = 'Welcome <b>'.$user->nama.'</b>';
 					echo json_encode($respons_ajax);
-					
+					$kata = $_SESSION['nama'].' is Login.';
+					$this->User_model->update_log($kata, $_SESSION['username']);
 				} else {
 					
 					// login failed
 					$respons_ajax['status'] = 'error';
-					$respons_ajax['pesan'] = 'Wrong Username or Password!';
+					$respons_ajax['pesan'] = 'Wrong Username or Password';
 					echo json_encode($respons_ajax);
 					
 				}
@@ -132,11 +133,13 @@ class User extends CI_Controller {
 		$data = new stdClass();
 		
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-			
+			$kata = $_SESSION['nama'].' is Logout.';
+			$this->User_model->update_log($kata, $_SESSION['username']);
 			// remove session datas
 			foreach ($_SESSION as $key => $value) {
 				unset($_SESSION[$key]);
 			}
+			$kata = $_SESSION['nama'].' Login';
 			
 			// user logout ok
 			redirect(base_url());
@@ -191,7 +194,9 @@ class User extends CI_Controller {
 				$this->User_model->create_user($username, $password, $fullname, $recovery, $answer, $role);
 				$respons_ajax['status'] = 'success';
 				$respons_ajax['pesan'] = 'Register Success';
-				echo json_encode($respons_ajax);		
+				echo json_encode($respons_ajax);
+				$kata = $_SESSION['nama'].' Menambahkan Login '.$username.'('.$fullname.')';
+				$this->User_model->update_log($kata, $_SESSION['username']);		
 			}
 			
 		}else{
@@ -217,19 +222,20 @@ class User extends CI_Controller {
 		if($this->input->post(null)){
 			$username = $this->input->post('username');
 
+			$data = new stdClass();
 			if($this->User_model->get_detail($username)->num_rows() == 0)
 			{
-				$data = new stdClass();
+				
 				$data->type = 'error';
 				$data->message = 'Username Not Found';
-				echo json_encode($data);
+				
 			}else{
-				$data = new stdClass();
+				
 				$data->type = 'success';
 				$data->message = $this->User_model->get_detail($username)->row('recovery_q');
-				echo json_encode($data);
+				
 			}
-
+			echo json_encode($data);
 		}
 	}
 
@@ -240,16 +246,18 @@ class User extends CI_Controller {
 			$question = $this->input->post('question');
 			$answer = $this->input->post('answer');
 
+			$data = new stdClass();
 			if($this->_check_answer($username, $question, $answer)){
-				$data = new stdClass();
+				
 				$data->type = 'success';
-				echo json_encode($data);
+				
 			}else{
-				$data = new stdClass();
+				
 				$data->type = 'error';
 				$data->message = 'Sorry, your answer is wrong';
-				echo json_encode($data);
+				
 			}
+			echo json_encode($data);
 		}else{
 
 			show_404();
@@ -291,7 +299,8 @@ class User extends CI_Controller {
 					$data->type = 'success';
 					$data->message = 'Your password is updated!';
 					echo json_encode($data);
-
+					$kata = $username.' Telah Merubah Password Dalam Fitur Lupa Password';
+					$this->User_model->update_log($kata, $username);
 				}else{
 					$data = new stdClass();
 					$data->type = 'error';
@@ -331,6 +340,8 @@ class User extends CI_Controller {
 						$data->type = 'success';
 						$data->message = 'Your password is updated!';
 						echo json_encode($data);
+						$kata = $_SESSION['nama'].' Telah Merubah Password';
+						$this->User_model->update_log($kata, $_SESSION['username']);
 
 					}else{
 						$data = new stdClass();
@@ -350,6 +361,8 @@ class User extends CI_Controller {
 			show_404();
 		}
 	}
+
+
 
 	
 }

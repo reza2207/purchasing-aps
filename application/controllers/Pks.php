@@ -172,17 +172,9 @@ class Pks extends CI_Controller {
 				$id = $this->input->post('id');
 				if($this->Pks_model->get_detail($id)){
 					$data = new stdClass();
-					$data = $this->Pks_model->get_detail($id);
-					
-					echo json_encode($data);
-						
-				}else{
-
-					echo json_encode($id);
-				}
-			}else{
-				if($this->Pks_model->get_detail($id)){
-					$data = $this->Pks_model->get_detail($id);
+					$data->pks = $this->Pks_model->get_detail($id)->row();
+					$data->comment = $this->get_comment($id);
+					$data->reminder = $this->Pks_model->data_reminder($id)->result();
 					echo json_encode($data);
 						
 				}
@@ -193,15 +185,20 @@ class Pks extends CI_Controller {
 			
 	}
 
-	public function get_comment()
+	private function get_comment($id)
+	{
+		return $data = $this->Pks_model->get_comment($id)->result();
+		
+	}
+
+	public function get_comm()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+
 			if($this->input->post(null)){
 				$id = $this->input->post('id');
 				$data = $this->Pks_model->get_comment($id)->result();
 				echo json_encode($data);
-			}else{
-				show_404();
 			}
 		}
 	}
@@ -384,7 +381,7 @@ class Pks extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
 		{
 			if($this->input->post(null)){
-				
+				$data = new stdClass();
 				$this->load->library('form_validation');
  				$this->form_validation->set_rules('no', 'No. Surat', 'required');
  				$this->form_validation->set_rules('tgl', 'Tgl. Surat', 'required');
@@ -401,7 +398,7 @@ class Pks extends CI_Controller {
 
 					$no = $this->input->post('no');
 					$idpks = $this->input->post('idpks');
-					$tgl = $this->input->post('tgl');
+					$tgl = tanggal1($this->input->post('tgl'));
 					$perihal = $this->input->post('perihal');
 					$file = $this->input->post('file');
 					$id = uniqid();
@@ -409,16 +406,16 @@ class Pks extends CI_Controller {
 					if($this->Pks_model->add_reminder($id, $idpks, $no, $tgl, $perihal, $file))
 					{
 						
-						$data = new stdClass();
 						$data->type = 'success';
 						$data->message = 'Berhasil';
-						echo json_encode($data);
+						
 					}else{
-						$data = new stdClass();
+						
 						$data->type = 'error';
 						$data->message = 'Gagal';
-						echo json_encode($data);
+						
 					}
+					echo json_encode($data);
 				}
 
 			}

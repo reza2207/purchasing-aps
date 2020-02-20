@@ -8,7 +8,7 @@
       <link type="text/css" rel="stylesheet" href="<?= base_url().'assets/materialize/css/materialize.min.css';?>"  media="screen,projection"/>
       <link href="<?= base_url().'assets/css/sweetalert2.min.css';?>" rel="stylesheet">
       <link href="<?= base_url().'assets/css/reza.css';?>" rel="stylesheet">
-
+      <link href="<?= base_url().'assets/css/balloon.css';?>" rel="stylesheet">
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
@@ -26,13 +26,15 @@
     <body>
       <nav>
         <div class="nav-wrapper deep-orange darken-3">
-          <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large brand-logo center" style="font-family: ogresse">System Monitoring Purchasing</a>
+          
+          <a href="#" class="brand-logo show-on-small hide-on-large-only" data-target="slide-out" style="font-size: 19px;font-family: ogresse;">System Purchasing</a>
+            <a href="<?= base_url();?>" id="brand-logo" class="show-on-large hide-on-med-and-down brand-logo center" for='dekstop'>Purchasing System</a>
         </div>
       </nav>
       <!-- Page Layout here -->
-      <div class="row col l12 s12">
-        <?= form_open('', 'style="top: 20%;position: absolute;padding-top: 10px;", class="card-panel col s10 push-s1 l4 push-l4" id="form-login"');?>
-          <div class="row center-align" style="margin-bottom: 0rem;">
+      <div class="row col l12 s12" style="padding-top: 70px">
+        <?= form_open('', 'style="", class="card-panel col s10 push-s1 l4 push-l4" id="form-login"');?>
+          <div class="row center-align" style="margin-bottom: 0rem;padding-top: 20px">
             <div class="input-field col s12 l6 push-l3">
               <input id="username" type="text" class="validate">
               <label for="username">Username</label>
@@ -45,10 +47,14 @@
             </div>
           </div>
           <div class="row">
-            <div class="input-field col l8 push-l4">
-              <a href="<?= base_url().'forgot_password';?>">Lupa Password?</a>
+            <div class="col l9 push-l3">
+              
               <button class="waves-effect waves-light deep-orange darken-1 btn" type="reset">Reset</button>
               <button class="waves-effect waves-light btn" type="submit" id="login">Login</button>
+            </div>
+            <div class="col l9 push-l3">
+              <a href="#" aria-label="untuk login dan password guest, gunakan username: guest | password: guest123" data-balloon-pos='up'><u>info</u></a> | 
+              <a href="<?= base_url().'forgot_password';?>">Lupa Password</a>
             </div>
           </div>
           <div class="row">
@@ -59,16 +65,13 @@
         <?= form_close();?>
       </div>
       <div class="row col l12 s12">
-        <div class="col s10 push-s1 l4 push-l4 center" style="top: 90%;position: absolute;padding-top: 10px;font-family: comfortaa;color:blue">@2019 <a href="mailto:muhamad.reza@bni.co.id" style="color:blue">Muhamad Reza</a> &reg </div>
-
-
-      </div>
-       <div class="row col l12 s12">
         <div class="col s10 push-s1 l4 push-l4" style="" id="jamlogin"></div>
-        
+      </div>
+      <div class="row col l12 s12">
+        <div class="col s10 push-s1 l4 push-l4 center" style="font-family: comfortaa;color:blue">@2019 <a href="mailto:muhamad.reza@bni.co.id" style="color:blue">Muhamad Reza</a> &reg </div>
+
 
       </div>
-
     </body>
       <!--JavaScript at end of body for optimized loading-->
       <script src="<?= base_url().'assets/js/jquery.min.js';?>"></script>

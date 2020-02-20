@@ -52,16 +52,16 @@
 			<div class="col l2">
 				<label class="active">Status</label>
 				<select class="select-m" id="my_task">
-					<option value="">--Pilih--</option>
-					<option value="On Process">On Process</option>
-					<option value="Finished">Finished</option>
-					<option value="All">Semua</option>
+					<option value="All">--Pilih--</option>
+					<?php foreach($status as $s){?>
+						<option value="<?= $s->id_status;?>"><?= $s->keterangan;?></option>
+					<?php };?>
 				</select>
 			</div>
 			<div class="col l2">
 				<label class="active">Divisi</label>
 				<select class="select-m" id="divisi-select">
-					<option value="All">Semua</option>
+					<option value="All">--Pilih--</option>
 					<option value="BSK">BSK</option>
 					<option value="PDM">PDM</option>
 					<option value="EBK">EBK</option>
@@ -71,7 +71,7 @@
 			<div class="col l2">
 			<label class="active">Tahun</label>
 				<select class="select-m" id="year-select">
-					<option value="All">Semua</option>
+					<option value="All">--Pilih-- </option>
 					<?php foreach($year as $y):?>
 					<option value="<?= $y->tahun;?>"><?= $y->tahun;?></option>
 					<?php endforeach;?>
@@ -89,6 +89,7 @@
 					<th class="center align-middle">Perihal</th>
 					<th class="center align-middle">Jenis</th>
 					<th class="center align-middle">Status</th>
+					<th class="center align-middle">Keterangan</th>
 				</tr>
 			</thead>
 		</table>
@@ -108,7 +109,7 @@
 					</div>
 					<div class="input-field col l4 s12">
 						<label class="active">Divisi</label>
-						<select name="divisi" class="select-m">
+						<select name="divisi" class="select-m" id="divisi_f">
 							<option value="">--pilih--</option>  
 							<option value="BSK">BSK</option>
 							<option value="PDM">PDM</option>
@@ -139,11 +140,15 @@
 						<label class="active">Tgl. Email</label>
 					</div>
 					<!-- jika surat -->
-					<div class="input-field col s12 l6 surat hide">
+					<div class="input-field col s12 l4 surat-re hide">
+						<input name="id_pengadaan" id="id_p_sbl">
+						<label class="active">ID. Pengadaan Sebelumnya</label>
+					</div>
+					<div class="input-field col s12 l4 surat hide">
 						<input name="no_surat" class="">
 						<label class="active">No. Surat</label>
 					</div>
-					<div class="input-field col s12 l6 surat hide">
+					<div class="input-field col s12 l4 surat hide">
 						<input name="tgl_surat" class="datepicker">
 						<label class="active">Tgl. Surat</label>
 					</div>
@@ -284,6 +289,11 @@
 								<td>:</td>
 								<td id="d_tgl_lelang"></td>
 							</tr>
+							<tr class="row-lelang hide">
+								<td>Perihal Surat Pengumuman Lelang</td>
+								<td>:</td>
+								<td id="d_perihal_lelang"></td>
+							</tr>
 								<span id="d_unamepembuat" class="hide"></span>
 							<tr>
 								<td>Status Data</td>
@@ -340,8 +350,10 @@
 		<?php if($_SESSION['role'] != "user"){?>
 		
 		<button class="waves-effect orange waves-green btn-flat left" id="btn-return" aria-label="Pengembalian / Pembatalan Memo/Notin" data-balloon-pos="up-left"><i class="fa fa-rotate-left"></i></button>
+		<?php if($_SESSION['role'] == 'superuser'){?>
 		<button class="waves-effect red waves-yellow btn-flat white-text hide left" id="btn-hapus" title="Hapus Data" aria-label="Hapus Data" data-balloon-pos="up-left"><i class="fa fa-trash"></i></button>
-		<button class="waves-effect yellow waves-green btn-flat left" id="btn-ubah" aria-label="Ubah Data" data-balloon-pos="up-left"><i class="fa fa-pencil"></i></button>
+		<?php }?>
+		<!-- <button class="waves-effect yellow waves-green btn-flat left" id="btn-ubah" aria-label="Ubah Data" data-balloon-pos="up-left"><i class="fa fa-pencil"></i></button> -->
 		<button class="waves-effect green white-text waves-green btn-flat left" id="btn-comments" aria-label="Comments" data-balloon-pos="up-left"><i class="fa fa-comments"></i></button>
 		<button class="waves-blue btn-flat teal white-text" id="update_surat">Update Surat</button>
 		<button class="waves-blue btn-flat teal white-text hide" id="btn-disposisi">Disposisi</button>
@@ -403,7 +415,13 @@
 						<input name="no_surat" type="text" class="validate">
 						<label>No. Surat</label>
 					</div>
-				</div> 
+				</div>
+				<div class="row">
+					<div class="input-field col l12 s12">
+						<input name="perihal" type="text" class="validate">
+						<label>Perihal</label>
+					</div>
+				</div>
 			</div>
 		<?= form_close();?>
 	</div>
@@ -529,7 +547,7 @@
 			<div class="input-field">
 				<select id="tipe" name="" class="select-m">
 					<option value="Pengembalian">Pengembalian</option>
-					<option value="Pengembalian">Pembatalan</option>
+					<option value="Pembatalan">Pembatalan</option>
 				</select>
 				<label>Tipe</label>
 			</div>
@@ -561,13 +579,13 @@
 
 			</div>
 		<?= form_close();?>
-		<?= form_open('',array('id'=>'form-batal'));?>
+		<?= form_open('',array('id'=>'form-batal', 'class'=>'hide'));?>
 			<div class="col s12 l12">
 				
 				<div class="row">
 					<input name="id_register" type="text" class="idregister" hidden>
 					<div class="input-field col s12 l4">
-						<input name="tgl_kembali" class=" datepicker">
+						<input name="tgl_batal" class=" datepicker">
 						<label class="active">Tgl. Pembatalan</label>
 					</div>
 					<div class="input-field col s12 l4">
@@ -592,7 +610,7 @@
 	<div class="modal-footer">
 			
 		<button class="modal-close grey darken-3 waves-effect waves-yellow btn-flat white-text">CLOSE</button>
-		<button id="proses_return" class="waves-effect green waves-green btn-flat white-text">Submit</button>
+		<button id="proses_return" class="waves-effect green waves-green btn-flat white-text" data-tipe="pengembalian">Submit</button>
 	</div>
 </div>
 <!-- end modal return-->
@@ -778,18 +796,32 @@
 
 			},
 			"columns":[
-				{"data": ['no']},
+				{"data": ['id_register']},
 				{"data": ['tgl_surat']},
 				{"data": ['no_surat']},
 				{"data": ['tgl_terima_surat']},
 				{"data": ['perihal']},
 				{"data": ['jenis_surat']},
 				{"data": ['status']},
+				{"data": function(data){
+					if(data['comment'] != '-' && data['status'] == 'On Process'){
+						return "<span aria-label='"+data['created_at']+"' data-balloon-pos='up-right'>"+data['comment']+"</span>";
+					}else if(data['status'] == 'Return'){
+						return "<span aria-label='"+data['tgl_srt_pengembalian']+"' data-balloon-pos='up-right'>"+data['alasan']+"</span>";;
+					}else{
+						return '';
+					}
+					
+				}
+				},
+
 			],
 			"dom": 'Bflrtip',
 							buttons: [
 						{ className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
+						<?php if($_SESSION['role'] != 'user'){?>
 						{ className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
+						<?php }?>
 						{ extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
 						{ extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
 						{ className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
@@ -808,20 +840,27 @@
 			},
 			"columnDefs": [
 						{
-							"targets": [ 0, 1, 2, 3, 5, -1 ],
+							"targets": [ 0, 1, 2, 3, 5,6, -1 ],
 							"className": 'center'
 						}
 				],
 			"createdRow" : function(row, data, index){
 				$(row).addClass('row');
+				
+
 				$(row).attr('data-id',data['id_register']);
+				if(cek_similar(data['username'], '<?= $_SESSION['username'];?>') && data['status'] == 'On Process')
+				{
+					$(row).css({'background':'#ce3500','color':'white'});
+				}
+				/*
 				if(data['jenis_surat'] == 'Email'){
 					$(row).css({'background':'#65635D','color':'white'});//#140FF0
 				}
 
 				if(data['status'] == 'Done'){
 					$(row).css({'background':'#039be5','color':'white'});
-				}
+				}*/
 			}
 		})
 		
@@ -902,32 +941,63 @@
 
 		$('#proses_return').on('click', function(e){
 			let id = $(this).attr('data-id');
-			swal({
-				type: 'question',
-				text: 'Are you sure to submit this data?',
-				showConfirmButton: true,
-				allowOutsideClick: false,
-				showCancelButton:true
-			}).then(function(){
-				$.ajax({
-					type: 'POST',
-					url: '<?= base_url()."register/proses_return";?>',
-					data: $('#form-return').serialize(),
-					dataType: 'JSON',
-					success: function(data){
-						swal({
-							type: data.type,
-							text: data.pesan,
-							showConfirmButton: true,
-							allowOutsideClick: false,
-						}).then(function(){
-							update_modal(id);
-							$('#modal_return').modal('close');
-							$('#table').DataTable().ajax.reload();	
-						})
-					}
+			
+			let tipe = $(this).attr('data-tipe');
+			if(tipe == 'pengembalian'){
+				swal({
+					type: 'question',
+					text: 'Are you sure to submit this data?',
+					showConfirmButton: true,
+					allowOutsideClick: false,
+					showCancelButton:true
+				}).then(function(){
+					$.ajax({
+						type: 'POST',
+						url: '<?= base_url()."register/proses_return";?>',
+						data: $('#form-return').serialize(),
+						dataType: 'JSON',
+						success: function(data){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								update_modal(id);
+								$('#modal_return').modal('close');
+								$('#table').DataTable().ajax.reload();	
+							})
+						}
+					})
 				})
-			})
+			}else{
+				swal({
+					type: 'question',
+					text: 'Are you sure to submit this data?',
+					showConfirmButton: true,
+					allowOutsideClick: false,
+					showCancelButton:true
+				}).then(function(){
+					$.ajax({
+						type: 'POST',
+						url: '<?= base_url()."register/proses_batal";?>',
+						data: $('#form-batal').serialize(),
+						dataType: 'JSON',
+						success: function(data){
+							swal({
+								type: data.type,
+								text: data.pesan,
+								showConfirmButton: true,
+								allowOutsideClick: false,
+							}).then(function(){
+								update_modal(id);
+								$('#modal_return').modal('close');
+								$('#table').DataTable().ajax.reload();	
+							})
+						}
+					})
+				})
+			}
 		})
 		$('#btn-hapus').on('click', function(e){
 			let id = $(this).attr('data-id');
@@ -959,6 +1029,10 @@
 		})
 		$('#add_data').on('click', function(){
 			$('#modal_tambah').modal('open');
+			
+			$('.select-m').find('option[value=""]').prop('selected', true);
+			$('.select-m').formSelect();
+			check_new(jenis)
 		})
 		$('#submit_new').on('click', function(e){
 			e.preventDefault();
@@ -1016,26 +1090,53 @@
 				}
 			})	
 		})
-		$('#jenis_surat').on('change', function(e){
-			e.preventDefault();
-			if(this.value == 'Email'){
-				$('.surat').addClass('hide');
+
+		function check_new(jenis = '')
+		{
+			if(jenis == 'Email'){
+				$('.surat, .beban').addClass('hide');
 				$('.email').removeClass('hide');
-				$('.surat input').val('');
-				$('.beban').addClass('hide');
-			}else if(this.value == '' || this.value == 'Pemberitahuan'){
+				$('.surat input, .surat-re').val('');
+				$('#id_p_sbl').val('');
+				$('.surat-re').addClass('hide');
+			}else if(jenis == '' || jenis == 'Pemberitahuan'){
 				$('.surat').removeClass('hide');
-				$('.email').addClass('hide');
-				$('.email input').val('');
-				$('.surat input').val('');
-				$('.beban').addClass('hide');
+				$('.email, .beban').addClass('hide');
+				$('.email input, .surat input').val('');
+				$('.surat-re').val('');
+				$('#id_p_sbl').val('');
+				$('.surat-re').addClass('hide');
+			}else if(jenis == 'Permintaan Ulang'){
+				
+				$('.surat-re').removeClass('hide');
+				$('.surat').removeClass('hide');
+				if($('.surat').hasClass('l6')){
+					
+					$('.surat').removeClass('l6').addClass('l4');
+				}else if($('.surat').hasClass('l4')){
+					
+					//$('.surat').removeClass('l4').addClass('l6');
+				}
+				$('.surat-re').val('');
 			}else{
-				$('.beban').removeClass('hide');
-				$('.email').addClass('hide');
-				$('.surat').removeClass('hide');
-				$('.email input').val('');
+				$('#id_p_sbl').val('');
+				
+				$('.beban, .surat').removeClass('hide');
+				$('.email, .surat-re').addClass('hide');
+				$('.surat-re').val('');
+				if($('.surat').hasClass('l4')){
+					$('.surat').removeClass('l4').addClass('l6');	
+					$('.email input').val('');
+				}else if($('.surat').hasClass('l6')){
+					//$('.surat').removeClass('l6').addClass('l4');
+				}
 
 			}
+		}
+		$('#jenis_surat').on('change', function(e){
+			e.preventDefault();
+			jenis = this.value;
+			check_new(jenis)
 		})
 		$('#btn-disposisi').on('click', function(e){
 			$('#modal_disposisi').modal('open')
@@ -1051,7 +1152,7 @@
 			disposisi(kel, dpim, dman);
 		})
 		$('#proses_disposisi').on('click', function(e){
-			e.preventDefault();			
+			e.preventDefault();
 			let id = $(this).attr('data-id');
 			$('#s-pembuat').formSelect();
 
@@ -1275,6 +1376,7 @@
 			}
 		}
 		$('#proses_surat').on('click', function(e){
+			let id = $(this).attr('data-id');
 			swal({
 				type: 'question',
 				text: 'Are you Sure?',
@@ -1282,13 +1384,12 @@
 				allowOutsideClick: false,
 				showCancelButton: true
 			}).then(function(){
-				let id = $(this).attr('data-id');
 				$.ajax({
 					type: 'POST',
 					url : '<?= base_url()."register/update_surat";?>',
 					data: $('#formsurat').serialize(),
-					success: function(result){
-						let data = JSON.parse(result);
+					dataType: 'JSON',
+					success: function(data){
 						swal({
 							type: data.type,
 							text: data.pesan,
@@ -1418,6 +1519,7 @@
 							}).then(function(){
 								$('#modal_comment').modal('close');
 								update_modal(id);
+								$('#table').DataTable().ajax.reload();
 								$('#form-comment input:not(.idregister)').val('');
 							})
 						}else{
@@ -1439,7 +1541,7 @@
 			let jenis = $(this).attr('jenis');
 			let jenisp = $(this).attr('jenis-pengadaan');
 			$('#jenis_pengadaans').val(jenisp);
-			console.log(jenisp);
+			
 			let html = 	'<div class="row"><div class="input-field col l4 s12 sp">'+
 							'<select name="id_vendor[]" id="selectvendor'+no+'" class="select2">'+
 							'<option value="">--select--</option>'+
@@ -1660,6 +1762,22 @@
 			$('#modal_comment').modal('open');
 		
 		})
+
+		$('#tipe').on('change', function(e){
+			let tipe = this.value;
+			console.log(tipe)
+			if(tipe == 'Pengembalian'){
+				$('#form-batal').addClass('hide');
+				$('#form-return').removeClass('hide');
+				$('#proses_return').attr('data-tipe', 'pengembalian');
+			}else{
+				$('#form-batal').removeClass('hide');
+				$('#form-return').addClass('hide');
+				$('#proses_return').attr('data-tipe', 'batal');
+			}
+		})
+
+		
 		$('#modal_eauction .hapus-row').on('click', function(e){
 			e.preventDefault();
 			$(this).parent().parent().remove();
@@ -1746,7 +1864,7 @@
 		$('#waiting').removeClass('hide');
 		$('#d_disposisi_pimkel, #d_disposisi_manager, #d_pembuat, #d_jenis_pengadaan, #d_unamepembuat, #d_jenis_surat, #d_no_surat, #d_tgl_surat, #d_terima_surat,#d_perihal, #d_tempat_pengadaan, ds_vendor_p, .s-pembuat, #dpembuat, #d_alasan, #tblcomments').html('');
 		$('.ddpimkel, .spk').hide();
-		$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat, #proses_disposisi, #proses_spk, #proses_jenis, #btn-eauction, #btn-proses, #btntmbhvendor, #btn-lelang, #proses_return, #proses_comment, #proses_pfa, #proses_aanwijzing').attr('data-id', id);
+		$('#btn-ubah, #btn-hapus, #proses, #btn-disposisi, #update_surat, #proses_disposisi, #proses_spk, #proses_jenis, #btn-eauction, #btn-proses, #btntmbhvendor, #btn-lelang, #proses_return, #proses_comment, #proses_pfa, #proses_aanwijzing, #proses_surat').attr('data-id', id);
 		$('.idregister').val(id);
 		$('#btn-eauction, #eauction, #btn-lelang, #btn-jenis, .row-lelang, .d_tempat, .row-surat, .row-email, #btn-aanwijzing, #btn-proses, #aanwijzing, .d_metode, #btn-proses-pfa, #btn-proses, #btn-hapus, #btn-disposisi, .alasan, .ddpembuat, .ddmanager').addClass('hide');
 		$('#btn-eauction, #eauction').removeAttr('jenis');
@@ -1944,19 +2062,46 @@
 					if(pfa.length > 0)
 					{
 						$('#pfa').removeClass('hide');
-						console.table(pfa)
+						let no = 0;
+						tblpfa += '<table id="table-pfa">'+
+										'<tr>'+
+											'<th>#</th>'+
+											'<th>Tgl. Kirim</th>'+
+											'<th>Tgl. Surat</th>'+
+											'<th>No. Surat</th>'+
+											'<th>Perihal</th>'+
+										'</tr>';
+						
+						for(i = 0; i < pfa.length ;i++){
+							no++;
+							 tblpfa += '<tr>'+
+											'<td>'+no+'</td>'+
+											'<td>'+tanggal_indo(pfa[i].tgl_kirim)+'</td>'+
+											'<td>'+tanggal_indo(pfa[i].tgl_surat)+'</td>'+
+											'<td>'+pfa[i].no_surat+'</td>'+
+											'<td>'+pfa[i].perihal+'</td>'+
+										'</tr>';
+						}
+						tblpfa += '</table>';
+						$('#tblpfa').html(tblpfa);
+						$('#btn-proses-pfa').addClass('hide');
+						$('#btn-proses').removeClass('hide');
 					}else{
+						$('#btn-proses-pfa').removeClass('hide');
+						$('#btn-proses').addClass('hide');
 						$('#pfa').addClass('hide');
+						$('#tblpfa').html('');
 					}
 					
 				}else{
 					$('#pfa').addClass('hide');
+					$('#tblpfa').html('');
 				}
 				if(data.status_data == 'Done' || '<?= $_SESSION['role'];?>' == 'user'){
 					$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
 					$('#btn-ubah, #btn-disposisi, #btn-return').addClass('hide');
-					$('#btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-comments').addClass('hide');
-					console.log('as')
+					$('#btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-comments, #btn-proses-pfa').addClass('hide');
+					
 
 				}else{ // jika status masih on proses
 					$('#btn-ubah, #btn-return').removeClass('hide');
@@ -1964,13 +2109,18 @@
 					$('#btn-comments, #btn-hapus').removeClass('hide');
 
 					if(data.nama != null){ //jika pembuat ada 
-
+						
 						$('#btn-jenis').removeClass('hide');
 						
 						//$('#btn-disposisi').hide();
 						if(cek_similar(data.username, '<?= $_SESSION['username'];?>'))
 						{
-
+							if(data.jmlp > 1 ){
+								$('#btn-disposisi').addClass('hide');
+								
+							}else{
+								$('#btn-disposisi').removeClass('hide')
+							}
 							$('#btn-jenis').removeClass('hide');
 							$('#btn-ubah, #btn-return').show();
 
@@ -2010,13 +2160,14 @@
 										$('#btn-proses, #btntmbhvendor').attr('jenis-pengadaan', data.jenis_pengadaan);
 										if(data.no_srt_llg == null && data.tgl_srt_llg == null){
 											$('#btn-proses').addClass('hide');
-											$('#btn-lelang').addClass('hide');//disini
+											$('#btn-lelang').removeClass('hide');//disini
 											$('#btn-aanwijzing').removeClass('hide');
 
 										}else{
 
 											$('#d_no_lelang').text(data.no_srt_llg);
 											$('#d_tgl_lelang').text(tanggal_indo(data.tgl_srt_llg));
+											$('#d_perihal_lelang').text(data.perihal_llg);
 											$('#btn-lelang').addClass('hide');
 											$('#btn-aanwijzing').removeClass('hide');
 											if(auc.length > 0){
@@ -2034,7 +2185,7 @@
 								}else{ // jika pengadaan nya di pfa
 									//tambahin btn memo ke pfa
 									$('#btn-eauction').addClass('hide');
-									$('#btn-proses-pfa').removeClass('hide');
+									$('#btn-aanwijzing').removeClass('hide');
 									
 									
 								}
@@ -2046,6 +2197,7 @@
 						}
 						
 					}else{
+
 						$('#btn-disposisi').removeClass('hide')
 					}
 
@@ -2056,10 +2208,19 @@
 						$('#d_status_data').text('Memo / Notin Dikembalikan').css({'color':'red'});
 						$('.alasan').removeClass('hide');
 						$('#d_alasan').html(status);
-						$('#btn-return, #btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-ubah, #btn-comments').addClass('hide');
+						$('#btn-return, #btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-ubah, #btn-comments, #btn-jenis').addClass('hide');
 						
+					}else if(data.alasan_batal != null){
+						let tp = 'Tgl. Pembatalan: '+tanggal(data.tgl_pembatalan)+'|No. Surat Pembatalan: '+data.no_srt_btl+'|Tgl. Surat Pengembalian: '+tanggal(data.tgl_srt_btl);
+						let status = "<span aria-label='"+tp+"' data-balloon-pos='up'>"+data.alasan_batal+"</span>";
+
+						$('#d_status_data').text('Dibatalkan').css({'color':'red'});
+						$('.alasan').removeClass('hide');
+						$('#d_alasan').html(status);
+						$('#btn-return, #btn-eauction, #btn-aanwijzing, #btn-hapus, #btn-proses, #btn-ubah, #btn-comments, #btn-proses-pfa, #btn-jenis').addClass('hide');
+
 					}else{
-						console.log('a');
+						
 						$('#d_status_data').text(strip(data.status_data)).css({'color':'green'});
 						/*if(data.tempat_pengadaan == 'BSK'){
 							

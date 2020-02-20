@@ -19,10 +19,26 @@ background: #D7A42B;color:white;
 </style>
 
 <div class="row first">
-
+  
   <!-- <div class="col s12"> -->
   <div class="col s12 offset-l3 l9">
-    <ul class="collection with-header"  id="reminder">
+    <!-- <div>
+        {{ message }}
+        <div v-if="count === 1">
+          Green
+        </div>
+        <div v-else-if="count === 2">
+          
+        </div>
+        <br>
+        Sign Up
+        <br>
+        <input v-model="email" :class="[email.length < 2 ? 'red' : 'green']">
+        <button onclick="alert('ss')" :disabled="email.length < 2">
+          Submit
+        </button>
+    </div>   -->
+    <ul class="collection with-header" id="reminder" v-if="pks > 0">
       <li class="collection-item red accent-4 white-text"><marquee id="marquee"><?= $pks->num_rows();?> PKS yang akan berakhir</marquee></li>
     </ul>
     <!-- <button id="" class="btn btn-small">[+]Add Data</button> -->
@@ -79,7 +95,7 @@ background: #D7A42B;color:white;
             <label class="active" style="top: -14px;">Vendor</label>
           </div>
           <div class="input-field col s12 l12">
-            <input name="perihal" type="text" class="validate" required>
+            <input name="perihal" type="text" class="validate" required v-model="perihal">
             <label class="active">Perihal</label>
           </div>  
           <div class="input-field col s12 l4">
@@ -108,7 +124,7 @@ background: #D7A42B;color:white;
   </div>
   <div class="modal-footer">
     <button class="modal-close waves-effect waves-yellow btn-flat">CANCEL</button>
-    <button id="save" class="waves-effect waves-green btn-flat">Save</button>
+    <button id="save" class="btn-flat white-text waves-effect waves-green teal" :disabled="perihal.length < 2"><i class='fa fa-save'></i> Save</button>
   </div>
 </div>
 <!-- end modal add-->
@@ -212,12 +228,12 @@ background: #D7A42B;color:white;
           <tr>
             <td>File</td>
             <td>:</td>
-            <td id="d_file" style="font-style: italic;"></td>
+            <td id="d_file" style="font-style: italic;font-weight: bolder"></td>
           </tr>
           <tr>
             <td>Reminder Terakhir</td>
             <td>:</td>
-            <td id="d_reminder" style="font-style: italic;"></td>
+            <td id="d_reminder" style="font-weight: bolder">-</td>
           </tr>
         </table>
         <input placeholder="input comment" id="input-comment">
@@ -241,7 +257,9 @@ background: #D7A42B;color:white;
         <button class="waves-effect red waves-yellow btn-flat white-text" id="btn-hapus" aria-label="Hapus Data" data-balloon-pos="up"><i class="fa fa-trash"></i></button>
     <?php }}?>
     <button class="modal-close waves-effect waves-yellow btn-flat">CLOSE</button>
+    <?php if($_SESSION['role'] != 'user'){?>
     <button id="proses" class="waves-effect blue waves-green btn-flat white-text">PROSES</button>
+    <?php }?>
   </div>
 </div>
 <!-- end modal detail-->
@@ -272,16 +290,17 @@ background: #D7A42B;color:white;
       <?= form_close();?>
       <div class="row">
         <table id="table-reminder">
-          <thead>
+          <thead class="center red white-text">
             <tr>
-              <td>No.</td>
-              <td>No. Surat</td>
-              <td>Tgl. Surat</td>
-              <td>Perihal</td>
-              <td>File</td>
-            </tr>
+              <th>No.</th>
+              <th>No. Surat</th>
+              <th>Tgl. Surat</th>
+              <th>Perihal</th>
+              <th>File</th>
+            </th>
           </thead>
-
+          <tbody id="tbody-reminder">
+          </tbody>
         </table>        
       </div>
     </div>
@@ -464,6 +483,15 @@ background: #D7A42B;color:white;
 </div>
 <!-- end modal add-->
 <script>
+  new Vue({
+    el: '#modal_tambah',
+    data: {
+      message: 'You loaded this page on ' + new Date().toLocaleString(),
+      count: 0,
+      perihal: '',
+      pks: '<?= $pks->num_rows();?>'
+    }
+  })
   $(document).ready(function(){
 
     $("select").select2({
@@ -510,7 +538,9 @@ background: #D7A42B;color:white;
       "dom": 'Bflrtip',
              buttons: [
             { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
+            <?php if($_SESSION['role'] != 'user'){?>
             { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
+            <?php }?>
             { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
             { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
 
@@ -564,29 +594,23 @@ background: #D7A42B;color:white;
     $("[name='table_length']").formSelect();
 
     $('tbody').on('click','.row', function(e){
-
+      let id = $(this).attr('data-id');
       $('.modal').modal({
         dismissible : false
       });
       $('#modal_detail').modal('open');
-
-      let id = $(this).attr('data-id');
-
-      //table.row($(this).parents('tr')).data();
-      
       $('#proses, #btn-reminder, #prosespks, #btn-ubah, #btn-hapus, #update, #btn-comment').attr('data-id', id);
       detail_pks(id);
-      get_comment(id)
     }) //end tbody row click
 
     $('#proses').on('click', function(){ //proses 
       $('#modal_proses').modal('open');
-      
       let id = $('#proses').attr('data-id');
       $.ajax({
         type: 'POST',
         url: '<?= base_url()."pks/get_detail";?>',
         data: {id:id,ubah:id},
+        dataType: 'JSON',
         success: function(response){
           proses_pks(response, id);
         //ini
@@ -607,8 +631,8 @@ background: #D7A42B;color:white;
           type : 'POST',
           url : '<?= base_url()."pks/add_comment";?>',
           data: {id:id, comment:komen},
-          success: function(response){
-            let data = JSON.parse(response);
+          dataType: 'JSON',
+          success: function(data){
             $('#input-comment').val('');
             if(data.type == 'success'){
               $('#input-comment').val('');
@@ -647,8 +671,8 @@ background: #D7A42B;color:white;
           type: 'POST',
           url: '<?= base_url()."pks/delete_pks";?>',
           data: {id:id},
-          success: function(response){
-            let data = JSON.parse(response);
+          dataType: 'JSON',
+          success: function(data){
             swal({
               type: data.type,
               text: data.message,
@@ -698,9 +722,9 @@ background: #D7A42B;color:white;
         type: 'POST',
         url: '<?= base_url()."pks/get_detail";?>',
         data: {id:id,ubah:id},
+        dataType: 'JSON',
         success: function(response){
-          let data = JSON.parse(response);
-
+          let data = response.pks;
           $('#eid_tdr').select2().val(data.id_vendor).trigger('change.select2')
           $('#eid_pks').val(id);
           $("#modal_ubah label").addClass('active');
@@ -785,43 +809,54 @@ background: #D7A42B;color:white;
       e.preventDefault();
       let id = $(this).attr('data-id');
       let form = $(this);
-      
-      $.ajax({
-        type : 'POST',
-        url  : '<?= base_url()."Pks/submit_reminder";?>',
-        data : form.serialize(),
-        success: function(result){
-          let data = JSON.parse(response);
-          swal({
-              type: data.type,
-              text: data.message,
-              showConfirmButton: true,
-          }).then(function(){
-            console.log(result);
-            form[0].reset();
-            $('#idpks').val(id);
-          })
-        }
+      swal({
+        type: 'question',
+        text: 'Are you sure to submit this data?',
+        showCancelButton: 'TRUE',
+        }).then(function(e){
+        $.ajax({
+          type : 'POST',
+          url  : '<?= base_url()."Pks/submit_reminder";?>',
+          data : form.serialize(),
+          dataType: 'JSON',
+          success: function(data){
+            swal({
+                type: data.type,
+                text: data.message,
+                showConfirmButton: true,
+            }).then(function(){
+              detail_pks(id);
+              
+              $('#idpks').val(id);
+            })
+          }
+        })
       })
     })
     $('#save').on('click', function(){
-        
-      $.ajax({
-        type: 'POST',
-        url : '<?= base_url()."pks/add_data";?>',
-        data: $('#formtambah').serialize(),
-        success: function(response){
-          let data = JSON.parse(response);
-          swal({
-            type: data.type,
-            text: data.message,
-            showConfirmButton: true,
-          }).then(function(){
-            $('#formtambah input').val('');
-            $('#modal_tambah').modal('close');
-            $('#table').DataTable().ajax.reload();
-          })
-        }
+      
+      swal({
+        type: 'question',
+        text: 'Are you sure to submit this data?',
+        showCancelButton: 'TRUE',
+        }).then(function(e){
+        $.ajax({
+          type: 'POST',
+          url : '<?= base_url()."pks/add_data";?>',
+          data: $('#formtambah').serialize(),
+          success: function(response){
+            let data = JSON.parse(response);
+            swal({
+              type: data.type,
+              text: data.message,
+              showConfirmButton: true,
+            }).then(function(){
+              $('#formtambah input').val('');
+              $('#modal_tambah').modal('close');
+              $('#table').DataTable().ajax.reload();
+            })
+          }
+        })
       })
     })
     
@@ -836,8 +871,8 @@ background: #D7A42B;color:white;
         disableWeekends:true,
       });
        $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().show();
-
-      let data = JSON.parse(response);
+      
+        let data = response.pks;
           $('#formproses label').addClass('active');
           $('#pid_pks').val(id);
           $('#ps_penunjukan').val(data.no_srt_pelaksana).attr('readonly', true);
@@ -964,7 +999,6 @@ background: #D7A42B;color:white;
             $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
             $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
             $('#p_serahterima').val(tanggal(tgl7)).attr('readonly', true);
-console.log('a')
           }else{
             
              $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
@@ -987,6 +1021,7 @@ console.log('a')
             $('#pno_pks').val(nopks).attr('readonly', true);
 
             $('#btncancel').text('CLOSE');
+
             $('#prosespks').hide();
             console.log('b');
           }
@@ -998,9 +1033,10 @@ console.log('a')
         type:'POST',
         url: '<?= base_url()."pks/get_detail";?>',
         data: {id:id},
-        success: function(response){
+        dataType: 'JSON',
+        success: function(data){
           
-          let pks = JSON.parse(response);
+          let pks = data.pks;
           let html = "";
           
           $('#d_srt_pen').text(pks.no_srt_pelaksana);
@@ -1074,9 +1110,9 @@ console.log('a')
           $('#d_status').html(status);
           
           if(pks.status == 'Done' || pks.status == 'On Process'){
-            $('#proses, #btn-hapus, #btn-ubah').hide();
+            $('#proses, #btn-hapus').hide();
           }else{
-            $('#proses, #btn-hapus, #btn-ubah').show();
+            $('#proses, #btn-hapus').show();
           }
           
           if(pks.file != ''){
@@ -1088,7 +1124,45 @@ console.log('a')
             $('#d_file').html('');
 
           }
+          let tp = 'No. Surat: '+pks.no_surat+' | Perihal: '+pks.prhl;
+
+          let tglr = "<span aria-label='"+tp+"' data-balloon-pos='up'>"+tanggal_indo(pks.tgl_surat)+"</span>";
+          $('#d_reminder').html(tglr);
+          let comment = data.comment;
           
+          if(comment.length > 0){
+            for(i = 0;i < comment.length;i++){
+              if(i == 0){
+                html += '<a class="collection-item green white-text"><span class="new badge" data-badge-caption="'+comment[i].comment_date+'">'+comment[i].nama+' on </span>'+comment[i].comment+'</a>';
+              }else{
+                html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+comment[i].comment_date+'">'+comment[i].nama+' on </span>'+comment[i].comment+'</a>';
+              }
+            
+            }
+            $('#comment').html(html);
+          }else{
+            $('#comment').html('');
+          }
+          $('#tbody-reminder').html('');
+          let rem = data.reminder;
+          let trem = '';
+          if(rem.length > 0){
+            let i = 0;
+            let no = 0;
+            for(i;i<rem.length;i++){
+              no++;
+              trem += "<tr>"+
+                        "<td>"+no+"</td>"+
+                        "<td>"+rem[i].no_surat+"</td>"+
+                        "<td>"+tanggal_indo(rem[i].tgl_surat)+"</td>"+
+                        "<td>"+rem[i].perihal+"</td>"+
+                        "<td>"+strip(rem[i].file)+"</td>"+
+                      "</tr>";
+            }
+          }else{
+            trem = "<tr><td colspan='5'>Tidak ada data</td></tr>";
+          }
+          $('#tbody-reminder').html(trem);
         }
       })
     }//end function detail table
@@ -1097,17 +1171,17 @@ console.log('a')
     {
       $.ajax({
         type:'POST',
-        url: '<?= base_url()."pks/get_comment";?>',
+        url: '<?= base_url()."pks/get_comm";?>',
         data: {id:id},
-        success: function(response){
-          let data = JSON.parse(response);
+        dataType: 'JSON',
+        success: function(comment){
           let html = '';
-          if(data.length > 0){
-            for(i = 0;i < data.length;i++){
+          if(comment.length > 0){
+            for(i = 0;i < comment.length;i++){
               if(i == 0){
-                html += '<a class="collection-item green white-text"><span class="new badge" data-badge-caption="'+data[i].comment_date+'">'+data[i].nama+' on </span>'+data[i].comment+'</a>';
+                html += '<a class="collection-item green white-text"><span class="new badge" data-badge-caption="'+comment[i].comment_date+'">'+comment[i].nama+' on </span>'+comment[i].comment+'</a>';
               }else{
-                html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+data[i].comment_date+'">'+data[i].nama+' on </span>'+data[i].comment+'</a>';
+                html += '<a class="collection-item"><span class="new badge" data-badge-caption="'+comment[i].comment_date+'">'+comment[i].nama+' on </span>'+comment[i].comment+'</a>';
               }
             
             }
@@ -1118,6 +1192,7 @@ console.log('a')
         }
       })
     }
+    
 
   })
 </script>

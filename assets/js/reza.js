@@ -29,7 +29,7 @@ function strip(value){
 }
 
 function tanggal(value){
-  if(value == '0000-00-00'){
+  if(value == '0000-00-00' || value == null){
     return '';
   }else{
     let d = new Date(value); 
@@ -42,7 +42,7 @@ function tanggal(value){
 }
 
 function tanggal_indo(value){
-  if(value == '0000-00-00'){
+  if(value == '0000-00-00' || value == null){
     return '-';
   }else{
     let d = new Date(value); 
@@ -152,9 +152,13 @@ function tanggal_r(value){
 }
 
 function cek_similar(words, find){
-  if (words.indexOf(find) > -1) {
-    return true;
-  } else {
+  if(words !== null){
+    if (words.indexOf(find) > -1) {
+      return true;
+    } else {
+      return false;
+    }
+  }else{
     return false;
   }
 }

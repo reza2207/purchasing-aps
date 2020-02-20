@@ -39,10 +39,11 @@ background: #D7A42B;color:white;
   </div>
 </div>
 <div class="row first">
+
   <!-- <div class="col s12"> -->
   <div class="col s12 offset-l3 l9" style="left: 333.25px;">
     <div class="row row-filter" style="margin-bottom: 0px;">
-
+ 
       <div class="input-field col s12 l1">
         <select id="tahunselect" class="select-m">
 
@@ -57,7 +58,7 @@ background: #D7A42B;color:white;
       <div class="input-field col s12 l1">
         
         <select id="divisiselect" class="select-m" >
-          <option value="semua">semua</option>
+          <option value="">--Pilih--</option>
           <?php foreach ($divisi as $dv){?>
           <option value="<?= $dv->divisi;?>"><?= $dv->divisi;?></option>
           <?php }?>
@@ -67,6 +68,7 @@ background: #D7A42B;color:white;
       <div class="input-field col s12 l2">
         
         <select name="jenis_pengadaan" class="select-m" id="n_jenis_pengadaan_e" >
+            <option value="">--Pilih--</option>
             <option value="Pembelian Langsung">Pembelian Langsung</option>
             
             <option value="Penunjukan Langsung">Penunjukan Langsung</option>
@@ -76,7 +78,9 @@ background: #D7A42B;color:white;
         <label>Jenis Pengadaan</label>
       </div>
       <div class="input-field col s12 l2">
-        <button class="waves-effect green waves-blue btn-flat" id="btn-filter"><i class="fa fa-filter"></i></button>
+        <button class="waves-effect green waves-blue white-text btn-flat" id="btn-filter"><i class="fa fa-filter"></i></button>
+        <button class="waves-effect green waves-blue white-text btn-flat" id="btn-report"><i class="fa fa-pie-chart"></i></button>
+        
       </div>
     </div>
     <table class="table display" id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
@@ -85,12 +89,15 @@ background: #D7A42B;color:white;
           <th class="center align-middle">#</th>
           <th class="center align-middle">Tgl. Surat</th>
           <th class="center align-middle">No. Surat</th>
-          <th class="center align-middle">Jenis Surat</th>
+          <!-- <th class="center align-middle">Jenis Surat</th> -->
           <th class="center align-middle">Tgl. Disposisi</th>
           <th class="center align-middle">Perihal</th>
           <th class="center align-middle">Jenis</th>
           <th class="center align-middle">Divisi</th>
           <th class="center align-middle">Kewenangan</th>
+          <th class="center align-middle">Keberhasilan Nego</th>
+          <th class="center align-middle">Nilai Pengadaan</th>
+          <th class="center align-middle">File</th>
         </tr>
       </thead>
     </table>
@@ -186,8 +193,6 @@ background: #D7A42B;color:white;
               <th class="center">Bahan</th>
               <th class="center">Jumlah</th>
               <th class="center">Satuan</th>
-              <th class="center">HPS (USD)</th>
-              <th class="center">HPS (IDR)</th>
               <th class="center">HPS Satuan (IDR)</th>
               <th class="center">Penawaran (IDR)</th>
               <th class="center">Realisasi (Nego)(USD)</th>
@@ -391,10 +396,10 @@ background: #D7A42B;color:white;
               <th class="center" width='200'>Ukuran</th>
               <th class="center" width='200'>Bahan</th>
               <th class="center" width='80'>Jumlah</th>
+              <th class="center" width='100'>HPS Satuan (IDR)</th>
               <th class="center" width='80'>Satuan</th>
               <th class="center" width='100'>HPS (USD)</th>
               <th class="center" width='100'>HPS (IDR)</th>
-              <th class="center" width='100'>HPS Satuan (IDR)</th>
               <th class="center" width='100'>Penawaran (IDR)</th>
               <th class="center" width='100'>Realisasi (Nego)(USD)</th>
               <th class="center" width='100'>Realisasi (Nego)(Rp)</th>
@@ -536,22 +541,23 @@ background: #D7A42B;color:white;
     <?= form_open('',array('id'=>'form-edit-row'));?>
       <div class="col s12 l12" style="margin-bottom: 0px;">
         <div class="row">
-          <div class="input-field col s12 l4">
+          <div class="input-field col s12 l6">
             <input name="item" type="text" id="item_e">
             <input name="id" type="text" id="id_e" class="hide">
             <input type="text" name="id_row" id="id_row" hidden>
             <label>Item</label>
           </div>
-          <div class="input-field col s12 l4">
+          <div class="input-field col s12 l6">
             <input name="ukuran" type="text" id="ukuran_e">
             <label>Ukuran</label>
           </div>
+          
+        </div>
+        <div class="row">
           <div class="input-field col s12 l4">
             <input name="bahan" type="text" id="bahan_e">
             <label>Bahan</label>
           </div>
-        </div>
-        <div class="row">
           <div class="input-field col s12 l4">
             <input name="jumlah" type="text" id="jml_e">
             <label>jumlah</label>
@@ -560,16 +566,10 @@ background: #D7A42B;color:white;
             <input name="satuan" type="text" id="satuan_e">
             <label>Satuan</label>
           </div>
-          <div class="input-field col s12 l4">
-            <input name="hpsusd" type="text" id="hpsusd_e">
-            <label>HPS (USD)</label>
-          </div>
+          
         </div>
         <div class="row">
-          <div class="input-field col s12 l4">
-            <input name="hpsidr" type="text" id="hpsidr_e">
-            <label>HPS (IDR)</label>
-          </div>
+          
           <div class="input-field col s12 l4">
             <input name="hpssatuan" type="text" id="hpssatuanidr_e">
             <label>HPS Satuan (IDR)</label>
@@ -578,31 +578,34 @@ background: #D7A42B;color:white;
             <input name="penawaran" type="text" id="penawaran_e">
             <label>Penawaran (IDR)</label>
           </div>
-        </div>
-        <div class="row">
           <div class="input-field col s12 l4">
             <input name="realisasiusd" type="text" id="realisasiusd_e">
             <label>Realisasi Nego (USD)</label>
           </div>
-          <div class="input-field col s12 l4">
+        </div>
+        <div class="row">
+          
+          <div class="input-field col s12 l6">
             <input name="realisasirp" type="text" id="realisasirp_e">
             <label>Realisasi Nego (Rp)</label>
           </div>
-          <div class="input-field col s12 l4">
+          <div class="input-field col s12 l6">
             <input name="realisasiqty" type="text" id="realisasiqty_e">
             <label>Realisasi Qty/Unit</label>
           </div>
         </div>
         <div class="row">
-          <div class="input-field col s12 l4">
+          <div class="input-field col s12 l6">
             <input name="nokontrak" type="text" id="nokontrak_e">
             <label>No. Kontrak</label>
           </div>
-          <div class="input-field col s12 l4">
+          <div class="input-field col s12 l6">
             <input name="tglkontrak" type="text" id="tglkontrak_e">
             <label>Tgl. Kontrak</label>
           </div>
-          <div class="input-field col s12 l4" style="bottom: -14px;" >
+        </div>
+        <div class="row">
+          <div class="input-field col s12 l12" style="bottom: -14px;" >
             <select name="vendor" class="select" id="vendor_e">
               <?php foreach($select_tdr as $row):?>
                 <option value="<?= $row->id_vendor;?>"><?= $row->nm_vendor;?></option>
@@ -630,13 +633,17 @@ background: #D7A42B;color:white;
       //theme: 'material'
 
     },$('select').css('width','100%'));
-
+    setInterval(set_int, 60000);
     //$('.select2-selection__arrow').addClass("fa fa-spin");
 
     $('#btn-filter').click(function(){ //button filter event click
         table.ajax.reload();  //just reload table
     });
-
+    function set_int()
+    {
+      $('#table').DataTable().ajax.reload();
+      
+    }
     $('.datepicker').datepicker({
       container: 'body',
       format: 'dd-mm-yyyy',
@@ -651,7 +658,6 @@ background: #D7A42B;color:white;
         autoClose: true,
 
     });
-   
 
     $('.modal').modal();
     $('.bg').hide();
@@ -667,6 +673,7 @@ background: #D7A42B;color:white;
         "data": function (data){
           data.tahun = $('#tahunselect').val();
           data.divisi = $('#divisiselect').val();
+          data.jenis = $('#n_jenis_pengadaan_e').val();
         }
 
       },
@@ -674,17 +681,21 @@ background: #D7A42B;color:white;
         {"data": ['no_id']},
         {"data": ['tgl_notin']},
         {"data": ['no_notin']},
-        {"data": ['jenis_notin_masuk']},
+        /*{"data": ['jenis_notin_masuk']},*/
         {"data": ['tgl_disposisi']},
         {"data": ['perihal']},
         {"data": ['jenis_pengadaan']},
         {"data": ['divisi']},
         {"data": ['kewenangan']},
-        
+        {"data": ['nego']},
+        {"data": ['realisasi']},
+        {"data": ['file']}
       ],
       "dom": 'Bflrtip',
              buttons: [
+            <?php if($_SESSION['role'] != 'user'){?>
             { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data'} },
+          <?php }?>
             { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload'}},
             { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>'},
             { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
@@ -703,7 +714,7 @@ background: #D7A42B;color:white;
       },
       "columnDefs": [
             {
-                "targets": [ 0, 1, 2, 3, 4, 6, 7, -1 ],
+                "targets": [ 0, 1, 2, 3, 4, 6, 7,8,9, -1 ],
                 "className": 'center'
             }
         ],
@@ -776,13 +787,11 @@ background: #D7A42B;color:white;
       })
     });
 
-    
     $("[name='table_length']").formSelect();
 
     //get detail after click in row
     $('tbody').on('click','.row', function(e){
 
-      
       $('#modal_detail').modal('open');
       $('#waiting').removeClass('hide');
       let id = $(this).attr('data-id');//table.row($(this).parents('tr')).data();
@@ -796,17 +805,46 @@ background: #D7A42B;color:white;
       
     })
     $('#saving-row').on('click', function(e){
-      e.preventDefault();
-      $.ajax({
-        type: 'POST',
-        dataType: 'JSON',
-        url: '<?= base_url()."pengadaan/add_row";?>',
-        data: $('#form-row').serialize(),
-        success: function(data){
-          console.log(data)
-        }
+      let id = $(this).attr('data-id');
+      swal({
+        type: 'question',
+        text: 'Are you sure to submit this data?',
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        showCancelButton:true
+      }).then(function(){
+        e.preventDefault();
+        console.log($('#form-row').serialize())
+        $.ajax({
+          type: 'POST',
+          data: $('#form-row').serialize(),
+          dataType: 'JSON',
+          url: '<?= base_url()."pengadaan/add_row";?>',
+          data: $('#form-row').serialize(),
+          dataType: 'JSON',
+          success: function(data){
+            if(data.type == 'success'){
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              }).then(function(){
+                $('.rowitem').html('');
+                data_tabel(id)
+                $('#table').DataTable().ajax.reload();
+              })
+            }else{
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              })
+            }
+          }
+        })
       })
-      ;
     })
     //proses invoice di row detail
     $('#tbisiinvoice tbody').on('click', '.proses-inv', function(e){
@@ -848,33 +886,42 @@ background: #D7A42B;color:white;
     })
     $('#btn-prosesbaru').on('click', function(e){
       e.preventDefault();
-      $.ajax({
-        type: 'POST',
-        url : '<?= base_url()."pengadaan/submit_new_data";?>',
-        data: $('#formtambahdata').serialize(),
-        success: function(response){
-          let data = JSON.parse(response);
-          if(data.type == 'success'){
-            swal({
-              type: data.type,
-              text: data.pesan,
-              showConfirmButton: true,
-              allowOutsideClick: false,
-            }).then(function(){
-              $('#modal_tambah').modal('close');
-              $('.rowitem').html('');
-              $('#table').DataTable().ajax.reload();
-            })
-          }else{
-            swal({
-              type: data.type,
-              text: data.pesan,
-              showConfirmButton: true,
-              allowOutsideClick: false,
-            })
+      swal({
+        type: 'question',
+        title: 'Warning',
+        text: 'Are you sure to submit this data?',
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        showCancelButton:true
+      }).then(function(){
+        $.ajax({
+          type: 'POST',
+          url : '<?= base_url()."pengadaan/submit_new_data";?>',
+          data: $('#formtambahdata').serialize(),
+          dataType: 'JSON',
+          success: function(data){
+            if(data.type == 'success'){
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              }).then(function(){
+                $('#modal_tambah').modal('close');
+                $('.rowitem').html('');
+                $('#table').DataTable().ajax.reload();
+              })
+            }else{
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              })
+            }
           }
-        }
-      })       
+        })       
+      })
 
     })
     $('#btn-ubah').on('click', function(e){
@@ -979,15 +1026,14 @@ background: #D7A42B;color:white;
                       "<td><input type='text' placeholder='item' name='item[]' style='width: 200px'></td>"+
                       "<td><input type='text' placeholder='ukuran' name='ukuran[]' style='width: 200px'></td>"+
                       "<td><input type='text' placeholder='bahan' name='bahan[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='jumlah' name='jumlah[]' style='width: 80px'></td>"+
+                      "<td><input type='number' placeholder='jumlah' name='jumlah[]' style='width: 80px' min='0'></td>"+
                       "<td><input type='text' placeholder='satuan' name='satuan[]' style='width: 80px'></td>"+
-                      "<td><input type='number' placeholder='hps usd' name='hpsusd[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='hps idr' name='hpsidr[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='hps satuan' name='hpssatuan[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='penawaran' name='penawaran[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='realisasi (usd)' name='realisasiusd[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='realisasi (rp)' name='realisasirp[]' id='realisasirp"+nomor+"' data-id='"+nomor+"' class='realisasirp' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='realisasi (qty)' name='realisasiqty[]' id='realisasiqty"+nomor+"' data-id='"+nomor+"' class='realisasiqty' style='width: 200px'></td>"+
+                      
+                      "<td><input type='number' placeholder='hps satuan' name='hpssatuan[]' style='width: 200px' min='0'></td>"+
+                      "<td><input type='number' placeholder='penawaran' name='penawaran[]' style='width: 200px' min='0'></td>"+
+                      "<td><input type='number' placeholder='realisasi (usd)' name='realisasiusd[]' style='width: 200px' min='0'></td>"+
+                      "<td><input type='number' placeholder='realisasi (rp)' name='realisasirp[]' id='realisasirp"+nomor+"' data-id='"+nomor+"' class='realisasirp' style='width: 200px' min='0'></td>"+
+                      "<td><input type='number' placeholder='realisasi (qty)' name='realisasiqty[]' id='realisasiqty"+nomor+"' data-id='"+nomor+"' class='realisasiqty' style='width: 200px' min='0'></td>"+
                       "<td><span id='jumlah"+nomor+"' class='jml'>qty x rp</span></td>"+
                       "<td><input type='text' placeholder='no. kontrak' name='nokontrak[]' style='width: 200px'></td>"+
                       "<td><input type='text' placeholder='tgl. kontrak' class='datepicker' id='tglkontrak"+nomor+"' name='tglkontrak[]' style='width: 200px'></td>"+
@@ -1109,28 +1155,29 @@ background: #D7A42B;color:white;
       let idselects = '#'+idselect;
       
       let html = "<tr height='20'><td>"+nomor+"</td>"+
-                      "<td><input type='hidden' name='idpengadaan[]' style='width: 200px' value='"+id+"'><input type='text' placeholder='item' name='item[]' style='width: 200px'></td>"+
-                      "<td><input type='text' placeholder='ukuran' name='ukuran[]' style='width: 200px'></td>"+
-                      "<td><input type='text' placeholder='bahan' name='bahan[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='jumlah' name='jumlah[]' style='width: 80px'></td>"+
-                      "<td><input type='text' placeholder='satuan' name='satuan[]' style='width: 80px'></td>"+
-                      "<td><input type='number' placeholder='hps usd' name='hpsusd[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='hps idr' name='hpsidr[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='hps satuan' name='hpssatuan[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='penawaran' name='penawaran[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='realisasi (usd)' name='realisasiusd[]' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='realisasi (rp)' name='realisasirp[]' id='realisasirpa"+nomor+"' data-id='"+nomor+"' class='realisasirp' style='width: 200px'></td>"+
-                      "<td><input type='number' placeholder='realisasi (qty)' name='realisasiqty[]' id='realisasiqtya"+nomor+"' data-id='"+nomor+"' class='realisasiqty' style='width: 200px'></td>"+
+                      "<td><input type='hidden' name='idpengadaan' value='"+id+"'><input type='text' placeholder='item' name='item[]'></td>"+
+                      "<td><input type='text' placeholder='ukuran' name='ukuran[]'></td>"+
+                      "<td><input type='text' placeholder='bahan' name='bahan[]'></td>"+
+                      "<td><input type='number' placeholder='jumlah' name='jumlah[]'></td>"+
+                      "<td colspan='2'></td><td><input type='number' placeholder='hps satuan' name='hpssatuan[]'></td>"+
+                      "<td><input type='text' placeholder='satuan' name='satuan[]'></td>"+
+                      "<td><input type='number' placeholder='penawaran' name='penawaran[]'></td>"+
+                      "<td><input type='number' placeholder='realisasi (usd)' name='realisasiusd[]'></td>"+
+                      "<td><input type='number' placeholder='realisasi (rp)' name='realisasirp[]' id='realisasirpa"+nomor+"' data-id='"+nomor+"' class='realisasirp'></td>"+
+                      "<td><input type='number' placeholder='realisasi (qty)' name='realisasiqty[]' id='realisasiqtya"+nomor+"' data-id='"+nomor+"' class='realisasiqty'></td>"+
                       "<td><span id='jumlah"+nomor+"' class='jml'>qty x rp</span></td>"+
-                      "<td><input type='text' placeholder='no. kontrak' name='nokontrak[]' style='width: 200px'></td>"+
-                      "<td><input type='text' placeholder='tgl. kontrak' class='datepicker ' id='tglkontrak"+nomor+"' name='tglkontrak[]' style='width: 200px'></td>"+
-                      "<td><select name='vendor[]' style='width: 200px' id='"+idselect+"'><option value=''>--pilih--</option></select></td>"+
-                      "<td><span class='hapus-row-tbh'>X</span></td></tr>";
+                      "<td><input type='text' placeholder='no. kontrak' name='nokontrak[]'></td>"+
+                      "<td><input type='text' placeholder='tgl. kontrak' class='datepicker ' id='tglkontrak"+nomor+"' name='tglkontrak[]'></td>"+
+                      "<td><select name='vendor[]' id='"+idselect+"'><option value=''>--pilih--</option></select></td>"+
+                      "<td><button class='hapus-row-d'><i class='fa fa-trash'></i></button></td></tr>";
       $('#rowisi').append(html);
       $(idselects).select2({
         placeholder: 'Select an option',
           //theme: 'material'
-      },$('select').css('width','200px'));
+      },$('select').css('width','100%'));
+      $('.hapus-row-d').on('click', function(e){
+        $(this).parent().parent().remove();
+      })
       $('.realisasirp, .realisasiqty').on('change', function(){
         let nomorid = $(this).attr('data-id');
         let idjml = '#jumlah'+nomorid;
@@ -1176,7 +1223,7 @@ background: #D7A42B;color:white;
 
       swal({
         type: 'question',
-        text: 'yakin untuk menghapus data ini? :(',
+        text: 'Are you sure to deleting this data?',
         showCancelButton: 'TRUE',
         allowOutsideClick: 'FALSE',
 
@@ -1186,6 +1233,7 @@ background: #D7A42B;color:white;
           dataType: 'JSON',
           url: '<?= base_url()."pengadaan/hapus_data_inv";?>',
           data: {id:id},
+          dataType: 'JSON',
           success: function(data){
             swal({
               type: data.type,
@@ -1277,7 +1325,7 @@ background: #D7A42B;color:white;
                 onClose:function(c){
                   swal({
                     type: 'question',
-                    text: 'Are you sure to changing this data?',
+                    text: 'Are you sure to updating this data?',
                     showConfirmButton: true,
                     allowOutsideClick: false,
                     showCancelButton:true
@@ -1287,8 +1335,8 @@ background: #D7A42B;color:white;
                       type: 'POST',
                       url: '<?= base_url()."Pengadaan/update_inv";?>',
                       data: {id:idinv,tgl:val,j:j},
-                      success: function(result){
-                        let data = JSON.parse(result);
+                      dataType: 'JSON',
+                      success: function(data){
                         swal({
                           type: data.type,
                           text: data.pesan,
@@ -1317,46 +1365,38 @@ background: #D7A42B;color:white;
     $('#tbisiinvoice tbody').on('click', '.edit-row', function(e){
       
       let id = $(this).attr('data-id');
-      swal({
-        type: 'question',
-        text: 'Are you sure to edit this data?',
-        showConfirmButton: true,
-        allowOutsideClick: false,
-        showCancelButton:true
-      }).then(function(){
-        $.ajax({
-          type: 'POST',
-          data: {id:id},
-          url : '<?= base_url()."pengadaan/get_detail";?>',
-          success: function(result){
-            let data = JSON.parse(result);
-            $('#btn-update-row').attr('data-id', data.id_pengadaan);
-            $('#modal_edit_row').modal('open');
-            $('#modal_edit_row label').addClass('active');
-            $('#item_e').val(data.item);
-            $('#id_row').val(data.id_pengadaan_uniq);
-            $('#id_e').val(data.id_pengadaan);
+      
+      $.ajax({
+        type: 'POST',
+        data: {id:id},
+        url : '<?= base_url()."pengadaan/get_detail";?>',
+        dataType: 'JSON',
+        success: function(data){
+          $('#btn-update-row').attr('data-id', data.id_pengadaan);
+          $('#modal_edit_row').modal('open');
+          $('#modal_edit_row label').addClass('active');
+          $('#item_e').val(data.item);
+          $('#id_row').val(data.id_pengadaan_uniq);
+          $('#id_e').val(data.id_pengadaan);
 
-            $('#ukuran_e').val(data.ukuran);
-            $('#bahan_e').val(data.bahan);
-            $('#jml_e').val(data.jumlah);
-            $('#satuan_e').val(data.satuan);
-            $('#hpsusd_e').val(data.hps_usd);
-            $('#hpsidr_e').val(data.hps_idr);
-            $('#hpssatuanidr_e').val(data.hps_satuan);
-            $('#penawaran_e').val(data.penawaran);
-            $('#realisasiusd_e').val(data.realisasi_nego_usd);
-            $('#realisasirp_e').val(data.realisasi_nego_rp);
-            $('#realisasiqty_e').val(data.realisasi_qty_unit);
-            $('#nokontrak_e').val(data.no_kontrak);
-            $('#tglkontrak_e').val(tanggal(data.tgl_kontrak));
-            $('#vendor_e').select2().val(data.id_vendor).trigger('change.select2');
-          }
-        })
+          $('#ukuran_e').val(data.ukuran);
+          $('#bahan_e').val(data.bahan);
+          $('#jml_e').val(data.jumlah);
+          $('#satuan_e').val(data.satuan);
+          $('#hpsusd_e').val(data.hps_usd);
+          $('#hpsidr_e').val(data.hps_idr);
+          $('#hpssatuanidr_e').val(data.hps_satuan);
+          $('#penawaran_e').val(data.penawaran);
+          $('#realisasiusd_e').val(data.realisasi_nego_usd);
+          $('#realisasirp_e').val(data.realisasi_nego_rp);
+          $('#realisasiqty_e').val(data.realisasi_qty_unit);
+          $('#nokontrak_e').val(data.no_kontrak);
+          $('#tglkontrak_e').val(tanggal(data.tgl_kontrak));
+          $('#vendor_e').select2().val(data.id_vendor).trigger('change.select2');
+        }
       })
     })
     $('#tbisiinvoice tbody').on('click', '.hapus-row', function(e){
-      
       let id = $(this).attr('data-id');
       swal({
         type: 'question',
@@ -1369,6 +1409,7 @@ background: #D7A42B;color:white;
           type: 'POST',
           data: {id:id},
           url : '<?= base_url()."pengadaan/hapus_row";?>',
+          dataType: 'JSON',
           success: function(result){
             if(data.type == 'success'){
               swal({
@@ -1392,34 +1433,57 @@ background: #D7A42B;color:white;
         })
       })
     })
-
-    $('#btn-update-row').on('click', function(e){
-      let id = $(this).attr('data-id');
+    $('#btn-report').on('click', function(e){
+      let tahun = $('#tahunselect').val();
+      let div = $('#divisiselect').val();
+      let jenis = $('#n_jenis_pengadaan_e').val();
       $.ajax({
         type: 'POST',
-        url : '<?= base_url()."pengadaan/update_row";?>',
-        data: $('#form-edit-row').serialize(),
-        success: function(data){
-          if(data.type == 'success'){
-            swal({
-              type: data.type,
-              text: data.pesan,
-              showConfirmButton: true,
-              allowOutsideClick: false,
-            }).then(function(){
-              data_tabel(id)
-              $('#modal_edit_row').modal('close');
-              $('#table').DataTable().ajax.reload();
-            })
-          }else{
-            swal({
-              type: data.type,
-              text: data.pesan,
-              showConfirmButton: true,
-              allowOutsideClick: false,
-            })
-          }
+        url: '<?= base_url()."pengadaan/get_report";?>',
+        data: {tahun: tahun, div: div, jenis: jenis},
+        dataType: 'JSON',
+        success: function(data)
+        {
+          console.table(data);
         }
+      })
+    })
+    $('#btn-update-row').on('click', function(e){
+      let id = $(this).attr('data-id');
+       swal({
+        type: 'question',
+        text: 'Are you sure to updating this data?',
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        showCancelButton:true
+      }).then(function(){
+        $.ajax({
+          type: 'POST',
+          url : '<?= base_url()."pengadaan/update_row";?>',
+          data: $('#form-edit-row').serialize(),
+          dataType: 'JSON',
+          success: function(data){
+            if(data.type == 'success'){
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              }).then(function(){
+                data_tabel(id)
+                $('#modal_edit_row').modal('close');
+                $('#table').DataTable().ajax.reload();
+              })
+            }else{
+              swal({
+                type: data.type,
+                text: data.pesan,
+                showConfirmButton: true,
+                allowOutsideClick: false,
+              })
+            }
+          }
+        })
       })
       
     })
@@ -1458,34 +1522,41 @@ background: #D7A42B;color:white;
           if(detail.length > 0){
             let no = 0;
             let sum = 0;
+
             for(i = 0;i < detail.length;i++){
               no++;
-              let nego;
-              if(detail[i].realisasi_nego_rp <= detail[i].penawaran){
-                nego = "Ya";
-              }else{
-                nego = "Tidak";
-              }
-              let proses, status;
+              let nego = detail[i].nego;
+
+              let proses, status, edit, hapus;
               let role = "<?= $role;?>";
               if(role !== 'user'){
                edit = "<a href='#' class='edit-row' data-id='"+detail[i].id_pengadaan_uniq+"' data-pengadaan='"+id+"'>edit</a>";
                hapus = "<a href='#' class='hapus-row' data-id='"+detail[i].id_pengadaan_uniq+"'>hapus</a>";
                 status = "<a href='#' class='proses-inv' data-id='"+detail[i].no_kontrak+"' data-tahun='"+data.tahun+"' data-pengadaan='"+id+"' data-vendor='"+detail[i].id_vendor+"' data-nm_vendor='"+detail[i].nm_vendor+"'>"+detail[i].status+"</a>";
               }else{
-                
+                edit = "";
+                hapus = "";
                 status = "<a href='#' data-id='"+detail[i].no_kontrak+"' data-pengadaan='"+id+"' data-vendor='"+detail[i].id_vendor+"'>"+detail[i].status+"</a>";
               }
-              
+              let hpssatuan, negos = '';
+              if(i == 0){
+                hpssatuan = "<td class='center' rowspan="+detail.length+">"+formatNumber(detail[i].hpssatuan)+"</td>";
+                negos = "<td class='center' style='font-weight:bolder' rowspan="+detail.length+">"+nego+"</td>";
+              }else{
+                hpssatuan = "";
+                negos = '';
+              }
               html += "<tr><td class='center' height='20'>"+no+"</td>"+
                       "<td class='center'>"+detail[i].item+"</td>"+
                       "<td class='center'>"+detail[i].ukuran+"</td>"+
                       "<td class='center'>"+detail[i].bahan+"</td>"+
                       "<td class='center'>"+formatNumber(detail[i].jumlah)+"</td>"+
+                      "<td class='center'>"+formatNumber(detail[i].hps_satuan)+"</td>"+
                       "<td class='center'>"+detail[i].satuan+"</td>"+
                       "<td class='center'>"+formatNumber(detail[i].hps_usd)+"</td>"+
-                      "<td class='center'>"+formatNumber(detail[i].hps_idr)+"</td>"+
-                      "<td class='center'>"+formatNumber(detail[i].hps_satuan)+"</td>"+
+                      // "<td class='center'>"+formatNumber(detail[i].hps_idr)+"</td>"+
+                      hpssatuan
+                      +
                       "<td class='center'>"+formatNumber(detail[i].penawaran)+"</td>"+
                       "<td class='center'>"+formatNumber(detail[i].realisasi_nego_usd)+"</td>"+
                       "<td class='center'>"+formatNumber(detail[i].realisasi_nego_rp)+"</td>"+
@@ -1494,11 +1565,11 @@ background: #D7A42B;color:white;
                       "<td class='center'>"+detail[i].no_kontrak+"</td>"+
                       "<td class='center'>"+tanggal(detail[i].tgl_kontrak)+"</td>"+
                       "<td class='center'>"+detail[i].nm_vendor+"</td>"+
-                      "<td class='center' style='font-weight:bolder'>"+nego+"</td>"+
+                      negos+
                       "<td class='center'>"+status+"</td>"+
                       "<td class='center'>"+edit+' | '+hapus+"</td>"+
                       "</tr>";
-             
+              
                       sum += parseFloat(detail[i].jml);
             }
             $('#t_total').text('Rp.'+formatNumber(sum));

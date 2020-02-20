@@ -35,6 +35,7 @@ class Register extends CI_Controller {
 		$this->load->model('Task_model');
 		$this->load->library("excel");
 
+
 	}	
 
 
@@ -59,7 +60,7 @@ class Register extends CI_Controller {
 			$data->title = 'Register Masuk';
 			$data->year = $this->Register_masuk_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
-			
+			$data->status = $this->Register_masuk_model->get_list_status()->result();
 			$data->select_vendor = $this->Tdr_model->select_tdr();
 			$data->select_jenis = $this->Register_masuk_model->select_jenis_surat()->result();
 			$this->load->view('header', $data);
@@ -95,7 +96,11 @@ class Register extends CI_Controller {
 				$row['tgl_disposisi_manajer'] = tanggal($field->tgl_disposisi_manajer);
 				$row['status_data'] = $field->status_data;
 				$row['status'] = $field->status;
-			
+				$row['comment'] = $field->comment == null ? '-': $field->comment;
+				$row['created_at'] = $field->created_at == null ? '-' : 'Update at: '.tgl_jam($field->created_at);
+				$row['username'] = $field->username;
+				$row['alasan'] = $field->alasan;
+				$row['tgl_srt_pengembalian'] = $field->tgl_srt_pengembalian;
 				$data[] = $row;
 				
 			}
@@ -128,6 +133,8 @@ class Register extends CI_Controller {
 					$this->form_validation->set_rules('email', 'Email', 'required');
 					$this->form_validation->set_rules('tgl_email', 'Tgl. Email', 'required');
 					
+				}elseif($this->input->post('jenis_surat') == 'Permintaan Ulang'){
+					$this->form_validation->set_rules('id_pengadaan', 'Id Pengadaan Sebelumnya', 'required');
 				}else{
 					$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
 					$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');
@@ -158,6 +165,7 @@ class Register extends CI_Controller {
 					$t = explode("-",$tglterima);
 					$beban = $this->input->post('beban');
 					$anggaran = $this->input->post('anggaran');
+					$idr = $this->input->post('id_register');
 					$tahun = $t[0];
 					if($jenis != 'Pemberitahuan' ){
 						$status = 'On Process';
@@ -177,7 +185,7 @@ class Register extends CI_Controller {
 					$kelompok = $this->input->post('kelompok', TRUE);
 					$id = $this->_id_register_masuk(date('Y'));
 
-					if($this->Register_masuk_model->add_data_masuk($id,  $divisi, $jenis, $email, $tglemail, $nosurat, $tglsurat, $perihal, $user, $kelompok, $tglterimasurat, $tglterimaemail, $tahun, $status, $beban, $anggaran)){
+					if($this->Register_masuk_model->add_data_masuk($id,  $divisi, $jenis, $email, $tglemail, $nosurat, $tglsurat, $perihal, $user, $kelompok, $tglterimasurat, $tglterimaemail, $tahun, $status, $beban, $anggaran, $idr)){
 
 						$data = new stdClass();
 						$data->type = 'success';
@@ -305,10 +313,25 @@ class Register extends CI_Controller {
 			            $data->pesan = $errors;
 			            echo json_encode($data);
 					}else{
+
+
 						$pembuat = $this->input->post('pembuat');
 						$tgldpimkel = tanggal1($this->input->post('tgl_d_pimkel'));
 						$tgldmanager = tanggal1($this->input->post('tgl_d_manager'));
-						foreach($pembuat AS $p){
+						if($this->Register_masuk_model->cek_pembuat($idregister)->num_rows() > 0){
+							$u = $this->Register_masuk_model->cek_pembuat($idregister)->row()->id_pembuat;
+							$u = explode('-', $u);
+							$ur = $u[2];
+							foreach($pembuat AS $p){
+								$ur++;
+								$res[] = array(
+									'id_pembuat'=> $idregister.'-'.str_pad((int) $ur,2,"0",STR_PAD_LEFT),
+									'id_register'=>$idregister,
+									'username'=>$p
+								);
+							}
+						}else{
+							foreach($pembuat AS $p){
 							$no++;
 							$res[] = array(
 								'id_pembuat'=> $idregister.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT),
@@ -316,6 +339,8 @@ class Register extends CI_Controller {
 								'username'=>$p
 							);
 						}
+						}
+						
 
 						if($this->Register_masuk_model->disposisi($idregister, $tgldpimkel ,$tgldmanager) && $this->db->insert_batch('pembuat_pekerjaan', $res)){
 							$data = new stdClass();
@@ -542,7 +567,55 @@ class Register extends CI_Controller {
 		}
 
 	}
+    public function proses_batal()
+    {
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+        {
 
+            if($this->input->post(null))
+            {
+                $data = new stdClass();
+                $this->form_validation->set_rules('tgl_batal', 'Tanggal Batal', 'required');
+
+                //$this->form_validation->set_rules('no_surat', 'Nomor Surat', 'required');
+                //$this->form_validation->set_rules('tgl_surat', 'Tanggal Surat', 'required');
+                $this->form_validation->set_rules('alasan','Alasan', 'required|max_length[200]');
+                
+                if ($this->form_validation->run() == false) 
+                {
+                    
+                    $errors = validation_errors();
+                    $data->type = 'error';
+                    $data->pesan = $errors;
+                    
+                }else{
+
+                    $id = uniqid();
+                    $idr = $this->input->post('id_register');
+                    $tglb = tanggal1($this->input->post('tgl_batal'));
+                    $no = $this->input->post('no_surat');
+                    $tgls = tanggal1($this->input->post('tgl_surat'));
+                    $alasan = $this->input->post('alasan');
+
+                    if($this->Register_masuk_model->pembatalan($id, $idr, $tglb, $no, $tgls, $alasan)){
+                        $data->type = 'success';
+                        $data->pesan = 'Berhasil';
+                    }else{
+                        $data->type = 'error';
+                        $data->pesan = 'Failed';
+                
+                    }
+                }
+
+                echo json_encode($data);
+            }
+
+
+        }else{
+            show_404();
+        }
+
+    }
 	public function hapus_data(){
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
 		{
@@ -698,7 +771,7 @@ class Register extends CI_Controller {
 				$data = new stdClass();
 				$this->form_validation->set_rules('no_surat', 'No. Surat', 'required');
 				$this->form_validation->set_rules('tgl_surat', 'Tgl. Surat', 'required');
-
+				$this->form_validation->set_rules('perihal','Perihal', 'required');
 				if ($this->form_validation->run() == false) {
 
 					$errors = validation_errors();
@@ -710,8 +783,8 @@ class Register extends CI_Controller {
 					$no_surat = $this->input->post('no_surat');
 					$tgl_surat = tanggal1($this->input->post('tgl_surat'));
 					$idr = $this->input->post('id_register');
-
-					if($this->Register_masuk_model->add_pengumuman_lelang($id, $idr, $no_surat, $tgl_surat))
+					$perihal = $this->input->post('perihal');
+					if($this->Register_masuk_model->add_pengumuman_lelang($id, $idr, $no_surat, $tgl_surat, $perihal))
 					{
 						$data->type = 'success';
 						$data->pesan = 'Success!';

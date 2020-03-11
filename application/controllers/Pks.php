@@ -56,13 +56,13 @@ class Pks extends CI_Controller {
 				$no++;
 				$row = array();
 				$row['no'] = $no;
-				$row['tgl_minta'] = tanggal_indo($field->tgl_minta);
+				$row['tgl_minta'] = tgl_indo($field->tgl_minta);
 				$row['no_penunjukan'] = $field->no_srt_pelaksana;
 				$row['no_usulan'] = $field->no_notin;
 				$row['nm_vendor'] = $field->nm_vendor;
 				$row['perihal'] = $field->perihal;
-				$row['tgl_awal'] = tanggal_indo($field->tgl_krj_awal);
-				$row['tgl_akhir'] = tanggal_indo($field->tgl_krj_akhir);
+				$row['tgl_awal'] = tgl_indo($field->tgl_krj_awal);
+				$row['tgl_akhir'] = tgl_indo($field->tgl_krj_akhir);
 				$row['status'] = str_ireplace("_"," ",$field->status);
 				$row['nominal'] = titik($field->nominal_rp);
 				$row['beda'] = $field->beda;
@@ -350,7 +350,7 @@ class Pks extends CI_Controller {
 				$tglttdkevendor = tanggal1($this->input->post('tgl_ttd_ke_vendor'));
 				$tglttdkepemimpin = tanggal1($this->input->post('tgl_ttd_ke_pemimpin'));
 				$tglserahterimapks = tanggal1($this->input->post('tgl_serahterima_pks'));
-				$nopks = tanggal1($this->input->post('no_pks'));
+				$nopks = $this->input->post('no_pks');
 				$tglpks = tanggal1($this->input->post('tgl_pks'));
 
 				if($this->Pks_model->proses_pks($id,$tgldraftdarilegal,$tgldraftkeuser,$tgldraftkevendor,$tglreviewkelegal,$tglttdkevendor,$tglttdkepemimpin,$tglserahterimapks,$nopks,$tglpks))

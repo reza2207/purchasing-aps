@@ -79,7 +79,8 @@
       <script src="<?= base_url().'assets/js/moment.js';?>"></script>
       <script src="<?= base_url().'assets/js/locale.js';?>"></script>
       <script type="text/javascript" src="<?= base_url().'assets/materialize/js/materialize.min.js';?>"></script>
-      
+      <script type="text/javascript" src="<?= base_url().'assets/socket.io/dist/socket.io.js';?>"></script>
+      <script type="text/javascript" src="<?= base_url().'assets/js/socket.init.js';?>"></script>
       <script>
 
 
@@ -96,6 +97,17 @@
       let jam = moment().format('Do MMMM YYYY, h:mm:ss a');
       document.getElementById('jamlogin').innerHTML = jam;
     }
+
+    let ipAddress = "<?= $_SERVER['HTTP_HOST']; ?>";
+ 
+    if (ipAddress == "::1") {
+        ipAddress = "localhost"
+    }
+
+    const port = "3000";
+    const socketIoAddress = `http://${ipAddress}:${port}`;
+    const socket = io(socketIoAddress);
+
     $('#login').on('click', function(e){
       e.preventDefault();
       let username = $('#username').val();
@@ -105,17 +117,20 @@
         type: 'POST',
         url : "<?= base_url().'user/login';?>",
         data : {username: username, password: password},
-        success: function(response){
+        dataType: 'JSON',
+        success: function(data){
           
-          let data = JSON.parse(response);
           if(data.status == 'success'){
-          swal({
+            socket.emit('reload-user', data.kata);
+            swal({
               type: data.status,
               text: data.pesan,
               allowOutsideClick: false
-              }).then(function(){
+            }).then(function(){
+              
+              
                 window.location.href="<?=base_url().'welcome';?>"; 
-              })
+            })
           }else{
             swal({
               type: data.status,
@@ -129,6 +144,8 @@
     })
 
   });
+
+   
 </script>
 
     </body>

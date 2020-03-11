@@ -187,7 +187,6 @@
 <!-- Modal Structure detail-->
 <div id="modal_detail" class="modal modal-fixed-footer">
 	<div class="modal-content">
-		
 		<div class="col s12 l12">
 			<ul class="collapsible popout" data-collapsible="expandable">
 			    <li class="active">
@@ -377,7 +376,7 @@
 				<div class="row">
 					<div class="input-field col l12 s12 dpim">
 						<input name="id_register" type="text" class="idregister" hidden>
-						<input name="tgl_d_pimkel" type="text" class="datepicker" id="dtglDisposisiPimkel">
+						<input name="tgl_d_pimkel" type="text" class="datepicker" id="dtglDisposisiPimkel" value="00-00-0000">
 						<label>Tgl. Disposisi Pimkel</label>
 					</div>
 					<div class="input-field col l12 s12 dman">
@@ -755,7 +754,7 @@
 		$(".select2").select2({
 			placeholder: 'Select an option',
 		},$('select').css('width','100%'));
-		setInterval(set_int, 60000);
+		
 		var collaps = $('.collapsible').collapsible({
 		    accordion: false, // A setting that changes the collapsible behavior to expandable instead of the default accordion style
 		    onOpenStart: function(el) { }, // Callback for Collapsible open
@@ -807,7 +806,7 @@
 					if(data['comment'] != '-' && data['status'] == 'On Process'){
 						return "<span aria-label='"+data['created_at']+"' data-balloon-pos='up-right'>"+data['comment']+"</span>";
 					}else if(data['status'] == 'Return'){
-						return "<span aria-label='"+data['tgl_srt_pengembalian']+"' data-balloon-pos='up-right'>"+data['alasan']+"</span>";;
+						return "<span aria-label='R"+data['tgl_srt_pengembalian']+"' data-balloon-pos='up-right'>"+data['alasan']+"</span>";;
 					}else{
 						return '';
 					}
@@ -1061,7 +1060,8 @@
 							}).then(function(){
 								$('#modal_tambah').modal('close');
 								$('#formtambah input').val('');
-								
+								let str = "<?= $_SESSION['nama'];?>"+' menambahkan data register masuk';
+								socket.emit('notification', str);
 							})
 							$('#table').DataTable().ajax.reload();
 						}
@@ -1074,6 +1074,7 @@
 			$(this).parent().parent().remove();
 		})
 		$('#tmbhrowpembuat').on('click', function(e){
+			$('#dpembuat').show();
 			$.ajax({
 				url : "<?= base_url().'Register/get_user';?>",
 				dataType: 'JSON',
@@ -1177,6 +1178,7 @@
 							}).then(function(){
 								$('#modal_disposisi').modal('close');
 								update_modal(id);
+								socket.emit('update_task');
 							})
 						}else if(data.type == 'error'){
 							swal({
@@ -1402,6 +1404,7 @@
 								$('#table').DataTable().ajax.reload();
 								$('#update_surat').hide();
 								update_modal(id);
+								socket.emit('register_masuk');
 							}
 						})
 					}
@@ -1821,7 +1824,9 @@
 			})
 			
 		})
-
+		socket.on('reload-regist-msk', function(kata){
+			$('#table').DataTable().ajax.reload();
+		})
 		$('#proses_pfa').on('click', function(e){
 			let id = $(this).attr('data-id');
 			swal({
@@ -2236,10 +2241,6 @@
 			}
 		})
 	}
-	function set_int()
-	{
-		$('#table').DataTable().ajax.reload();
-		
-	}
+	
 
 </script>

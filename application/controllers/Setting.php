@@ -40,6 +40,7 @@ class Setting extends CI_Controller {
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$username = $_SESSION['username'];
 			$data->user = $this->get_detail_account($username);
+			$data->sendto = $this->User_model->select_user(array('amgr','asst','mgr'), $_SESSION['username'])->result();
 			$this->load->view('header', $data);
 			$this->load->view('setting');
 		}else{
@@ -76,7 +77,7 @@ class Setting extends CI_Controller {
             {
             	$namefile = $this->upload->data('file_name');
             	$username =  $_SESSION['username'];
-            	$profilpict = $config['upload_path'].'/'.$namefile;
+            	$profilpict = $namefile;
             	$configimg['image_library'] = 'gd2';
 				$configimg['source_image'] = $profilpict;
 				$configimg['create_thumb'] = FALSE;

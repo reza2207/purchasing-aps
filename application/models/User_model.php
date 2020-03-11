@@ -115,12 +115,13 @@ class User_model extends CI_Model {
 		
 	}
 
-	public function select_user($role = NULL){
+	public function select_user($role = NULL, $none = null){
 		
-		$this->db->select('username, nama');
+		$this->db->select('username, nama, profil_pict');
 		$this->db->from('user');
 		$this->db->where('status', 'aktif');
 		$this->db->where('username !=', 'admin');
+		$this->db->where('username !=', $none);
 		if($role != NULL){
 			$this->db->where_in('jabatan',$role);	
 		}

@@ -28,20 +28,27 @@
       <div class="navbar-fixed">
         <div class="navbar" style="width: calc(100%-50%);left:300px;">
           <nav class="nav-wrapper amber darken-4 header">
-            <div id="menu-bars"><button class="waves-effect waves-blue btn-flat white-text show-on-large hide-on-med-and-down" id="button-side"><i class="fa fa-bars"></i></button></div>  
-            <a href="#" class="brand-logo show-on-small hide-on-large-only" data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
+            <div id="menu-bars" style="">
+              <button class="waves-effect waves-blue btn-flat white-text show-on-large hide-on-med-and-down" id="button-side" style="top: 20px;"><i class="fa fa-bars" style="height: 0;"></i></button>
+            </div>  
+            <a href="#" id="brand-logo-mobile" class="brand-logo show-on-small hide-on-large-only" data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
             <a href="<?= base_url();?>" id="brand-logo" class="show-on-large hide-on-med-and-down brand-logo center" for='dekstop'>Purchasing System</a>
             
-            <a href="#" data-target="slide-out" class="sidenav-trigger show-on-small hide-on-up center" style="font-size: 16px"><i class='fa fa-bars'></i></a>
+            <a href="#" data-target="slide-out" class="sidenav-trigger show-on-small hide-on-up" style="font-size: 2em"><i class='fa fa-bars'></i></a>
 
             <ul class="right hide-on-med-and-down">
               <?php if ($_SESSION['role'] != "user" ){?>
-              <li><a href="<?= base_url().'add_user';?>"><i class="fa fa-user-plus"></i> Add User</a></li>
-              <?php } ?>
-              <?php if ($_SESSION['role'] != "user" ){?>
-              <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
+              
+
+              <ul id="dropdown2" class="dropdown-content">
+                <li><a href="<?= base_url().'add_user';?>"><i class="fa fa-user-plus"></i> User</a></li>
+                <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
+                
+              </ul>
+              <li><a class="dropdown-trigger" href="#!" data-target="dropdown2"><i class="fa fa-cog"></i> Setting</a></li>
+            
               <?php }?>
-              <li><a href="<?= base_url('user/logout');?>"><i class="fa fa-sign-out"></i> Logout</a></li>
+              <li><a class="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
             </ul>
           </nav>
         </div>
@@ -53,7 +60,7 @@
             <div class="background"> 
               <img src="<?= base_url().'gambar/background.jpg';?>" width="100%" height="100%">
             </div>
-            <img id="img-user" class="circle responsive-img tooltip-red" src="<?= base_url().$_SESSION['icon'];?>">
+            <img id="img-user" class="circle responsive-img tooltip-red" src="<?= base_url().$this->Setting_model->dir_foto()->row('defaultnya').$this->User_model->get_user($_SESSION['username'])->profil_pict;?>">
             
             <span class="name" id="sayhi">Hi, <b><?= $_SESSION['nama'];?>!</b></span>
             
@@ -64,7 +71,7 @@
           <ul class="collapsible">
 
             <li>
-              <div class="collapsible-header waves-effect">PKS<span class="new badge red" data-badge-caption=""><?= $this->Pks_model->list_reminder(180)->num_rows();?></span></div>
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="material-icons right">arrow_drop_down</i>PKS<span class="new badge red" data-badge-caption=""><?= $this->Pks_model->list_reminder(180)->num_rows();?></span></div>
               
                 <ul class="collapsible-body">
                   <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
@@ -73,7 +80,7 @@
             </li>
             <?php if($_SESSION['role'] != 'user'){?>
             <li>
-              <div class="collapsible-header waves-effect">Pengadaan</div>
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="material-icons right">arrow_drop_down</i>Pengadaan</div>
               
                 <ul class="collapsible-body">
                   <li><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
@@ -82,9 +89,9 @@
             </li>
             <?php }?>
             <li>
-              <div class="collapsible-header waves-effect">Register<?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></div>
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;" id="countMyTask"><i class="material-icons right">arrow_drop_down</i>Register<?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></div>
                 <ul class="collapsible-body">
-                  <li><a href="<?= base_url().'register/masuk';?>">Surat Masuk <?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></a></li>
+                  <li id="countMyTaskLi"><a href="<?= base_url().'register/masuk';?>">Surat Masuk <?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></a></li>
                   <!-- <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li> -->
                   <?php if($_SESSION['role'] != 'user'){?>
                   <li><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
@@ -96,6 +103,7 @@
           </ul>
           <li class="bold">
               <a href="<?= base_url().'tdr';?>" class="waves-effect waves-teal">TDR</a>
+              
           </li>
           <!-- <li class="bold">
               <a href="<?= base_url().'pengumuman';?>" class="waves-effect waves-teal">Pengumuman</a>
@@ -104,9 +112,10 @@
           <div class="divider show-on-small hide-on-large-only"></div>
           <li class="bold show-on-small hide-on-large-only"><a href="<?= base_url().'add_user';?>">Add User</a></li>
           <li class="bold show-on-small hide-on-large-only"><a href="<?= base_url('setting');?>">Setting</a></li>
+
           <?php }?>
           <div class="divider show-on-small hide-on-large-only"></div>
-          <li class="bold show-on-small hide-on-large-only"><a href="<?= base_url('user/logout');?>">Logout</a></li>
+          <li class="bold show-on-small hide-on-large-only"><a href="<?= base_url('user/logout');?>" class="logout">Logout</a></li>
           <div style="margin-top: 150px" id="jam"></div>
         </div>
         
@@ -145,21 +154,25 @@
 <script type="text/javascript" src="<?= base_url().'assets/js/chart.min.js';?>"></script>
 <script type="text/javascript" src="<?= base_url().'assets/js/chartjs.min.js';?>"></script>
 <script type="text/javascript" src="<?= base_url().'assets/js/utility.js';?>"></script>
+<script type="text/javascript" src="<?= base_url().'assets/socket.io/dist/socket.io.js';?>"></script>
+<script type="text/javascript" src="<?= base_url().'assets/js/socket.init.js';?>"></script>
 <script>
   
   $(document).ready(function(){
    
     window.setInterval(jam, 1000);
-
-    function jam(){
-      moment.locale('id');
-      let jam = moment().format('Do MMMM YYYY, ')+"<i class='fa fa-clock-o'></i> "+moment().format('h:mm:ss a');
-      document.getElementById('jam').innerHTML = jam;
+    if (Notification.permission !== "granted"){
+        Notification.requestPermission().then(function(getperm){
+          console.log('perm granted', getperm);
+        });
     }
     M.updateTextFields();
     $('.sidenav').sidenav();
     $('.collapsible').collapsible();
-    
+    $(".dropdown-trigger").dropdown({
+      constrainWidth: false
+    });
+        
     $('#button-side').on('click', function(e){
       $('#slide-out').fadeToggle("slow", "swing");
 
@@ -180,6 +193,103 @@
     })
 
   });
+    socket.on('reload', function(kata){
+        let toastHTML = '<span>'+kata+'</span>';
+        M.toast({
+          html: toastHTML,
+          classes: 'rounded',
+
+        });
+        
+    });
+    socket.on('broadcast', function(data){
+      let kata = data.msg;
+      let user = data.sendto;
+      let nama = data.nama+' ';
+      let gambar = data.gambar;
+      if(user.includes('<?= $_SESSION['username'];?>') && user.includes("all") === false){
+        let toastHTML = nama+' says : '+kata+'<a href="<?= base_url().'setting';?>" class="btn-flat toast-action">Reply</a>';
+        M.toast({
+          html: toastHTML,
+          classes: 'rounded',
+          displayLength: 30000
+        });
+        notifikasi(kata, nama, gambar)
+      }else if(user.includes("all") === true){
+        let toastHTML = nama+' says to All: '+kata+'<a href="<?= base_url().'setting';?>" class="btn-flat toast-action">Reply</a>';
+        M.toast({
+          html: toastHTML,
+          displayLength: 10000
+        });
+        notifikasi(kata, nama, gambar)
+      }
+        
+    });
+    get_user('<?= $_SESSION['username'];?>');
+    function jam(){
+      moment.locale('id');
+      let jam = moment().format('Do MMMM YYYY, ')+"<i class='fa fa-clock-o'></i> "+moment().format('h:mm:ss a');
+      document.getElementById('jam').innerHTML = jam;
+    }
+    function get_user(user){
+      socket.emit('send_user', user);
+    }
+
+    $('.logout').on('click', function(e){
+      let kata = "<?= $_SESSION['nama'];?>"+ ' is logout';
+      socket.emit('logout-user', kata);
+      window.location.href="<?= base_url('user/logout');?>";
+    })
+
+    
+    function myTask(count){
+      
+        let html, htmli;
+        if(count > 0){
+          html = `<i class="material-icons right">arrow_drop_down</i>Register<span class="new badge red" data-badge-caption="">`+count+`</span>`;
+          htmli = `<a href="<?= base_url().'register/masuk';?>">Surat Masuk <span class="new badge red" data-badge-caption="">`+count+`</span></a>`;
+          
+        }else{
+          html = '<i class="material-icons right">arrow_drop_down</i>Register';
+          htmli = `<a href="<?= base_url().'register/masuk';?>">Surat Masuk</a>`;
+        }
+        $('#countMyTask').html(html);
+        $('#countMyTaskLi').html(htmli);
+      
+    }
+    function notifikasi(str, nama, gambar = null) {
+        if (!Notification) {
+            alert('Browsermu tidak mendukung Web Notification.'); 
+            return;
+        }
+        if (Notification.permission !== "granted")
+            Notification.requestPermission();
+        else {
+            var notifikasi = new Notification(nama, {
+                icon: gambar,
+                body: str,
+            });
+            notifikasi.onclick = function () {
+                //window.open("http://goo.gl/dIf4s1");
+            };
+            setTimeout(function(){
+                notifikasi.close();
+            }, 5000);
+        }
+    };
+    socket.on('cek_task', () =>{
+      $.ajax({
+        type: 'POST',
+        url: '<?= base_url()."register/get_count_task";?>',
+        data: {username: "<?= $_SESSION['username'];?>"},
+        dataType: 'JSON',
+        success: function(data){
+          myTask(data);
+        }
+      })
+      
+    })
+    
 </script>
 
     </body>

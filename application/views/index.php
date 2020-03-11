@@ -179,138 +179,141 @@
       $('.slider').slider();
       $('.carousel').carousel();
       $('.select-m').formSelect();
-    function loader(){
-      $('.waiting').hide();
-    }
+      if (Notification.permission !== "granted")
+              Notification.requestPermission();
+    
     setTimeout(loader, 1000);
     setInterval(chart(<?= $this->Pengadaan_model->get_cur_y();?>),10000);
-      if(<?= $pks->num_rows();?> > 0){
-        swal({
-          type: 'warning',
-          text: '<?= $pks->num_rows() == 0 ? '': $pks->num_rows(). ' PKS yang akan berakhir';?>'
-        })
-        
-      }
-
-    });
-
-    $('#thn').on('change', function(e){
-      let thn = this.value;
-      chart(thn);
-    })
-    
-    function chart(thn)
-    {
-      $.ajax({
-        type: 'POST',
-        data: {tahun: thn},
-        url: '<?= base_url()."pengadaan/get_p";?>',
-        dataType: 'JSON',
-        success: function(data){
-          let ctx = document.getElementById('myChart').getContext('2d');
-
-          if(window.bar != undefined)
-            bar.destroy(); 
-
-            bar = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: data.divisi,
-                  datasets: [
-                  {
-                      label: data.jenis['Pembelian Langsung'],
-                      data: data.trans['Pembelian Langsung'],
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(204, 134, 30, 0.2)',
-                          
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(204, 134, 30, 1)',
-                          
-                      ],
-                      borderWidth: 1
-                  },
-                  {
-                      label: data.jenis['Penunjukan Langsung'],
-                      data: data.trans['Penunjukan Langsung'],
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(204, 134, 30, 0.2)',
-                          
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(204, 134, 30, 1)',
-                          
-                      ],
-                      borderWidth: 1
-                  },
-                  {
-                      label: data.jenis['Pemilihan Langsung'],
-                      data: data.trans['Pemilihan Langsung'],
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(204, 134, 30, 0.2)',
-                          
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(204, 134, 30, 1)',
-                          
-                      ],
-                      borderWidth: 1
-                  },
-                   {
-                      label: data.jenis['Pelelangan'],
-                      data: data.trans['Pelelangan'],
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(204, 134, 30, 0.2)',
-                          
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(204, 134, 30, 1)',
-                          
-                      ],
-                      borderWidth: 1
-                  }
-
-                  ]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero: true
-                          }
-                      }]
-                    },
-                    title: {
-                      display: true,
-                      text: 'Pengadaan'
-                    },
-                  legend: {
-                      display: false,
-                      labels: {
-                          fontColor: 'rgb(255, 99, 132)',
-
-                      }
-                  },
-
-              }
-            });
-        }
+    if(<?= $pks->num_rows();?> > 0){
+      swal({
+        type: 'warning',
+        text: '<?= $pks->num_rows() == 0 ? '': $pks->num_rows(). ' PKS yang akan berakhir';?>'
       })
+      
     }
+
+  });
+
+  $('#thn').on('change', function(e){
+    let thn = this.value;
+    chart(thn);
+  })
+  function loader(){
+    $('.waiting').hide();
+  }
+
+  function chart(thn)
+  {
+    $.ajax({
+      type: 'POST',
+      data: {tahun: thn},
+      url: '<?= base_url()."pengadaan/get_p";?>',
+      dataType: 'JSON',
+      success: function(data){
+        let ctx = document.getElementById('myChart').getContext('2d');
+
+        if(window.bar != undefined)
+          bar.destroy(); 
+
+          bar = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.divisi,
+                datasets: [
+                {
+                    label: data.jenis['Pembelian Langsung'],
+                    data: data.trans['Pembelian Langsung'],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(204, 134, 30, 0.2)',
+                        
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(204, 134, 30, 1)',
+                        
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: data.jenis['Penunjukan Langsung'],
+                    data: data.trans['Penunjukan Langsung'],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(204, 134, 30, 0.2)',
+                        
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(204, 134, 30, 1)',
+                        
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: data.jenis['Pemilihan Langsung'],
+                    data: data.trans['Pemilihan Langsung'],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(204, 134, 30, 0.2)',
+                        
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(204, 134, 30, 1)',
+                        
+                    ],
+                    borderWidth: 1
+                },
+                 {
+                    label: data.jenis['Pelelangan'],
+                    data: data.trans['Pelelangan'],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(204, 134, 30, 0.2)',
+                        
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(204, 134, 30, 1)',
+                        
+                    ],
+                    borderWidth: 1
+                }
+
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Pengadaan'
+                  },
+                legend: {
+                    display: false,
+                    labels: {
+                        fontColor: 'rgb(255, 99, 132)',
+
+                    }
+                },
+
+            }
+          });
+      }
+    })
+  }
 </script>

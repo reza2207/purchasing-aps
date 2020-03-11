@@ -111,9 +111,14 @@ class User extends CI_Controller {
 					$_SESSION['jabatan'] = $user->jabatan;
 					$respons_ajax['status'] = 'success';
 					$respons_ajax['pesan'] = 'Welcome <b>'.$user->nama.'</b>';
-					echo json_encode($respons_ajax);
+					
 					$kata = $_SESSION['nama'].' is Login.';
+					$respons_ajax['kata'] = $kata;
 					$this->User_model->update_log($kata, $_SESSION['username']);
+
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($respons_ajax));
 				} else {
 					
 					// login failed
@@ -133,7 +138,7 @@ class User extends CI_Controller {
 		$data = new stdClass();
 		
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-			$kata = $_SESSION['nama'].' is Logout.';
+			$kata = $_SESSION['nama'].' is logout.';
 			$this->User_model->update_log($kata, $_SESSION['username']);
 			// remove session datas
 			foreach ($_SESSION as $key => $value) {
@@ -362,7 +367,23 @@ class User extends CI_Controller {
 		}
 	}
 
-
+	public function list_pegawai(){
+        header('Content-Type: application/json');
+        $query = $this->db->get('pegawai');
+        if ($query){
+            $response = array(
+                "data" => $query->result(),
+                "message" => "OK",
+            );
+        }else{
+            $response = array(
+                "data" => array(),
+                "message" => "Table Empty"
+            );
+        }
+ 
+        echo json_encode($response);
+    }
 
 	
 }

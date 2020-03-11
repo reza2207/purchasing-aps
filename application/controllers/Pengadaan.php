@@ -837,41 +837,43 @@ class Pengadaan extends CI_Controller {
 		}
 	}
 
-	public function get_report()
-	{
-		$tahun = '2017';
-		$divisi = '';
-		$jenis = '';
-		echo json_encode($this->Pengadaan_model->get_report($tahun, $divisi, $jenis)->result());
-	}
+	
 
 	public function get_p()
 	{
 		$tahun = $this->input->post('tahun');
-		//$r = $this->Pengadaan_model->get_data_p($tahun)->result();
-		
-		/*for($i = 0;$i < count($r);$i++){
-			$row['a']['divisi'][] = $r[$i]->divisi;
-			$row['a']['jml'][] = $r[$i]->jml;
-			$row['a']['tahun'][] = $r[$i]->tahun;
-
-		}*/
-		//$j2 = 'Penunjukan Langsung';
-		//$j3 = 'Pemilihan Langsung';
-		
+		$divisi = $this->input->post('divisi');
 		$row = $this->get_d_p($tahun);
-		//$row[$j2] = $this->get_d_p($tahun, $j2);
-		//$row[$j3] = $this->get_d_p($tahun, $j3);
+
 		$row['divisi'] = $this->get_div($tahun);
 
 		echo json_encode($row);
 	}
 
-	private function get_d_p($tahun)
+	public function get_report()
+	{
+		$tahun = $this->input->post('tahun');
+		$divisi = $this->input->post('divisi');
+		$row = $this->get_d_r($tahun);
+
+		echo json_encode($row);
+	}
+	private function get_d_r($tahun = null, $divisi = null)
+	{
+		$r = $this->Pengadaan_model->get_data_p_d($tahun, $divisi)->result();
+		for($i = 0;$i < count($r);$i++){
+				
+				$row[] = $r[$i]->divisi.'|'.$r[$i]->jenis.'|'.$r[$i]->jml;
+			
+		}
+		return $row;
+	}
+
+	private function get_d_p($tahun = null, $divisi = null)
 	{
 		
 		
-		$r = $this->Pengadaan_model->get_data_p_d($tahun)->result();
+		$r = $this->Pengadaan_model->get_data_p_d($tahun, $divisi)->result();
 		//$jmldiv = $this->Pengadaan_model->get_div($tahun)->num_rows();
 		for($i = 0;$i < count($r);$i++){
 				

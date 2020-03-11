@@ -4,10 +4,11 @@
       <div class="col s12 offset-l3 l9">
         <div class="row">
           <div class="col s12">
-            <ul class="tabs">
-              <li class="tab col s3"><a href="#menu1">Change Password</a></li>
-              <li class="tab col s3"><a class="" href="#menu2">Change Picture</a></li>
-              <li class="tab col s3"><a href="#menu3">Tanggal Libur</a></li>
+            <ul class="tabs" style="overflow-x: hidden">
+              <li class="tab col s3"><a href="#menu1">Change Password <i class="fa fa-pencil-square-o"></i></a></li>
+              <li class="tab col s3"><a class="" href="#menu2">Change Picture <i class="fa fa-photo"></i></a></li>
+              <li class="tab col s3"><a href="#menu3">Tanggal Libur <i class="fa fa-calendar"></i></a></li>
+              <li class="tab col s3"><a href="#menu4">Broadcast <i class="fa fa-bullhorn"></i></a></li>
             </ul>
           </div>
           <div id="menu1" class="col s12" style="padding-top: 50px">
@@ -29,11 +30,30 @@
               </div>
             <?= form_close();?>
           </div>
+          <div id="menu4" class="col s12" style="padding-top: 50px">
+            <div class="row">
+              <div class="input-field col s6">
+                <label>Message:</label>
+                <input type="text" class="validate" id="message" placeholder="press enter to send">
+                <input type="text" class="validate" id="nama" hidden="true" value="<?= $_SESSION['nama'];?>">
+              </div>
+              <div class="input-field col s6">
+                <label class="active">Send To:</label>
+                <select id="sendto" class="select-m" multiple>
+                  <option value="all">all</option>
+                  <?php foreach($sendto as $u):?>
+                  <option data-icon="<?= $this->Setting_model->dir_foto()->row('defaultnya').$u->profil_pict;?>" value="<?= $u->username;?>" class="circle"><?= $u->nama;?></option>
+                  <?php endforeach;?>
+                </select>
+              </div>
+            </div>
+            
+          </div>
           <div id="menu2" class="col s12" style="padding-top: 50px">
             <?= form_open_multipart('', array('id'=>'form_pict'));?>
               <div class="row">
                 <div class="input-field col s5 center-align" id="image-old">
-                  <img class="responsive-img circle" src="<?= base_url().$user->profil_pict;?>" style='height:300px;width: 300px'><br>
+                  <img class="circle" src="<?= base_url().$user->profil_pict;?>"><br>
                   <label>Old Photo</label>
                 </div>
                 <div class="input-field col s5 center-align">
@@ -53,7 +73,7 @@
             <?= form_close();?>
           </div>
           <div id="menu3" class="col s12" style="padding-top: 50px;">
-            <table class="table display" id="table" style="width: 100%">
+            <table class="table display" id="table" width="100%">
               <thead class="teal white-text">
                 <tr>
                   <th class="center">No.</th>
@@ -147,6 +167,7 @@
                 showCancelButton:true
               }).then(function(){
                 $(form)[0].reset();
+                $('.tabs').tabs('select','menu1');
               })
             }else{
               swal({
@@ -215,13 +236,14 @@
       })
     })
     //table 
-
+    $('.select-m').formSelect();
     var table = $('#table').DataTable({
       "lengthMenu": [[5,10,25, 50, -1],[5,10,25,50, "All"]],
       "stateSave": false,
       "processing" : true,
       "serverSide": true,
       "orderClasses": false,
+      "autoWidth":false,
       "order": [],
       "ajax":{
         "url": "<?= site_url('Setting/get_data_libur');?>",
@@ -245,8 +267,7 @@
               buttons: [
             { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-refresh"></i>', attr: {id: 'reload','aria-label':'Refresh Data','data-balloon-pos':'up'}},
             { className: 'btn btn-small light-blue darken-4', text: '[+] Add Data', attr: {id: 'add_data','aria-label':'Tambah Data','data-balloon-pos':'up'} },
-            { extend: 'copy', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-copy"></i>', attr: {'aria-label':'Copy Data','data-balloon-pos':'up'}},
-            { extend: 'excel', className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-file-excel-o"><i>'},
+            
             { className: 'btn btn-small light-blue darken-4', text: '<i class="fa fa-filter"><i>', attr: {id: 'btn-filter'}}
             ],
       "processing": true,
@@ -275,6 +296,29 @@
     
     })
     
+    $('#message').on('keydown', function(e){
+      
+      if(e.which == 13){
+        let msg = $('#message').val();
+        let nama = $('#nama').val();
+        let sendto = $('#sendto').val();
+        let gambar = "<?= $this->Setting_model->dir_foto()->row('defaultnya').$this->User_model->get_user($_SESSION['username'])->profil_pict;?>";
+        let data = { nama: nama, msg: msg, sendto: sendto, gambar: gambar };
+        
+        if(msg.length > 0 && sendto !== null){
+          
+          
+          socket.emit('broadcast', data);
+          $('#message').val('');
+          
+        }else if(msg.length > 0 && sendto === null){
+          let toastHTML = 'please select receiver at least one';
+          M.toast({
+            html: toastHTML
+          });
+        }
+      }
+    })
     //$('#table_filter label').hide();
      $('#table_filter input ').attr('placeholder', 'Search here...');
       //$('#table_filter label').hide();

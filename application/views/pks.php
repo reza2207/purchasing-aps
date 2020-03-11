@@ -976,8 +976,27 @@ background: #D7A42B;color:white;
             $('#preview_ke_legal').val(tanggal(tgl4)).attr('readonly', true);
             $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
             $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
-            $('#ptgl_pks').val(tanggal(tgl8)).attr('readonly', true);
-            $('#pno_pks').val(nopks).attr('readonly', true);
+            
+            if(nopks != ''){
+              $('#pno_pks').val(nopks).attr('readonly', true);
+              
+             
+            }else{
+              $('#pno_pks').val('').attr('readonly', false);
+            }
+            if(tgl8 != '0000-00-00'){
+              $('#ptgl_pks').datepicker('destroy');
+             $('#ptgl_pks').val(tanggal(tgl8)).attr('readonly', true);
+            }else{
+              $('#ptgl_pks').datepicker({
+                container: 'body',
+                format: 'dd-mm-yyyy',
+                autoClose: true,
+                disableWeekends:true,
+                firstDay:1
+              });
+              $('#ptgl_pks').val('').attr('readonly', false);
+            }
             $('#p_serahterima,#pno_pks, #ptgl_pks').parent().show();
           
           }else if((tgl7 != '0000-00-00') && (tgl8 == '0000-00-00')){

@@ -109,8 +109,7 @@ background: #D7A42B;color:white;
   <div class="modal-content">
     
     <h6 id="title-modal"></h6>
-    <?php
-    echo form_open('',array('id'=>'formtambahdata'));?>
+    <?= form_open('',array('id'=>'formtambahdata'));?>
     <div class="col s12 l12">
       <div class="row">
         <div class="input-field col s12 l3">
@@ -231,6 +230,13 @@ background: #D7A42B;color:white;
   
 </div>
 <!-- end modal add-->
+<div id="modal_report" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <div class="row">
+       <div class="col" id="report">ss</div>
+    </div>
+  </div>
+</div>
 <!-- modal edit-->
 <div id="modal-ubah" class="modal modal-fixed-footer">
   <div class="modal-content">
@@ -1104,8 +1110,8 @@ background: #D7A42B;color:white;
         type: 'POST',
         data: $('#forminv').serialize(),
         url : "<?= base_url().'Pengadaan/submit_invoice';?>",
-        success: function(result){
-          let data = JSON.parse(result);
+        dataType: 'JSON',
+        success: function(data){
           swal({
             type: data.type,
             text: data.pesan,
@@ -1127,8 +1133,8 @@ background: #D7A42B;color:white;
         type: 'POST',
         data: $('#formeditdata').serialize(),
         url : '<?= base_url()."pengadaan/update_data";?>',
-        success: function(result){
-          let data = JSON.parse(result);
+        dataType: 'JSON',
+        success: function(data){
           swal({
             type: data.type,
             text: data.pesan,
@@ -1444,7 +1450,17 @@ background: #D7A42B;color:white;
         dataType: 'JSON',
         success: function(data)
         {
-          console.table(data);
+          $('#modal_report').modal('open');
+          let i, table;
+          for(i = 0;i < data.length;i++){
+            let r = data[i].split('|');
+            table += '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';
+
+          }
+          
+          $('#report').html(table);
+          console.log(data);
+          
         }
       })
     })
@@ -1510,7 +1526,7 @@ background: #D7A42B;color:white;
           $('#t_jenis_surat').text(data.jenis_notin_masuk);
           $('#t_tgl_disposisi').text(tanggal(data.tgl_disposisi));
             
-          $('#t_perihal').text(data.perihal);
+          $('#t_perihal').text  (data.perihal);
           $('#t_jenis_pengadaan').text(data.jenis_pengadaan);
           $('#t_divisi').text(data.divisi);
           $('#t_kewenangan').text(data.kewenangan);

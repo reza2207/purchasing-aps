@@ -273,7 +273,7 @@ class Register extends CI_Controller {
 				}elseif($this->input->post('tgl_d_manager') !== null && $this->input->post('pembuat') === NULL)
 				{
 
-					$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
+					//$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
 					$this->form_validation->set_rules('tgl_d_manager', 'Tgl. Disposisi Manager', 'required');
 
 					if ($this->form_validation->run() == false) {
@@ -303,7 +303,7 @@ class Register extends CI_Controller {
 				}else{
 					$no = 0;
 					
-					$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
+					//$this->form_validation->set_rules('tgl_d_pimkel', 'Tgl. Disposisi Pimkel', 'required');
 					$this->form_validation->set_rules('tgl_d_manager', 'Tgl. Disposisi Manager', 'required');
 					$this->form_validation->set_rules('pembuat[]', 'Pembuat Pekerjaan', 'required');
 					if ($this->form_validation->run() == false) {
@@ -332,13 +332,13 @@ class Register extends CI_Controller {
 							}
 						}else{
 							foreach($pembuat AS $p){
-							$no++;
-							$res[] = array(
-								'id_pembuat'=> $idregister.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT),
-								'id_register'=>$idregister,
-								'username'=>$p
-							);
-						}
+								$no++;
+								$res[] = array(
+									'id_pembuat'=> $idregister.'-'.str_pad((int) $no,2,"0",STR_PAD_LEFT),
+									'id_register'=>$idregister,
+									'username'=>$p
+								);
+							}
 						}
 						
 
@@ -349,7 +349,9 @@ class Register extends CI_Controller {
 				            $data->manager = $this->input->post('tgl_d_manager');
 				            $data->pembuat = $this->_get_name($pembuat);
 				            $data->unamepembuat = implode(',',$pembuat);
+				            
 				            echo json_encode($data);
+				            
 						}else{
 							$data = new stdClass();
 							$data->type = 'error';
@@ -364,6 +366,17 @@ class Register extends CI_Controller {
 		}else{
 			show_404();
 		}
+	}
+
+	public function get_count_task()
+	{
+		if($this->input->post(null)){
+			$pembuat = $this->input->post('username');
+			return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($this->Register_masuk_model->get_my_task($pembuat)->num_rows()));
+		}
+
 	}
 
 	public function submit_jenis()
@@ -1816,6 +1829,7 @@ class Register extends CI_Controller {
 	}
 
 
+	
 
 
 	

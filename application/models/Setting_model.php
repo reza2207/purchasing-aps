@@ -111,4 +111,6 @@ class Setting_model extends CI_Model {
 		$this->db->where('namasetting','dir_foto');
 		return $this->db->get();
 	}
+
+
 }

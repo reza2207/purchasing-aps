@@ -28,6 +28,7 @@ class Setting extends CI_Controller {
 		$this->load->model('Register_masuk_model');
 		$this->load->helper(array('form', 'url', 'terbilang_helper','tanggal_helper'));
 		$this->load->library('form_validation');
+		date_default_timezone_set("Asia/Bangkok");
 
 	}	
 
@@ -40,7 +41,8 @@ class Setting extends CI_Controller {
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$username = $_SESSION['username'];
 			$data->user = $this->get_detail_account($username);
-			$data->sendto = $this->User_model->select_user(array('amgr','asst','mgr'), $_SESSION['username'])->result();
+			
+
 			$this->load->view('header', $data);
 			$this->load->view('setting');
 		}else{
@@ -59,25 +61,24 @@ class Setting extends CI_Controller {
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$config['upload_path']          = $this->_dir_profile();
-            $config['allowed_types']        = 'gif|jpg|png|jpeg';
+            $config['allowed_types']        = 'gif|jpg|jpeg';
             $config['max_size']             = 1024;
             //$config['max_width']          = 150;
             //$config['max_height']         = 150;
             $config['encrypt_name']			= TRUE;
             $this->load->library('upload', $config);
             
+        	$data = new stdClass();
             if ( ! $this->upload->do_upload('image'))
             {
-        		$data = new stdClass();
         		$data->type = 'error';
-                $data->message = array('error' => $this->upload->display_errors());
+                $data->message = $this->upload->display_errors();
                 echo json_encode($data);
             }
             else
             {
-            	$namefile = $this->upload->data('file_name');
+            	$profilpict = $this->upload->data('file_name');
             	$username =  $_SESSION['username'];
-            	$profilpict = $namefile;
             	$configimg['image_library'] = 'gd2';
 				$configimg['source_image'] = $profilpict;
 				$configimg['create_thumb'] = FALSE;
@@ -90,14 +91,11 @@ class Setting extends CI_Controller {
 				
 				if($this->User_model->update_photo($username, $profilpict))
 				{
-					$data = new stdClass();
 					$data->type = 'success';
 					$data->message = 'Success!';
-					$_SESSION['icon'] = $profilpict;
 					echo json_encode($data);
 				}else{
 
-					$data = new stdClass();
 					$data->type = 'error';
 					$data->message = 'Failed!';
 					unset($profilpict);
@@ -140,6 +138,39 @@ class Setting extends CI_Controller {
 		}else{
 			$this->load->helper('form');
 			$this->load->view('login');
+		}
+	}
+
+	public function send_broadcast()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+
+				$nama = $this->input->post('nama');
+				$msg = $this->input->post('msg');
+				$sends = $this->input->post('sendto');
+				$sendto = (in_array('all', $sends) == true ? 'all' : '');
+				$time = date('Y-m-d H:i:s');
+				$gambar = $this->input->post('gambar');
+				
+
+				if($this->Setting_model->send_broadcast($nama, $msg, $sendto, $time)){
+					$data['nama'] = $nama;
+					$data['msg'] = $msg;
+					$data['sendto'] = $sendto;
+					$data['gambar'] = $gambar;
+					$data['time'] = $time;
+					$data['status'] = 'success';
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($data));		
+				}else{
+					$data['status'] = 'error';
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($data));
+				}
+			
+
 		}
 	}
 

@@ -8,7 +8,6 @@
               <li class="tab col s3"><a href="#menu1">Change Password <i class="fa fa-pencil-square-o"></i></a></li>
               <li class="tab col s3"><a class="" href="#menu2">Change Picture <i class="fa fa-photo"></i></a></li>
               <li class="tab col s3"><a href="#menu3">Tanggal Libur <i class="fa fa-calendar"></i></a></li>
-              <li class="tab col s3"><a href="#menu4">Broadcast <i class="fa fa-bullhorn"></i></a></li>
             </ul>
           </div>
           <div id="menu1" class="col s12" style="padding-top: 50px">
@@ -30,30 +29,11 @@
               </div>
             <?= form_close();?>
           </div>
-          <div id="menu4" class="col s12" style="padding-top: 50px">
-            <div class="row">
-              <div class="input-field col s6">
-                <label>Message:</label>
-                <input type="text" class="validate" id="message" placeholder="press enter to send">
-                <input type="text" class="validate" id="nama" hidden="true" value="<?= $_SESSION['nama'];?>">
-              </div>
-              <div class="input-field col s6">
-                <label class="active">Send To:</label>
-                <select id="sendto" class="select-m" multiple>
-                  <option value="all">all</option>
-                  <?php foreach($sendto as $u):?>
-                  <option data-icon="<?= $this->Setting_model->dir_foto()->row('defaultnya').$u->profil_pict;?>" value="<?= $u->username;?>" class="circle"><?= $u->nama;?></option>
-                  <?php endforeach;?>
-                </select>
-              </div>
-            </div>
-            
-          </div>
           <div id="menu2" class="col s12" style="padding-top: 50px">
             <?= form_open_multipart('', array('id'=>'form_pict'));?>
               <div class="row">
                 <div class="input-field col s5 center-align" id="image-old">
-                  <img class="circle" src="<?= base_url().$user->profil_pict;?>"><br>
+                  <img class="circle" src="<?= base_url().$this->Setting_model->dir_foto()->row('defaultnya').$this->User_model->get_user($_SESSION['username'])->profil_pict;?>"><br>
                   <label>Old Photo</label>
                 </div>
                 <div class="input-field col s5 center-align">
@@ -83,6 +63,7 @@
                 </tr>
               </thead>
             </table>
+
           </div>
         </div>
       </div>
@@ -138,7 +119,8 @@
         $('#btn-upload').removeClass('hide');
       }
     });
-
+    let chatHistorys = document.getElementById("list-all");
+        chatHistorys.scrollTop = chatHistorys.scrollHeight;
     $('#form_cp').on('submit', function(e){
       let form = $(this);
       e.preventDefault();
@@ -158,7 +140,7 @@
           data: $(this).serialize(),
           success: function(result){
             let data = JSON.parse(response);
-            if(data.type = 'success'){
+            if(data.type == 'success'){
             swal({
                 type: data.type,
                 text: data.message,
@@ -197,13 +179,13 @@
 
         $.ajax({
           url: '<?= base_url()."setting/update_photo_profile";?>',
-          type: 'post',
+          type: 'POST',
           data: new FormData(form),
           contentType: false,
           processData: false,
-          success: function(response){
-            let data = JSON.parse(response);
-            if(data.type = 'success'){
+          dataType: 'JSON',
+          success: function(data){
+            if(data.type == 'success'){
               swal({
                 type: data.type,
                 text: data.message,
@@ -211,7 +193,7 @@
                 allowOutsideClick: false,
                 showCancelButton:true
               }).then(function(){
-                window.location.href="<?=base_url().'setting';?>"; 
+                window.location.href="<?=base_url().'setting';?>";
                 $('.tabs').tabs('select','menu2');
               })
             }else{
@@ -228,7 +210,7 @@
       }, function(isConfirm){
         if(isConfirm == 'cancel'){
           swal({
-            type: 'success',
+            type: 'warning',
             text: 'Okay',
             showConfirmButton: true,
           })
@@ -304,12 +286,23 @@
         let sendto = $('#sendto').val();
         let gambar = "<?= $this->Setting_model->dir_foto()->row('defaultnya').$this->User_model->get_user($_SESSION['username'])->profil_pict;?>";
         let data = { nama: nama, msg: msg, sendto: sendto, gambar: gambar };
+
         
         if(msg.length > 0 && sendto !== null){
           
-          
-          socket.emit('broadcast', data);
           $('#message').val('');
+          $.ajax({
+            type: 'POST',
+            url : '<?= base_url()."setting/send_broadcast";?>',
+            data: data,
+            dataType: 'JSON',
+            success : function(data){
+              if(data.status == 'success'){
+                socket.emit('broadcast', data);
+
+              }
+            }
+          })
           
         }else if(msg.length > 0 && sendto === null){
           let toastHTML = 'please select receiver at least one';

@@ -131,26 +131,12 @@
               </div>
             </div>
           </div>
-          <?php if($_SESSION['role'] != 'user'){?>
-          <!-- <div class="col l3">
-            <div class="card hoverable">
-              <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
-                <div class="white-text activator" style="text-align: center;padding-top: 10px;font-size: 2em"><a href="<?= base_url().'register/my_task';?>" class="white-text">My Task</a></div>
-                <div style="text-align: center" class="white-text activator"><i class="fa fa-tasks" style="font-size: 6em;padding-top: 20px"></i></div>
-                <div style="text-align: center;padding-top: 20px" class="white-text activator">ss</div>
-              </div>
-              <div class="card-reveal">
-                <span class="card-title orange darken-4-text text-darken-4" style="font-size: 12px">My Task<i class="fa fa-close right"></i></span>
-                <p>Here is some more information about this product that is only revealed once clicked on.</p>
-              </div>
-            </div>
-          </div> -->
-          <?php }?>
+          
         </div>
       </div>
-      <div class="col push-sl s9">
+      <div class="col s12 offset-l3 l9">
       </div>
-      <div class="col push-l3 l9 s12">
+      <div class="col s12 offset-l3 l9">
         <div class="row">
           <div class="col s12 l1">
 
@@ -161,8 +147,10 @@
             </select>
           </div>
         </div>
+      </div>
+      <div class="col s12 offset-l3 l9">
         <div class="row">
-          <div class="col s12" style="position: relative; height:70vh;">
+          <div class="col s12 l12" style="position: relative; height:10vh;">
             <canvas id="myChart"></canvas>
           </div>
         </div>
@@ -179,8 +167,7 @@
       $('.slider').slider();
       $('.carousel').carousel();
       $('.select-m').formSelect();
-      if (Notification.permission !== "granted")
-              Notification.requestPermission();
+      
     
     setTimeout(loader, 1000);
     setInterval(chart(<?= $this->Pengadaan_model->get_cur_y();?>),10000);

@@ -10,7 +10,6 @@ io.on('connection', function(socket){
   })
   socket.on('broadcast', function(data){
     io.emit('broadcast', data);
-    console.log(data.gambar)
   })
 
   socket.on('register_masuk', function(){

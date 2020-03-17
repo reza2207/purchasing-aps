@@ -116,10 +116,15 @@ div.fixed
 
 #brand-logo{
     font-family: crackWall;
+    background:linear-gradient(90deg, #BAB1E1, #e1c245);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    -webkit-box-decoration-break:clone;
     letter-spacing: 10px;
-    text-decoration-line: underline;
-    text-decoration-style:double;
-    text-shadow: 10px 4px 3px #FF0000;
+    
+    /*text-decoration-line: underline;
+    text-decoration-style:double;*/
+    /*text-shadow: 10px 4px 3px #FF0000;*/
 }
 
 #brand-logo-mobile{

@@ -9,7 +9,7 @@
       <link type="text/css" rel="stylesheet" href="<?= base_url().'assets/materialize/css/materialize.min.css';?>" media="screen,projection"/>
       <link rel="stylesheet" type="text/css" href="<?= base_url().'assets/datatables/DataTables-1.10.13/css/jquery.dataTables.min.css';?>"/>
       <link href="<?= base_url().'assets/css/select2.min.css';?>" rel="stylesheet">
-      <link href="<?= base_url().'assets/css/balloon.css';?>" rel="stylesheet">
+      <link href="<?= base_url().'assets/css/basename(path)alloon.css';?>" rel="stylesheet">
       
       <link href="<?= base_url().'assets/css/reza.css';?>" rel="stylesheet">
       <!-- Include Editor style. -->
@@ -29,7 +29,7 @@
         <div class="navbar" style="width: calc(100%-50%);left:300px;">
           <nav class="nav-wrapper amber darken-4 header">
             <div id="menu-bars" style="">
-              <button class="waves-effect waves-blue btn-flat white-text show-on-large hide-on-med-and-down" id="button-side" style="top: 20px;"><i class="fa fa-bars" style="height: 0;"></i></button>
+              <button class="waves-effect waves-blue btn-flat white-text show-on-large hide-on-med-and-down" id="button-side" style="top: 15px;"><i class="fa fa-bars" style="height: 0;"></i></button>
             </div>  
             <a href="#" id="brand-logo-mobile" class="brand-logo show-on-small hide-on-large-only" data-target="slide-out" style="font-size: 19px;">System Purchasing</a>
             <a href="<?= base_url();?>" id="brand-logo" class="show-on-large hide-on-med-and-down brand-logo center" for='dekstop'>Purchasing System</a>
@@ -45,7 +45,8 @@
                 <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
                 
               </ul>
-              <li><a class="dropdown-trigger" href="#!" data-target="dropdown2"><i class="fa fa-cog"></i> Setting</a></li>
+              <li><a href="<?= base_url().'broadcast';?>"><i class="fa fa-bullhorn"></i> Broadcast</a></li>
+              <li><a class="dropdown-trigger" data-target="dropdown2"><i class="fa fa-cog"></i></a></li>
             
               <?php }?>
               <li><a class="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
@@ -207,21 +208,29 @@
       let user = data.sendto;
       let nama = data.nama+' ';
       let gambar = data.gambar;
+      let time = data.time;
       if(user.includes('<?= $_SESSION['username'];?>') && user.includes("all") === false){
-        let toastHTML = nama+' says : '+kata+'<a href="<?= base_url().'setting';?>" class="btn-flat toast-action">Reply</a>';
+        let toastHTML = nama+' says : '+kata+'<a href="<?= base_url().'broadcast';?>" class="btn-flat toast-action">Reply</a>';
         M.toast({
           html: toastHTML,
           classes: 'rounded',
           displayLength: 30000
         });
         notifikasi(kata, nama, gambar)
-      }else if(user.includes("all") === true){
-        let toastHTML = nama+' says to All: '+kata+'<a href="<?= base_url().'setting';?>" class="btn-flat toast-action">Reply</a>';
+      }else if(user.includes("all") === true && "<?= $_SESSION['role'];?>" != 'user'){
+        let toastHTML = nama+' says to All: '+kata+'<a href="<?= base_url().'broadcast';?>" class="btn-flat toast-action">Reply</a>';
         M.toast({
           html: toastHTML,
           displayLength: 10000
         });
         notifikasi(kata, nama, gambar)
+
+        let html = "";
+        html = `<li class="collection-item"><div>`+kata+`<br><a>from `+nama+` @`+time+`</a></div></li>`;
+
+        $('#list-all').append(html);
+        let chatHistory = document.getElementById("list-all");
+        chatHistory.scrollTop = chatHistory.scrollHeight;
       }
         
     });
@@ -270,7 +279,7 @@
                 body: str,
             });
             notifikasi.onclick = function () {
-                //window.open("http://goo.gl/dIf4s1");
+                window.open("http://goo.gl/dIf4s1");
             };
             setTimeout(function(){
                 notifikasi.close();

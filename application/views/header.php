@@ -45,7 +45,7 @@
                 <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
                 
               </ul>
-              <li><a href="<?= base_url().'broadcast';?>"><i class="fa fa-bullhorn"></i> Broadcast</a></li>
+              <li><a href="<?= base_url().'broadcast';?>"><i class="fa fa-envelope-o"></i> Broadcast</a></li>
               <li><a class="dropdown-trigger" data-target="dropdown2"><i class="fa fa-cog"></i></a></li>
             
               <?php }?>
@@ -209,6 +209,8 @@
       let nama = data.nama+' ';
       let gambar = data.gambar;
       let time = data.time;
+      let username = data.username;
+
       if(user.includes('<?= $_SESSION['username'];?>') && user.includes("all") === false){
         let toastHTML = nama+' says : '+kata+'<a href="<?= base_url().'broadcast';?>" class="btn-flat toast-action">Reply</a>';
         M.toast({
@@ -218,16 +220,22 @@
         });
         notifikasi(kata, nama, gambar)
       }else if(user.includes("all") === true && "<?= $_SESSION['role'];?>" != 'user'){
+        let loc = data.loc;
         let toastHTML = nama+' says to All: '+kata+'<a href="<?= base_url().'broadcast';?>" class="btn-flat toast-action">Reply</a>';
-        M.toast({
-          html: toastHTML,
-          displayLength: 10000
-        });
-        notifikasi(kata, nama, gambar)
+        
 
         let html = "";
-        html = `<li class="collection-item"><div>`+kata+`<br><a>from `+nama+` @`+time+`</a></div></li>`;
-
+        if(username == "<?= $_SESSION['username'];?>"){
+          html = `<li class="collection-item avatar teal lighten-4"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a>from `+nama+` @`+time+`</a></div></li>`;
+        
+        }else{
+          html = `<li class="collection-item avatar"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a>from `+nama+` @`+time+`</a></div></li>`;
+          M.toast({
+            html: toastHTML,
+            displayLength: 10000
+          });
+          notifikasi(kata, nama, gambar)
+        }
         $('#list-all').append(html);
         let chatHistory = document.getElementById("list-all");
         chatHistory.scrollTop = chatHistory.scrollHeight;

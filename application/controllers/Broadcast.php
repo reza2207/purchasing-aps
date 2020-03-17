@@ -24,7 +24,7 @@ class Broadcast extends CI_Controller {
 		parent::__construct();
 		
 		$this->load->model('Broadcast_model');
-		
+		$this->load->model('Setting_model');
 		$this->load->helper(array('form', 'url', 'terbilang_helper','tanggal_helper'));
 		$this->load->library('form_validation');
 		date_default_timezone_set("Asia/Bangkok");
@@ -62,7 +62,7 @@ class Broadcast extends CI_Controller {
 				$sendto = (in_array('all', $sends) == true ? 'all' : '');
 				$time = date('Y-m-d H:i:s');
 				$gambar = $this->input->post('gambar');
-				
+				$username = $_SESSION['username'];
 
 				if($this->Broadcast_model->send_broadcast($nama, $msg, $sendto, $time)){
 					$data['nama'] = $nama;
@@ -71,6 +71,7 @@ class Broadcast extends CI_Controller {
 					$data['gambar'] = $gambar;
 					$data['time'] = $time;
 					$data['status'] = 'success';
+					$data['username'] = $username;
 					return $this->output
 			        ->set_content_type('application/json')
 			        ->set_output(json_encode($data));		

@@ -29,10 +29,11 @@ class Broadcast_model extends CI_Model {
 
 	public function get_broadcast($sendto)
 	{
-		$this->db->select('`broadcast.id`, `broadcast.chat`, `broadcast.send_by`, `broadcast.send_to`, `broadcast.created_at`, `broadcast.deleted_at`,`user.nama`');
+		$this->db->select('`broadcast.id`, `broadcast.chat`, `broadcast.send_by`, `broadcast.send_to`, `broadcast.created_at`, `broadcast.deleted_at`,`user.nama`,`user.profil_pict`, (SELECT defaultnya FROM settings WHERE namasetting = "dir_foto") AS loc ');
 		$this->db->from('broadcast');
 		$this->db->join('user', 'broadcast.send_by = user.username', 'LEFT');
 		$this->db->where('broadcast.send_to', $sendto);
+		$this->db->order_by('broadcast.id', 'ASC');
 		return $this->db->get();
 	}
 }

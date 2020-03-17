@@ -25,8 +25,14 @@
               <li class="collection-header blue"><b>To All</b></li>
               <div style="overflow-y: scroll;max-height: 250px;min-height: 150px" id="list-all">
                 <?php foreach($list_all AS $c){?>
-                <li class="collection-item"><div><?= $c->chat;?><br><a>from <?= $c->nama;?> @<?= $c->created_at;?></a></div></li>
-                <?php };?>
+                <?php 
+                if($_SESSION['username'] == $c->send_by){?>
+                <li class="collection-item avatar teal lighten-4">
+                  <img src="<?= $c->loc.$c->profil_pict;?>" alt="" class="circle"><div><?= $c->chat;?><br><a style="font-size: 10px">from <?= $c->nama;?> @<?= $c->created_at;?></a></div></li>
+                <?php }else{?>
+                <li class="collection-item avatar">
+                  <img src="<?= $c->loc.$c->profil_pict;?>" alt="" class="circle"><div><?= $c->chat;?><br><a style="font-size: 10px">from <?= $c->nama;?> @<?= $c->created_at;?></a></div></li>
+                <?php }};?>
               </div>
             </ul>
           </div>
@@ -59,14 +65,14 @@
         let sendto = $('#sendto').val();
         let gambar = "<?= $this->Setting_model->dir_foto()->row('defaultnya').$this->User_model->get_user($_SESSION['username'])->profil_pict;?>";
         let data = { nama: nama, msg: msg, sendto: sendto, gambar: gambar };
-
+        
         
         if(msg.length > 0 && sendto !== null){
           
           $('#message').val('');
           $.ajax({
             type: 'POST',
-            url : '<?= base_url()."setting/send_broadcast";?>',
+            url : '<?= base_url()."broadcast/send_broadcast";?>',
             data: data,
             dataType: 'JSON',
             success : function(data){

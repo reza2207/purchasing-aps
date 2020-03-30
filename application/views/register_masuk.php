@@ -768,8 +768,7 @@
 			autoClose: true,
 			disableWeekends:true,
 			firstDay:1
-
-		});
+		}).datepicker("setDate", new Date());
 		$('.timepicker').timepicker({
 			container: 'body',
 			twelveHour: false
@@ -1258,7 +1257,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					})
+					}).datepicker("setDate", new Date());
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').datepicker({
 						container: 'body',
@@ -1267,7 +1266,7 @@
 						disableWeekends:true,
 						firstDay:1
 
-					}).attr('readonly', false);
+					}).datepicker("setDate", new Date()).attr('readonly', false);
 					
 					if($('#tmbhrowpembuat').hasClass('hide')){
 						$('#tmbhrowpembuat').removeClass('hide');
@@ -1282,7 +1281,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					})
+					}).datepicker("setDate", new Date());
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
 					$('.dman').html(rdman);
@@ -1299,7 +1298,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					})
+					}).datepicker("setDate", new Date());
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
 					$('.dman').html(rdman);
@@ -1318,7 +1317,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					}).attr('readonly', false);
+					}).datepicker("setDate", new Date()).attr('readonly', false);
 					
 				}else if(dpim != '' && dman == ''){//second
 					$('.dpim').show();
@@ -1328,7 +1327,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					})
+					}).datepicker("setDate", new Date());
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 
 					$('.dman').html(rdman);
@@ -1338,7 +1337,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					}).attr('readonly', false);
+					}).datepicker("setDate", new Date()).attr('readonly', false);
 					
 					$('#tmbhrowpembuat').removeClass('hide');
 					
@@ -1369,7 +1368,7 @@
 						autoClose: true,
 						disableWeekends:true,
 						firstDay:1
-					})
+					}).datepicker("setDate", new Date());
 					$('#dtglDisposisiPimkel').val(dpim).datepicker('destroy').attr('readonly', true);
 					$('#dtglDisposisiManager').val(dman).datepicker('destroy').attr('readonly', true);
 					$('#tmbhrowpembuat').addClass('hide');
@@ -1915,7 +1914,6 @@
 					$('.ddpimkel').show();
 
 				}
-				
 				if(data.tgl_disposisi_manajer != '0000-00-00'){
 					$('#d_disposisi_manager').text(tanggal_indo(data.tgl_disposisi_manajer));
 					$('.ddmanager').removeClass('hide');

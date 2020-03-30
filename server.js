@@ -38,6 +38,10 @@ io.on('connection', function(socket){
   socket.on('update_task', function(){
     io.emit('cek_task');
   })
+
+  socket.on('reload_table', function(){
+    io.emit('reload_table');
+  })
 });
  
 http.listen(3000, function(){

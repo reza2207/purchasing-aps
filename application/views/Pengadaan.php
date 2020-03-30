@@ -639,32 +639,30 @@ background: #D7A42B;color:white;
       //theme: 'material'
 
     },$('select').css('width','100%'));
-    setInterval(set_int, 60000);
+    
     //$('.select2-selection__arrow').addClass("fa fa-spin");
 
     $('#btn-filter').click(function(){ //button filter event click
         table.ajax.reload();  //just reload table
     });
-    function set_int()
-    {
+    
+
+    socket.on('reload_table', function(data){
       $('#table').DataTable().ajax.reload();
-      
-    }
+    })
     $('.datepicker').datepicker({
       container: 'body',
       format: 'dd-mm-yyyy',
       autoClose: true,
       disableWeekends:true,
       firstDay:1
-    });
+    }).datepicker("setDate", new Date());
     
     $('tbody .rowitem tr td .datepicker').datepicker({
         container: 'body',
         format: 'yyyy-mm-dd',
         autoClose: true,
-
-    });
-
+    }).datepicker("setDate", new Date());
     $('.modal').modal();
     $('.bg').hide();
     var table = $('#table').DataTable({
@@ -806,7 +804,6 @@ background: #D7A42B;color:white;
       if($('#saving-row').hasClass('hide') !== true){
         $('#saving-row').addClass('hide');  
       }
-      
       data_tabel(id)
       
     })
@@ -870,6 +867,7 @@ background: #D7A42B;color:white;
       $('#tp_nama_vendor').val(nmvendor);
       $('#tp_tahun_pengadaan_inv').val(tahun);
       rowinv(no_kontrak, tahun, id);
+      
     })
     $('#n_jenis_pengadaan').on('change', function(e){
       e.preventDefault();
@@ -915,7 +913,7 @@ background: #D7A42B;color:white;
               }).then(function(){
                 $('#modal_tambah').modal('close');
                 $('.rowitem').html('');
-                $('#table').DataTable().ajax.reload();
+                socket.emit('reload_table');
               })
             }else{
               swal({
@@ -997,8 +995,8 @@ background: #D7A42B;color:white;
           type: 'POST',
           url: '<?= base_url()."pengadaan/hapus";?>',
           data: {id:id},
-          success: function(result){
-            let data = JSON.parse(result);
+          dataType: 'JSON',
+          success: function(data){
             swal({
               type: data.type,
               text: data.pesan,
@@ -1085,7 +1083,7 @@ background: #D7A42B;color:white;
         let options = $(idselects);
 
         $.each(JSON.parse(result), function() {
-              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+          options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
         });
       });
     })
@@ -1143,7 +1141,7 @@ background: #D7A42B;color:white;
           }).then(function(){
             data_tabel(id);
             $('#modal-ubah').modal('close');
-            $('#table').DataTable().ajax.reload();
+            socket.emit('reload_table');
           })
         }
       })
@@ -1215,7 +1213,7 @@ background: #D7A42B;color:white;
         let options = $(idselects);
 
         $.each(JSON.parse(result), function() {
-              options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
+          options.append($("<option />").val(this.id_vendor).text(this.nm_vendor));
         });
       });
     })
@@ -1266,9 +1264,10 @@ background: #D7A42B;color:white;
         type: 'POST',
         url: '<?= base_url()."pengadaan/get_kontrak";?>',
         data: {no_kontrak: no_kontrak, tahun: tahun,id:id},
-        success: function(response){
+        dataType: 'JSON',
+        success: function(r){
           //  console.log(response);
-          let r = JSON.parse(response);
+          
           let html = "";
           $('.rowinv').html('');
 
@@ -1359,7 +1358,7 @@ background: #D7A42B;color:white;
                     }
                   })
                 }
-              });
+              }).datepicker("setDate", new Date());
             })
           }else{
             //html = '';
@@ -1425,7 +1424,7 @@ background: #D7A42B;color:white;
                 allowOutsideClick: false,
               }).then(function(){
                 data_tabel(id)
-                $('#table').DataTable().ajax.reload();
+                socket.emit('reload_table');
               })
             }else{
               swal({
@@ -1457,10 +1456,8 @@ background: #D7A42B;color:white;
             table += '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';
 
           }
-          
           $('#report').html(table);
           console.log(data);
-          
         }
       })
     })
@@ -1488,7 +1485,7 @@ background: #D7A42B;color:white;
               }).then(function(){
                 data_tabel(id)
                 $('#modal_edit_row').modal('close');
-                $('#table').DataTable().ajax.reload();
+                socket.emit('reload_table');
               })
             }else{
               swal({
@@ -1504,15 +1501,34 @@ background: #D7A42B;color:white;
       
     })
 
+    $('#t_file').on('click', function(e){
+      
+      let id = $(this).attr('data-id');
+      let cfm = prompt('Masukkan Nama file');
+      let tahun = $(this).attr('data-tahun');
+      if(cfm != ""){
+        $.ajax({
+          data: {id: id, file: cfm},
+          type: 'POST',
+          url: '<?= base_url()."pengadaan/update_file";?>',
+          dataType: 'JSON',
+          success: function(data){
+            let urlfile = "<a href='<?= base_url()."pengadaan/get_file/?file=";?>"+cfm+"&tahun="+tahun+"' target='_blank'>"+cfm+"</a>";
+            $('#t_file').html(urlfile);
+            socket.emit('reload_table');
+          }
 
+        })
+      }
+    })
     function data_tabel(id){
       $.ajax({
         type:'POST',
         url: '<?= base_url()."pengadaan/get_detail";?>',
         data: {id:id},
-        success: function(result){
+        dataType: 'JSON',
+        success: function(response){
           $('#waiting').addClass('hide');
-          let response = JSON.parse(result);
           let data = response.pengadaan;
           let detail = response.detail;
           let sli = response.sli;
@@ -1525,7 +1541,6 @@ background: #D7A42B;color:white;
           $('#t_sli').text(sli+' HK');
           $('#t_jenis_surat').text(data.jenis_notin_masuk);
           $('#t_tgl_disposisi').text(tanggal(data.tgl_disposisi));
-            
           $('#t_perihal').text  (data.perihal);
           $('#t_jenis_pengadaan').text(data.jenis_pengadaan);
           $('#t_divisi').text(data.divisi);
@@ -1533,6 +1548,8 @@ background: #D7A42B;color:white;
           $('#t_no_usulan').text(data.no_usulan);
           $('#t_tgl_usulan').text(tanggal(data.tgl_usulan));
           $('#t_keterangan').text(data.keterangan);
+          $('#t_file').attr('data-id', id);
+          $('#t_file').attr('data-tahun', data.tahun);
           let urlfile = "<a href='<?= base_url()."pengadaan/get_file/?file=";?>"+data.file+"&tahun="+data.tahun+"' target='_blank'>"+data.file+"</a>";
           $('#t_file').html(urlfile);
           if(detail.length > 0){

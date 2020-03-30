@@ -37,7 +37,7 @@ class Broadcast extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Broadcast';
-			
+			$data->page = 'Broadcast';
 			$username = $_SESSION['username'];
 			$data->sendto = $this->User_model->select_user(array('amgr','asst','mgr'), $_SESSION['username'])->result();
 			$data->list_all = $this->Broadcast_model->get_broadcast('all')->result();

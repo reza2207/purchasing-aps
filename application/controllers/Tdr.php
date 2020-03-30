@@ -35,7 +35,8 @@ class Tdr extends CI_Controller {
 		if(isset($_SESSION['username'])){
 			$data = new stdClass();
 			
-			$data->title = 'Welcome '.$_SESSION['nama'].'!';
+			$data->title = 'TDR';
+			$data->page = 'TDR';
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$data->tdr = $this->Tdr_model->get_reminder()->num_rows();
 			$this->load->view('header', $data);

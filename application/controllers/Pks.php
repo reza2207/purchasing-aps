@@ -35,6 +35,7 @@ class Pks extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'PKS';
+			$data->page = 'PKS';
 			$data->select_tdr = $this->Tdr_model->select_tdr();
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$data->role = $_SESSION['role'];

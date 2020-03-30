@@ -58,6 +58,7 @@ class Register extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Register Masuk';
+			$data->page = 'Register';
 			$data->year = $this->Register_masuk_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
 			$data->status = $this->Register_masuk_model->get_list_status()->result();
@@ -727,6 +728,7 @@ class Register extends CI_Controller {
 		{
 			$data = new stdClass();
 			$data->title = 'Lembar Pengolahan';
+			$data->page = 'Register';
 			$data->year = $this->Register_masuk_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
 			
@@ -1138,6 +1140,7 @@ class Register extends CI_Controller {
 		{
 			$data = new stdClass();
 			$data->title = 'Warkat Purchasing';
+			$data->page = 'Register';
 			$data->year = $this->Warkat_model->get_year()->result();
 			$data->user = $this->User_model->select_user(array('amgr','asst'));
 			$data->pemutus = $this->User_model->pemutus_warkat('active')->result();
@@ -1288,8 +1291,8 @@ class Register extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
 		{
 			$data = new stdClass();
-			$data->title = 'Register Masuk';
-			
+			$data->title = 'Garansi Bank';
+			$data->page = 'Register';
 			$data->year = $this->Bg_model->get_year()->result();
 
 			$this->load->view('header', $data);

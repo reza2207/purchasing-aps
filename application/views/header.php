@@ -45,7 +45,7 @@
                 <li><a href="<?= base_url('setting');?>"><i class="fa fa-wrench"></i> Setting</a></li>
                 
               </ul>
-              <li><a href="<?= base_url().'broadcast';?>"><i class="fa fa-envelope-o"></i> Broadcast</a></li>
+              <li class="<?= current_active($page, 'Broadcast');?>"><a href="<?= base_url().'broadcast';?>"><i class="fa fa-envelope-o"></i> Broadcast</a></li>
               <li><a class="dropdown-trigger" data-target="dropdown2"><i class="fa fa-cog"></i></a></li>
             
               <?php }?>
@@ -71,38 +71,39 @@
         <div id="header-side">
           <ul class="collapsible">
 
-            <li>
-              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="material-icons right">arrow_drop_down</i>PKS<span class="new badge red" data-badge-caption=""><?= $this->Pks_model->list_reminder(180)->num_rows();?></span></div>
+            <li class="<?= current_active($title, 'PKS');?> collapsible-head">
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="fa fa-caret-down right <?= caretup($page, 'PKS');?>"></i>PKS<span class="new badge red" data-badge-caption=""><?= $this->Pks_model->list_reminder(180)->num_rows();?></span></div>
               
                 <ul class="collapsible-body">
                   <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
                 </ul>
               
             </li>
+
             <?php if($_SESSION['role'] != 'user'){?>
-            <li>
-              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="material-icons right">arrow_drop_down</i>Pengadaan</div>
+            <li class="<?= current_active($page, 'Pengadaan');?> collapsible-head">
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="fa fa-caret-down right <?= caretup($page, 'Pengadaan');?>"></i>Pengadaan</div>
               
                 <ul class="collapsible-body">
-                  <li><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
-                  <li><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
+                  <li class="<?= current_active($title, 'Pengadaan');?>"><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
+                  <li class="<?= current_active($title, 'Invoice');?>"><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
                 </ul>
             </li>
             <?php }?>
-            <li>
-              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;" id="countMyTask"><i class="material-icons right">arrow_drop_down</i>Register<?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></div>
+            <li class="<?= current_active($page, 'Register');?> collapsible-head">
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;" id="countMyTask"><i class="fa fa-caret-down right <?= caretup($page, 'Register');?>"></i>Register<?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></div>
                 <ul class="collapsible-body">
-                  <li id="countMyTaskLi"><a href="<?= base_url().'register/masuk';?>">Surat Masuk <?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></a></li>
+                  <li id="countMyTaskLi" class="<?= current_active($title, 'Register Masuk');?>"><a href="<?= base_url().'register/masuk';?>">Surat Masuk <?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></a></li>
                   <!-- <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li> -->
                   <?php if($_SESSION['role'] != 'user'){?>
-                  <li><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
-                  <li><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
-                  <li><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
+                  <li class="<?= current_active($title, 'Lembar Pengolahan');?>"><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
+                  <li class="<?= current_active($title, 'Warkat Purchasing');?>"><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
+                  <li class="<?= current_active($title, 'Garansi Bank');?>"><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
                   <?php }?>
                 </ul>
             </li>
           </ul>
-          <li class="bold">
+          <li class="bold <?= current_active($page, 'TDR');?>">
               <a href="<?= base_url().'tdr';?>" class="waves-effect waves-teal">TDR</a>
               
           </li>
@@ -146,8 +147,6 @@
 <script src="<?= base_url().'assets/js/reza.js';?>"></script>
 <script src="<?= base_url().'assets/js/popper.min.js';?>"></script>
 <script src="<?= base_url().'assets/js/tooltip.min.js';?>"></script>
-
-
 <script src="<?= base_url().'assets/materialSummernote-master/js/zzz_ckMaterializeOverrides.js';?>"></script>
 <script src="<?= base_url().'assets/materialSummernote-master/js/codeMirror/codemirror.js';?>"></script>
 <script src="<?= base_url().'assets/materialSummernote-master/js/codeMirror/xml.js';?>"></script>
@@ -173,7 +172,26 @@
     $(".dropdown-trigger").dropdown({
       constrainWidth: false
     });
-        
+    
+    $('.collapsible-head').on('click', function(e){
+      if($(this).find('i').hasClass('caretup')){
+        $(this).find('i').removeClass('caretup');
+        $(this).find('i').addClass('caretdown');
+        if($(this).siblings('.collapsible-head').find('i').hasClass('caretup')){
+          
+          $(this).siblings('.collapsible-head').find('i').addClass('caretup');
+          $(this).siblings('.collapsible-head').find('i').removeClass('caretdown');
+        }
+      }else{
+        $(this).find('i').addClass('caretup');
+        $(this).find('i').removeClass('caretdown');
+        if($(this).siblings('.collapsible-head').find('i').hasClass('caretup')){
+          
+          $(this).siblings('.collapsible-head').find('i').removeClass('caretup');
+          $(this).siblings('.collapsible-head').find('i').addClass('caretdown');
+        }
+      }
+    })
     $('#button-side').on('click', function(e){
       $('#slide-out').fadeToggle("slow", "swing");
 

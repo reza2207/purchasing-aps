@@ -23,8 +23,9 @@ class User extends CI_Controller {
 
 		parent::__construct();
 		$this->load->model('User_model');
-		$this->load->helper(array('form', 'url'));
+		
 		$this->load->model('Pks_model');
+		$this->load->helper(array('form', 'url', 'terbilang_helper','tanggal_helper'));
 		date_default_timezone_set("Asia/Bangkok");
 	}	
 
@@ -34,9 +35,11 @@ class User extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Welcome '.$_SESSION['nama'].'!';
+			$data->page = 'User';
+
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$this->load->view('header', $data);
-			$this->load->view('index');
+			
 
 		}else{
 			$this->load->helper('form');
@@ -49,6 +52,7 @@ class User extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Register';
+			$data->page = 'Register';
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$this->load->view('header', $data);
 			$this->load->view('add_user');

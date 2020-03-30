@@ -96,3 +96,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
         return $words;
     }
+
+    function caretup($page , $pages){
+
+        if($page == NULL){
+            return '';
+        }elseif($page == $pages){
+            return 'caretup';
+        }else{
+            return '';
+        }
+    }

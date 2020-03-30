@@ -39,6 +39,7 @@ class Pengadaan extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Pengadaan';
+			$data->page = 'Pengadaan';
 			$data->role = $_SESSION['role'];
 			$data->select_tdr = $this->Tdr_model->select_tdr();
 			$data->tahun = $this->Pengadaan_model->get_tahun();
@@ -86,7 +87,9 @@ class Pengadaan extends CI_Controller {
 				"recordsFiltered"=>$this->Pengadaan_model->count_filtered(),
 				"data"=>$data,
 			);
-			echo json_encode($output);
+			return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($output));
 		}else{
 			$this->load->helper('form');
 			$this->load->view('login');
@@ -202,15 +205,19 @@ class Pengadaan extends CI_Controller {
 						$data = new stdClass();
 						$data->type = 'success';
 						$data->pesan = 'Success';
-						echo json_encode($data);
+						
 						
 					}else{
 						$data = new stdClass();
 						$data->type = 'error';
 						$data->pesan = 'Failed';
-						echo json_encode($data);
+						
 
 					}
+
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($data));
 				}
 			}else{
 				show_404();
@@ -247,11 +254,15 @@ class Pengadaan extends CI_Controller {
 			}else{
 				if($this->Pengadaan_model->get_pengadaan($id)){
 					$data = $this->Pengadaan_model->get_pengadaan($id);
-					echo json_encode($data);
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($data));
 						
 				}else{
 
-					echo json_encode($id);
+					return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($id));
 				}
 			}
 		}else{
@@ -277,16 +288,22 @@ class Pengadaan extends CI_Controller {
 
 						$data->data = $this->Pengadaan_model->get_kontrak($id, $tahun)->result();
 						$data->jml = $this->Pengadaan_model->get_kontrak($id, $tahun)->num_rows();
-						echo json_encode($data);
+						return $this->output
+				        ->set_content_type('application/json')
+				        ->set_output(json_encode($data));
 					}else{
 						$data = new stdClass();
 						$data = $this->Pengadaan_model->get_nominal($id, $idpengadaan);
 						$data->jml = $this->Pengadaan_model->get_kontrak($id, $tahun, $idpengadaan)->num_rows();
-						echo json_encode($data);
+						return $this->output
+				        ->set_content_type('application/json')
+				        ->set_output(json_encode($data));
 					}
 				}else{
 					
-					echo json_encode($id);
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($id));
 				}
 			}else{
 				show_404();
@@ -311,15 +328,20 @@ class Pengadaan extends CI_Controller {
 
 			if ($this->form_validation->run() == FALSE){
 				$errors = validation_errors();
-	            $respons_ajax['status'] = 'error';
-	            $respons_ajax['pesan'] = $errors;
-	            echo json_encode($respons_ajax);
+	            $data['status'] = 'error';
+	            $data['pesan'] = $errors;
+	            return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 	        }else{
 	        	$this->Pengadaan_model->tambah_invoice();
-				$respons_ajax['status'] = 'success';
-				$respons_ajax['pesan'] = 'Register Success';
-				echo json_encode($respons_ajax);		
+				$data['status'] = 'success';
+				$data['pesan'] = 'Register Success';
+						
 	        }
+	        return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 	    }else{
 			$this->load->helper('form');
 			$this->load->view('login');
@@ -332,12 +354,14 @@ class Pengadaan extends CI_Controller {
 	{
 		$divisi = $this->input->post('divisi');
 
-		foreach($this->Pengadaan_model->get_kewenangan($divisi) AS $result) {
+		/*foreach($this->Pengadaan_model->get_kewenangan($divisi) AS $result) {
 			
 			$row[] = $result->kewenangan;
 			
-		}
-		echo json_encode($this->Pengadaan_model->get_kewenangan($divisi));
+		}*/
+		return $this->output
+        ->set_content_type('application/json')
+        ->set_output(json_encode($this->Pengadaan_model->get_kewenangan($divisi)));
 	}
 
 	protected function _get_id_pengadaan($tahun)
@@ -377,7 +401,6 @@ class Pengadaan extends CI_Controller {
 					$errors = validation_errors();
 					$data->type = 'error';
 		            $data->pesan = $errors;
-		            echo json_encode($data);
 					
 				}else{
 
@@ -398,16 +421,17 @@ class Pengadaan extends CI_Controller {
 						$data = new stdClass();
 						$data->type = 'success';
 						$data->pesan = 'Success';
-						echo json_encode($data);
 						
 					}else{
 						$data = new stdClass();
 						$data->type = 'error';
 						$data->pesan = 'Failed';
-						echo json_encode($data);
 
 					}
 				}
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 
 
 			}else{
@@ -476,28 +500,32 @@ class Pengadaan extends CI_Controller {
 						$data = new stdClass();
 						$data->type = 'success';
 						$data->pesan = 'Success';
-						echo json_encode($data);
 						
 					}else{
 						$data = new stdClass();
 						$data->type = 'error';
 						$data->pesan = 'Failed';
-						echo json_encode($data);
+						
 					}
+
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($data));
 				}elseif($j == 'tp'){
 					if($this->Invoice_model->update_tp($id, $tgl))
 					{
 						$data = new stdClass();
 						$data->type = 'success';
 						$data->pesan = 'Success';
-						echo json_encode($data);
 						
 					}else{
 						$data = new stdClass();
 						$data->type = 'error';
 						$data->pesan = 'Failed';
-						echo json_encode($data);
 					}
+					return $this->output
+			        ->set_content_type('application/json')
+			        ->set_output(json_encode($data));
 				}
 			}
 
@@ -548,14 +576,17 @@ class Pengadaan extends CI_Controller {
 					$data = new stdClass();
 					$data->type = 'success';
 					$data->pesan = 'Success';
-					echo json_encode($data);
 					
 				}else{
 					$data = new stdClass();
 					$data->type = 'error';
 					$data->pesan = 'Failed';
-					echo json_encode($data);
+					
 				}
+
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 			}else{
 				show_404();
 			}
@@ -601,7 +632,9 @@ class Pengadaan extends CI_Controller {
 					
 				}
 
-				echo json_encode($data); 
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 
 			}else{
 				show_404();
@@ -631,7 +664,9 @@ class Pengadaan extends CI_Controller {
 					
 				}
 
-				echo json_encode($data); 
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 			}else{
 				show_404();
 			}
@@ -664,7 +699,6 @@ class Pengadaan extends CI_Controller {
 					$errors = validation_errors();
 					$data->type = 'error';
 		            $data->pesan = $errors;
-		            echo json_encode($data);
 					
 				}else{
 
@@ -689,18 +723,18 @@ class Pengadaan extends CI_Controller {
 						$data = new stdClass();
 						$data->type = 'success';
 						$data->pesan = 'Success';
-						echo json_encode($data);
 						
 					}else{
 						$data = new stdClass();
 						$data->type = 'error';
 						$data->pesan = 'Failed';
-						echo json_encode($data);
 
 					}
 
-
 				}
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 			}else{
 				show_404();
 			}
@@ -730,7 +764,7 @@ class Pengadaan extends CI_Controller {
 				$this->form_validation->set_rules('nokontrak[]', 'No. Kontrak', 'required');
 				$this->form_validation->set_rules('tglkontrak[]', 'Tgl. Kontrak', 'required');
 				$this->form_validation->set_rules('vendor[]', 'Vendor', 'required');
-//beloman
+
 				if ($this->form_validation->run() === false) 
 				{
 					
@@ -802,7 +836,9 @@ class Pengadaan extends CI_Controller {
 
 				}
 
-				echo json_encode($data);
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 
 			}
 		}
@@ -820,14 +856,15 @@ class Pengadaan extends CI_Controller {
 				{
 					$data->type = 'success';
 					$data->pesan = 'Success';
-					echo json_encode($data);
 					
 				}else{
 				
 					$data->type = 'error';
 					$data->pesan = 'Failed';
 				}
-				echo json_encode($data);
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
 
 			}else{
 				show_404();
@@ -856,7 +893,9 @@ class Pengadaan extends CI_Controller {
 		$divisi = $this->input->post('divisi');
 		$row = $this->get_d_r($tahun);
 
-		echo json_encode($row);
+		return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($row));
 	}
 	private function get_d_r($tahun = null, $divisi = null)
 	{
@@ -894,6 +933,35 @@ class Pengadaan extends CI_Controller {
 			
 		}
 		return $row;
+	}
+
+	public function update_file()
+	{
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 
+		{	
+			if($this->input->post(null)){
+
+				$id = $this->input->post('id');
+				$file = $this->input->post('file');
+				$data = new stdClass();
+				if($this->Pengadaan_model->update_file($id, $file))
+				{
+					$data->type = 'success';
+					$data->pesan = 'Success';
+					
+				}else{
+				
+					$data->type = 'error';
+					$data->pesan = 'Failed';
+				}
+
+				return $this->output
+		        ->set_content_type('application/json')
+		        ->set_output(json_encode($data));
+
+			}
+
+		}
 	}
 
 }

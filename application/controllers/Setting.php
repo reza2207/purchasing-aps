@@ -37,7 +37,8 @@ class Setting extends CI_Controller {
 	{	
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
-			$data->title = 'Register';
+			$data->title = 'Settings';
+			$data->page = 'Settings';
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$username = $_SESSION['username'];
 			$data->user = $this->get_detail_account($username);

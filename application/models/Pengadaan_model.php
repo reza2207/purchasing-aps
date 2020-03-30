@@ -358,4 +358,11 @@ class Pengadaan_model extends CI_Model {
 		$this->db->where('tahun', $tahun);
 		return $this->db->get();
 	}
+
+	public function update_file($id, $file)
+	{
+		$data = array('file'=>$file);
+		$this->db->where('id_pengadaan', $id);
+		return $this->db->update($this->table, $data);
+	}
 }

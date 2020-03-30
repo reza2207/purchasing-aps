@@ -152,7 +152,7 @@
       disableWeekends:true,
       firstDay:1
 
-    });
+    }).datepicker("setDate", new Date());
     $('.modal').modal();
     $('.bg').hide();
     var table = $('#table').DataTable({
@@ -412,7 +412,7 @@
           if(e == 'cancel'){
             swal({
               type: 'success',
-              text: 'OKE! HUFT...',
+              text: 'okay...',
               showConfirmButton: true,
               allowOutsideClick: false,
             })

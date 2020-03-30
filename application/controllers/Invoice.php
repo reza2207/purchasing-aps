@@ -35,8 +35,8 @@ class Invoice extends CI_Controller {
 		$this->load->helper('form');
 		if(isset($_SESSION['username'])){
 			$data = new stdClass();
-			
-			$data->title = 'Welcome '.$_SESSION['nama'].'!';
+			$data->page = 'Pengadaan';
+			$data->title = 'Invoice';
 			$data->pks = $this->Pks_model->list_reminder(180);
 			$data->year = $this->Invoice_model->get_year()->result();
 			$data->get_select_status = $this->Invoice_model->get_select_status()->result();

@@ -507,8 +507,7 @@ background: #D7A42B;color:white;
       autoClose: true,
       disableWeekends:true,
       firstDay:1
-
-    });
+    }).datepicker("setDate", new Date());;
     $('.modal').modal();
     $('.bg').hide();
     let table = $('#table').DataTable({
@@ -613,6 +612,7 @@ background: #D7A42B;color:white;
         dataType: 'JSON',
         success: function(response){
           proses_pks(response, id);
+          socket.emit('reload_table');
         //ini
         }
       })
@@ -637,18 +637,17 @@ background: #D7A42B;color:white;
             if(data.type == 'success'){
               $('#input-comment').val('');
               swal({
-                  type: data.type,
-                  text: data.message,
-                  showConfirmButton: true,
+                type: data.type,
+                text: data.message,
+                showConfirmButton: true,
               }).then(function(){
                 get_comment(id)
-
               })//ini
             }else{
               swal({
-                  type: data.type,
-                  text: data.message,
-                  showConfirmButton: true,
+                type: data.type,
+                text: data.message,
+                showConfirmButton: true,
               })
             }
           }
@@ -678,7 +677,7 @@ background: #D7A42B;color:white;
               text: data.message,
             }).then(function(){
               $('#modal_detail').modal('close');
-              $('#table').DataTable().ajax.reload();
+              socket.emit('reload_table');
             })
           }
         }) 
@@ -708,7 +707,7 @@ background: #D7A42B;color:white;
             $('#modal_proses').modal('close');
             //$('#modal_detail').modal('close');
             detail_pks(id);
-            $('#table').DataTable().ajax.reload();
+            socket.emit('reload_table');
           })
         }
       })
@@ -783,7 +782,7 @@ background: #D7A42B;color:white;
           }).then(function(){
             $('#modal_ubah').modal('close');
             detail_pks(id)
-            $('#table').DataTable().ajax.reload();
+            socket.emit('reload_table');
           })
         }
       })
@@ -826,7 +825,6 @@ background: #D7A42B;color:white;
                 showConfirmButton: true,
             }).then(function(){
               detail_pks(id);
-              
               $('#idpks').val(id);
             })
           }
@@ -853,14 +851,16 @@ background: #D7A42B;color:white;
             }).then(function(){
               $('#formtambah input').val('');
               $('#modal_tambah').modal('close');
-              $('#table').DataTable().ajax.reload();
+              socket.emit('reload_table');
             })
           }
         })
       })
     })
     
-    
+    socket.on('reload_table', function(data){
+      $('#table').DataTable().ajax.reload();
+    })
     function proses_pks(response, id){
 
       $('#pdraft_dr_legal, #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks, #pperihal, #ps_penunjukan').val('').attr('readonly', false);
@@ -869,7 +869,8 @@ background: #D7A42B;color:white;
         format: 'dd-mm-yyyy',
         autoClose: true,
         disableWeekends:true,
-      });
+        firstDay:1
+      }).datepicker("setDate", new Date());
        $('#pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #pno_pks, #ptgl_pks').parent().show();
       
         let data = response.pks;
@@ -909,7 +910,7 @@ background: #D7A42B;color:white;
               autoClose: true,
               disableWeekends:true,
               firstDay:1
-            });
+            }).datepicker("setDate", new Date());
             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor ').datepicker('destroy');
 
             $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
@@ -927,7 +928,8 @@ background: #D7A42B;color:white;
               format: 'dd-mm-yyyy',
               autoClose: true,
               disableWeekends:true,
-            });
+              firstDay:1
+            }).datepicker("setDate", new Date());
             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal').datepicker('destroy');
             $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
             $('#pdraft_ke_user').val(tanggal(tgl2)).attr('readonly', true);
@@ -946,7 +948,7 @@ background: #D7A42B;color:white;
               autoClose: true,
               disableWeekends:true,
               firstDay:1
-            });
+            }).datepicker("setDate", new Date());
             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor').datepicker('destroy');
 
             $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
@@ -967,7 +969,7 @@ background: #D7A42B;color:white;
               autoClose: true,
               disableWeekends:true,
               firstDay:1
-            });
+            }).datepicker("setDate", new Date());
             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin').datepicker('destroy');
 
             $('#pdraft_dr_legal').val((tgl1)).attr('readonly', true);
@@ -994,7 +996,7 @@ background: #D7A42B;color:white;
                 autoClose: true,
                 disableWeekends:true,
                 firstDay:1
-              });
+              }).datepicker("setDate", new Date());
               $('#ptgl_pks').val('').attr('readonly', false);
             }
             $('#p_serahterima,#pno_pks, #ptgl_pks').parent().show();
@@ -1007,7 +1009,7 @@ background: #D7A42B;color:white;
               autoClose: true,
               disableWeekends:true,
               firstDay:1
-            });
+            }).datepicker("setDate", new Date());
 
             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima').datepicker('destroy');
 
@@ -1018,6 +1020,7 @@ background: #D7A42B;color:white;
             $('#pttd_ke_vendor').val(tanggal(tgl5)).attr('readonly', true);
             $('#pttd_ke_pemimpin').val(tanggal(tgl6)).attr('readonly', true);
             $('#p_serahterima').val(tanggal(tgl7)).attr('readonly', true);
+
           }else{
             
              $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker({
@@ -1026,7 +1029,7 @@ background: #D7A42B;color:white;
                 autoClose: true,
                 disableWeekends:true,
                 firstDay:1
-              });
+              }).datepicker("setDate", new Date());
             $('#pdraft_dr_legal , #pdraft_ke_user, #pdraft_ke_vendor, #preview_ke_legal, #pttd_ke_vendor, #pttd_ke_pemimpin, #p_serahterima, #ptgl_pks').datepicker('destroy');
 
             $('#pdraft_dr_legal').val(tanggal(tgl1)).attr('readonly', true);
@@ -1042,7 +1045,6 @@ background: #D7A42B;color:white;
             $('#btncancel').text('CLOSE');
 
             $('#prosespks').hide();
-            console.log('b');
           }
     }
 

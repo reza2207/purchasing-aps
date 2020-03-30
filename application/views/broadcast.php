@@ -23,7 +23,7 @@
           <div class="col s6">
             <ul class="collection with-header">
               <li class="collection-header blue"><b>To All</b></li>
-              <div style="overflow-y: scroll;max-height: 250px;min-height: 150px" id="list-all">
+              <div style="overflow-y: scroll;max-height: 250px;height: 180px" id="list-all">
                 <?php foreach($list_all AS $c){?>
                 <?php 
                 if($_SESSION['username'] == $c->send_by){?>
@@ -39,7 +39,7 @@
           <div class="col s6">
             <ul class="collection with-header">
               <li class="collection-header green"><b>Private</b></li>
-              <div style="overflow-y: scroll;max-height: 250px;min-height: 150px">                    
+              <div style="overflow-y: scroll;max-height: 250px;height: 180px">                    
               </div>
             </ul>
           </div>

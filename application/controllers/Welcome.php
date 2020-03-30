@@ -26,10 +26,8 @@ class Welcome extends CI_Controller {
 		$this->load->model('Pks_model');
 		$this->load->model('Pengadaan_model');
 		$this->load->model('Register_masuk_model');
+		$this->load->helper(array('form', 'url', 'terbilang_helper','tanggal_helper'));
 
-		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-			$_SESSION['pks'] = $this->Pks_model->list_reminder(180)->num_rows();
-		}
 
 	}	
 	public function index()
@@ -38,7 +36,8 @@ class Welcome extends CI_Controller {
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			$data = new stdClass();
 			$data->title = 'Welcome '.$_SESSION['nama'].'!';
-			$data->pks = $this->Pks_model->list_reminder(180);
+			$data->page = 'Purchasing';
+			
 			$year = date('Y');
 			$data->role = $_SESSION['role'];
 			$data->year = $year;

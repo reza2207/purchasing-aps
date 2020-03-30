@@ -171,8 +171,7 @@
       autoClose: true,
       disableWeekends:true,
       firstDay:1
-
-    });
+    }).datepicker("setDate", new Date());
     function selected(status, stat){
       if(status == stat){
         return 'selected';

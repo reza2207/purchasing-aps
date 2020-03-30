@@ -68,12 +68,12 @@
               <div class="card-image waves-effect waves-block waves-orange orange darken-4" style="height: 250px">
                 <div class="white-text" style="text-align: center;padding-top: 10px;font-size: 2em"><a href="<?= base_url().'PKS';?>" class="white-text">PKS</a></div>
                 <div style="text-align: center" class="white-text activator"><i class="fa fa-handshake-o" style="font-size: 6em;padding-top: 20px"></i></div>
-                <div style="text-align: center;padding-top: 20px" class="white-text activator"><?= $pks->num_rows() == 0 ? '': $pks->num_rows(). ' PKS yang akan berakhir';?></div>
+                <div style="text-align: center;padding-top: 20px" class="white-text activator"><?= $this->Pks_model->list_reminder(180)->num_rows() == 0 ? '': $this->Pks_model->list_reminder(180)->num_rows(). ' PKS yang akan berakhir';?></div>
               </div>
               <div class="card-reveal">
-                <?php if($pks->num_rows() > 0 ){?>
-                <span class="card-title orange darken-4-text text-darken-4" style="font-size: 12px;font-weight: bolder">PKS Yang Akan Berakhir<i class="fa fa-close right"></i></span>
-                <?php $no = 1;foreach($pks->result() AS $row){?>
+                <?php if($this->Pks_model->list_reminder(180)->num_rows() > 0 ){?>
+                <span class="card-title darken-4-text text-darken-4" style="font-size: 12px;font-weight: bolder">PKS Yang Akan Berakhir<i class="fa fa-close right"></i></span>
+                <?php $no = 1;foreach($this->Pks_model->list_reminder(180)->result() AS $row){?>
                 <p style="font-size: 12px"><?= $no++.'. '.$row->perihal;?></p>
                 <?php }
                 }else{?>
@@ -135,8 +135,6 @@
         </div>
       </div>
       <div class="col s12 offset-l3 l9">
-      </div>
-      <div class="col s12 offset-l3 l9">
         <div class="row">
           <div class="col s12 l1">
 
@@ -150,7 +148,7 @@
       </div>
       <div class="col s12 offset-l3 l9">
         <div class="row">
-          <div class="col s12 l12" style="position: relative; height:10vh;">
+          <div class="col s12 l12" style="position: relative; height: 30vh">
             <canvas id="myChart"></canvas>
           </div>
         </div>
@@ -171,10 +169,10 @@
     
     setTimeout(loader, 1000);
     setInterval(chart(<?= $this->Pengadaan_model->get_cur_y();?>),10000);
-    if(<?= $pks->num_rows();?> > 0){
+    if(<?= $this->Pks_model->list_reminder(180)->num_rows();?> > 0){
       swal({
         type: 'warning',
-        text: '<?= $pks->num_rows() == 0 ? '': $pks->num_rows(). ' PKS yang akan berakhir';?>'
+        text: '<?= $this->Pks_model->list_reminder(180)->num_rows() == 0 ? '': $this->Pks_model->list_reminder(180)->num_rows(). ' PKS yang akan berakhir';?>'
       })
       
     }
@@ -279,6 +277,7 @@
                 ]
             },
             options: {
+                maintainAspectRatio: false,
                 scales: {
                     yAxes: [{
                         ticks: {

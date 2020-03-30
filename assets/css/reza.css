@@ -116,17 +116,28 @@ div.fixed
 
 #brand-logo{
     font-family: crackWall;
-    background:linear-gradient(90deg, #BAB1E1, #e1c245);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    -webkit-box-decoration-break:clone;
     letter-spacing: 10px;
-    
+    -webkit-animation: glow 1s ease-in-out infinite alternate;
+      -moz-animation: glow 1s ease-in-out infinite alternate;
+      animation: glow 1s ease-in-out infinite alternate;  
     /*text-decoration-line: underline;
     text-decoration-style:double;*/
     /*text-shadow: 10px 4px 3px #FF0000;*/
 }
 
+@-webkit-keyframes glow {
+  from {
+    text-shadow: 0 0 10px #ee9600, 0 0 20px #ee9600, 0 0 30px #3200e6, 0 0 90px #3200e6;
+    background:linear-gradient(90deg, #BAB1E1, #e1c245);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    -webkit-box-decoration-break:clone;
+  }
+  to {
+    text-shadow: 0 0 20px #ee9600, 0 0 30px #31b1ce, 0 0 40px #31b1ce, 0 0 90px #31b1ce;
+  }
+}
+ 
 #brand-logo-mobile{
     font-size: 19px;
     font-family: crackWall;
@@ -222,7 +233,7 @@ div.fixed
     color:#50394c !important;
 }
 #header-side .collapsible-body a:before{
-    content:"> ";
+    content:" ";
 }
 
 #table{
@@ -606,4 +617,31 @@ nav ul li::after{
 }
 .story{
     font-family: happySchool;
+}
+
+.caretup {
+    color: white;
+    transform: rotate(180deg);
+    -webkit-transition-duration: 1s;
+    -moz-transition-duration: 1s;
+    -o-transition-duration: 1s;
+    transition-duration: 1s;
+     
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;
+}
+
+.caretdown{
+    transform: rotate(0deg);
+    -webkit-transition-duration: 1s;
+    -moz-transition-duration: 1s;
+    -o-transition-duration: 1s;
+    transition-duration: 1s;
+     
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;
 }

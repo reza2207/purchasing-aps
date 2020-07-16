@@ -41,6 +41,7 @@ class Broadcast extends CI_Controller {
 			$username = $_SESSION['username'];
 			$data->sendto = $this->User_model->select_user(array('amgr','asst','mgr'), $_SESSION['username'])->result();
 			$data->list_all = $this->Broadcast_model->get_broadcast('all')->result();
+			$data->list = $this->Broadcast_model->get_broadcast($username)->result();
 			$this->load->view('header', $data);
 			$this->load->view('broadcast');
 		}else{
@@ -59,27 +60,59 @@ class Broadcast extends CI_Controller {
 				$nama = $this->input->post('nama');
 				$msg = $this->input->post('msg');
 				$sends = $this->input->post('sendto');
-				$sendto = (in_array('all', $sends) == true ? 'all' : '');
+				$sendto = (in_array('all', $sends) == true ? 'all' : $sends);
+				$type = (in_array('all', $sends) == true ? 'all' : 'few');
 				$time = date('Y-m-d H:i:s');
 				$gambar = $this->input->post('gambar');
 				$username = $_SESSION['username'];
 
-				if($this->Broadcast_model->send_broadcast($nama, $msg, $sendto, $time)){
-					$data['nama'] = $nama;
-					$data['msg'] = $msg;
-					$data['sendto'] = $sendto;
-					$data['gambar'] = $gambar;
-					$data['time'] = $time;
-					$data['status'] = 'success';
-					$data['username'] = $username;
-					return $this->output
-			        ->set_content_type('application/json')
-			        ->set_output(json_encode($data));		
+				foreach($sends AS $key => $val){
+					$result[] = array(
+						'send_by' => $username,
+						'chat' => $msg,
+						'send_to' =>  $sendto[$key],
+						'created_at' =>$time,
+					);
+				}
+
+				if($sendto == 'all'){
+					if($this->Broadcast_model->send_broadcast($nama, $msg, $sendto, $time)){
+						$data['nama'] = $nama;
+						$data['msg'] = $msg;
+						$data['sendto'] = $sendto;
+						$data['gambar'] = $gambar;
+						$data['time'] = $time;
+						$data['status'] = 'success';
+						$data['username'] = $username;
+						$data['type'] = 'all';
+						return $this->output
+				        ->set_content_type('application/json')
+				        ->set_output(json_encode($data));		
+					}else{
+						$data['status'] = 'error';
+						return $this->output
+				        ->set_content_type('application/json')
+				        ->set_output(json_encode($data));
+					}
 				}else{
-					$data['status'] = 'error';
-					return $this->output
-			        ->set_content_type('application/json')
-			        ->set_output(json_encode($data));
+					if($this->db->insert_batch('broadcast', $result)){
+						$data['nama'] = $nama;
+						$data['msg'] = $msg;
+						$data['sendto'] = $sendto;
+						$data['gambar'] = $gambar;
+						$data['time'] = $time;
+						$data['status'] = 'success';
+						$data['username'] = $username;
+						$data['type'] = 'few';
+						return $this->output
+				        ->set_content_type('application/json')
+				        ->set_output(json_encode($data));		
+					}else{
+						$data['status'] = 'error';
+						return $this->output
+				        ->set_content_type('application/json')
+				        ->set_output(json_encode($data));
+					}
 				}
 			
 

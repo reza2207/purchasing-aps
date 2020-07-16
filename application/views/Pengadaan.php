@@ -646,7 +646,7 @@ background: #D7A42B;color:white;
         table.ajax.reload();  //just reload table
     });
     
-
+    
     socket.on('reload_table', function(data){
       $('#table').DataTable().ajax.reload();
     })
@@ -775,6 +775,7 @@ background: #D7A42B;color:white;
         type: 'POST',
         url : '<?= base_url()."pengadaan/get_kewenangan";?>',
         data: {'divisi':divisi},
+        dataType: 'JSON',
         success: function(response){
 
           $('#kewenangan').select2({
@@ -783,7 +784,7 @@ background: #D7A42B;color:white;
           },$('select').css('width','100%'));
 
           let option= $('#kewenangan');
-          $.each(JSON.parse(response), function(){ 
+          $.each(response, function(){ 
               option.append($("<option />").val(this.kewenangan).text(this.kewenangan));
           });
 
@@ -1503,22 +1504,24 @@ background: #D7A42B;color:white;
 
     $('#t_file').on('click', function(e){
       
-      let id = $(this).attr('data-id');
-      let cfm = prompt('Masukkan Nama file');
-      let tahun = $(this).attr('data-tahun');
-      if(cfm != ""){
-        $.ajax({
-          data: {id: id, file: cfm},
-          type: 'POST',
-          url: '<?= base_url()."pengadaan/update_file";?>',
-          dataType: 'JSON',
-          success: function(data){
-            let urlfile = "<a href='<?= base_url()."pengadaan/get_file/?file=";?>"+cfm+"&tahun="+tahun+"' target='_blank'>"+cfm+"</a>";
-            $('#t_file').html(urlfile);
-            socket.emit('reload_table');
-          }
+      if($(this).text() == ""){
+        let id = $(this).attr('data-id');
+        let cfm = prompt('Masukkan Nama file');
+        let tahun = $(this).attr('data-tahun');
+        if(cfm != ""){
+          $.ajax({
+            data: {id: id, file: cfm},
+            type: 'POST',
+            url: '<?= base_url()."pengadaan/update_file";?>',
+            dataType: 'JSON',
+            success: function(data){
+              let urlfile = "<a href='<?= base_url()."pengadaan/get_file/?file=";?>"+cfm+"&tahun="+tahun+"' target='_blank'>"+cfm+"</a>";
+              $('#t_file').html(urlfile);
+              socket.emit('reload_table');
+            }
 
-        })
+          })
+        }
       }
     })
     function data_tabel(id){

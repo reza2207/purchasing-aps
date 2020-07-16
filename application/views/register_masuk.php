@@ -188,7 +188,7 @@
 <div id="modal_detail" class="modal modal-fixed-footer">
 	<div class="modal-content">
 		<div class="col s12 l12">
-			<ul class="collapsible popout" data-collapsible="expandable">
+			<ul class="collapsibles popout" data-collapsible="expandable">
 			    <li class="active">
 			      	<div class="collapsible-header"><i class="material-icons">list</i><b>Detail</b>
 			      	</div>
@@ -755,7 +755,7 @@
 			placeholder: 'Select an option',
 		},$('select').css('width','100%'));
 		
-		var collaps = $('.collapsible').collapsible({
+		var collaps = $('.collapsibles').collapsible({
 		    accordion: false, // A setting that changes the collapsible behavior to expandable instead of the default accordion style
 		    onOpenStart: function(el) { }, // Callback for Collapsible open
 		    onCloseEnd: function(el) { } // Callback for Collapsible close
@@ -851,14 +851,6 @@
 				{
 					$(row).css({'background':'#ce3500','color':'white'});
 				}
-				/*
-				if(data['jenis_surat'] == 'Email'){
-					$(row).css({'background':'#65635D','color':'white'});//#140FF0
-				}
-
-				if(data['status'] == 'Done'){
-					$(row).css({'background':'#039be5','color':'white'});
-				}*/
 			}
 		})
 		

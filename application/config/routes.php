@@ -53,6 +53,7 @@ $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['register/masuk'] = 'register/register_masuk';
+
 $route['register/keluar'] = 'register/register_keluar';
 $route['register/pengolahan'] = 'register/lembar_pengolahan';
 $route['register/warkat'] = 'register/warkat';

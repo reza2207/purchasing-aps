@@ -112,5 +112,14 @@ class Setting_model extends CI_Model {
 		return $this->db->get();
 	}
 
+	public function theme($user = null, $title = null)
+	{
+		$this->db->select('value');
+		$this->db->from('theme_user');
+		$this->db->where('user_id', $user);
+		
+		return $this->db->get();
+	}
+
 
 }

@@ -72,8 +72,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             return '';
         }elseif($page == $pages){
             return 'active';
-        }else{
-            return '';
         }
     }
 

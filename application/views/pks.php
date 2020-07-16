@@ -38,8 +38,8 @@ background: #D7A42B;color:white;
           Submit
         </button>
     </div>   -->
-    <ul class="collection with-header" id="reminder" v-if="pks > 0">
-      <li class="collection-item red accent-4 white-text"><marquee id="marquee"><?= $pks->num_rows();?> PKS yang akan berakhir</marquee></li>
+    <ul class="collection" id="reminder" v-if="pks > 0">
+      <li class="collection-item red accent-4 white-text"><marquee id="marquee"><?= $pks->num_rows();?> PKS yang akan berakhir </marquee></li>
     </ul>
     <!-- <button id="" class="btn btn-small">[+]Add Data</button> -->
     <table class="table display"  id="table" style="font-family:'Times New Roman', Times, serif; font-size: 12px;width: 100%">
@@ -707,6 +707,7 @@ background: #D7A42B;color:white;
             $('#modal_proses').modal('close');
             //$('#modal_detail').modal('close');
             detail_pks(id);
+            $('#table').DataTable().ajax.reload();
             socket.emit('reload_table');
           })
         }

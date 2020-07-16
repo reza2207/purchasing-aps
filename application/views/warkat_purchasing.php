@@ -212,11 +212,16 @@
               return 'Done';
             }else{*/
               let status = data.status;
+              if(status == ''){
               return "<select class='browser-default status' data-id='"+data['id_warkat']+"'>"+
                       "<option "+selected(status,'none')+">-pilih-</option>"+
                       "<option value='done' "+selected(status,'done')+">Approve</option>"+
                       "<option value='reject' "+selected(status,'reject')+">Reject</option>"+
                     "</select>";
+
+              }else{
+                return status;
+              }
            
             //}
           }

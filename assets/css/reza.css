@@ -169,6 +169,9 @@ div.fixed
     
     margin-top: 25px;
     background:#00b0ff;
+    -webkit-animation: glow_say 1s ease-in-out infinite alternate;
+      -moz-animation: glow_say 1s ease-in-out infinite alternate;
+      animation: glow_say 1s ease-in-out infinite alternate;
 }
 #sayhi:hover{
     
@@ -190,7 +193,18 @@ div.fixed
     margin-top: -5.5px;
     margin-left: -13px;
 }
-
+@-webkit-keyframes glow_say {
+  from {
+    text-shadow: 0 0 10px #ee9600, 0 0 20px #ee9600, 0 0 30px #3200e6, 0 0 90px #3200e6;
+    -webkit-box-decoration-break:clone;
+    color: white;
+  }
+  to {
+    text-shadow: 0 0 20px #ee9600, 0 0 30px #31b1ce, 0 0 40px #31b1ce, 0 0 90px #31b1ce;
+    color: yellow;
+  }
+}
+ 
 
 #header-side .collapsible-header:hover , #header-side .bold a:hover{
     /*border-left: 6px solid #ff6f69;*/
@@ -226,11 +240,12 @@ div.fixed
     background:#fbefcc !important;
     font-family: happySchool;
     color:#674d3c;
+
     margin-left: -30px;
 }
 #header-side .collapsible-header, .bold a{
     font-family: happySchool;
-    color:#50394c !important;
+    /*color:#50394c !important;*/
 }
 #header-side .collapsible-body a:before{
     content:" ";
@@ -621,11 +636,11 @@ nav ul li::after{
 
 .caretup {
     color: white;
-    transform: rotate(180deg);
-    -webkit-transition-duration: 1s;
-    -moz-transition-duration: 1s;
-    -o-transition-duration: 1s;
-    transition-duration: 1s;
+    transform: rotateX(-180deg);
+    -webkit-transition-duration: 0.5s;
+    -moz-transition-duration: 0.5s;
+    -o-transition-duration: 0.5s;
+    transition-duration: 0.5s;
      
     -webkit-transition-property: -webkit-transform;
     -moz-transition-property: -moz-transform;
@@ -633,12 +648,12 @@ nav ul li::after{
     transition-property: transform;
 }
 
-.caretdown{
+.caretdown {
     transform: rotate(0deg);
-    -webkit-transition-duration: 1s;
-    -moz-transition-duration: 1s;
-    -o-transition-duration: 1s;
-    transition-duration: 1s;
+    -webkit-transition-duration: 0.5s;
+    -moz-transition-duration: 0.5s;
+    -o-transition-duration: 0.5s;
+    transition-duration: 0.5s;
      
     -webkit-transition-property: -webkit-transform;
     -moz-transition-property: -moz-transform;

@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 class Welcome extends CI_Controller {
 
 	/**
@@ -27,6 +30,10 @@ class Welcome extends CI_Controller {
 		$this->load->model('Pengadaan_model');
 		$this->load->model('Register_masuk_model');
 		$this->load->helper(array('form', 'url', 'terbilang_helper','tanggal_helper'));
+
+		require APPPATH.'libraries/phpmailer/src/Exception.php';
+        require APPPATH.'libraries/phpmailer/src/PHPMailer.php';
+        require APPPATH.'libraries/phpmailer/src/SMTP.php';
 
 
 	}	
@@ -99,6 +106,49 @@ class Welcome extends CI_Controller {
  
         $data->pagination = $this->pagination->create_links();
 			
+	}
+
+	public function send_email()
+	{
+	    // PHPMailer object
+         $response = false;
+         $mail = new PHPMailer();
+       
+
+        // SMTP configuration
+        $mail->isSMTP();
+        $mail->Host     = 'bnimail.bni.com'; //sesuaikan sesuai nama domain hosting/server yang digunakan
+        $mail->SMTPAuth = true;
+        $mail->Username = 'muhamad.reza@bni.co.id'; // user email
+        $mail->Password = 'reza'; // password email
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;;
+        $mail->Port     = 110;
+
+        $mail->setFrom('muhamad.reza@bni.co.id', ''); // user email
+        $mail->addReplyTo('muhamad.reza@bni.co.id', ''); //user email
+
+        // Add a recipient
+        $mail->addAddress('haridiana.iswandani@bni.co.id'); //email tujuan pengiriman email
+
+        // Email subject
+        $mail->Subject = 'SMTP Codeigniter'; //subject email
+
+        // Set email format to HTML
+        $mail->isHTML(true);
+
+        // Email body content
+        $mailContent = "&lt;h1>SMTP Codeigniterr&lt;/h1>
+            &lt;p>Laporan email SMTP Codeigniter.&lt;/p>"; // isi email
+        $mail->Body = $mailContent;
+
+        // Send email
+        if(!$mail->send()){
+            echo 'Message could not be sent.';
+            echo 'Mailer Error: ' . $mail->ErrorInfo;
+        }else{
+            echo 'Message has been sent';
+        }
+        
 	}
 
 }

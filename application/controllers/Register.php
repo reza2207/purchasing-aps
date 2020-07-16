@@ -72,6 +72,9 @@ class Register extends CI_Controller {
 		}
 	}
 
+	
+	
+
 	public function get_data_surat()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {

@@ -377,6 +377,10 @@ class Pks extends CI_Controller {
 		}
 	}
 
+	public function print_form_pks()
+	{
+		$this->load->view('print_form_pks');
+	}
 	public function submit_reminder()
 	{
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) 

@@ -24,10 +24,11 @@
     </head>
     <title><?= $title == "" ? "Purchasing System" : $title;?></title>
     
-    <body class="red lighten-5">
+    <?= $this->Setting_model->theme($_SESSION['username'])->num_rows() > 0 ? '<body class="brown darken-2">' : '<body class="red lighten-5">';?>
+    
       <div class="navbar-fixed">
         <div class="navbar" style="width: calc(100%-50%);left:300px;">
-          <nav class="nav-wrapper amber darken-4 header">
+          <?= $this->Setting_model->theme($_SESSION['username'])->num_rows() > 0 ? '<nav class="nav-wrapper grey darken-4 header">' : '<nav class="nav-wrapper amber darken-4 header">';?>
             <div id="menu-bars" style="">
               <button class="waves-effect waves-blue btn-flat white-text show-on-large hide-on-med-and-down" id="button-side" style="top: 15px;"><i class="fa fa-bars" style="height: 0;"></i></button>
             </div>  
@@ -54,7 +55,8 @@
           </nav>
         </div>
       </div>
-      <ul id="slide-out" class="sidenav sidenav-fixed orange lighten-2" style=";overflow-y: hidden;">
+      <?= $this->Setting_model->theme($_SESSION['username'])->num_rows() > 0 ? '<ul id="slide-out" class="sidenav sidenav-fixed brown darken-4">' : '<ul id="slide-out" class="sidenav sidenav-fixed orange lighten-2 " style=";overflow-y: hidden;">';?>
+      <!-- <ul id="slide-out" class="sidenav sidenav-fixed brown darken-4" style=";overflow-y: hidden;"> -->
         <!-- <ul id="slide-out" class="sidenav sidenav-fixed indigo lighten-5"> -->
         <li>
           <div class="user-view">
@@ -68,43 +70,55 @@
           </div>
 
         </li>
+
         <div id="header-side">
           <ul class="collapsible">
 
             <li class="<?= current_active($title, 'PKS');?> collapsible-head">
-              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="fa fa-caret-down right <?= caretup($page, 'PKS');?>"></i>PKS<span class="new badge red" data-badge-caption=""><?= $this->Pks_model->list_reminder(180)->num_rows();?></span></div>
-              
-                <ul class="collapsible-body">
-                  <li><a href="<?= base_url().'pks';?>">List PKS</a></li>
-                </ul>
-              
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="fa fa-caret-down right <?= caretup($page, 'PKS');?>"></i>PKS<span class="new badge red" data-badge-caption=""><?= $this->Pks_model->list_reminder(180)->num_rows();?></span>
+              </div>
+              <ul class="collapsible-body">
+                <li class="<?= current_active($title, 'PKS');?>">
+                  <a href="<?= base_url().'pks';?>">List PKS</a>
+                </li>
+              </ul>
             </li>
 
             <?php if($_SESSION['role'] != 'user'){?>
             <li class="<?= current_active($page, 'Pengadaan');?> collapsible-head">
-              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="fa fa-caret-down right <?= caretup($page, 'Pengadaan');?>"></i>Pengadaan</div>
-              
-                <ul class="collapsible-body">
-                  <li class="<?= current_active($title, 'Pengadaan');?>"><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a></li>
-                  <li class="<?= current_active($title, 'Invoice');?>"><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
-                </ul>
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;"><i class="fa fa-caret-down right <?= caretup($page, 'Pengadaan');?>"></i>Pengadaan
+              </div>
+              <ul class="collapsible-body">
+                <li class="<?= current_active($title, 'Pengadaan');?>"><a href="<?= base_url().'pengadaan';?>">List Pengadaan</a>
+                </li>
+                <li class="<?= current_active($title, 'Invoice');?>"><a href="<?= base_url().'invoice';?>">List Invoice</a></li>
+              </ul>
             </li>
             <?php }?>
             <li class="<?= current_active($page, 'Register');?> collapsible-head">
-              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;" id="countMyTask"><i class="fa fa-caret-down right <?= caretup($page, 'Register');?>"></i>Register<?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></div>
-                <ul class="collapsible-body">
-                  <li id="countMyTaskLi" class="<?= current_active($title, 'Register Masuk');?>"><a href="<?= base_url().'register/masuk';?>">Surat Masuk <?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?></a></li>
-                  <!-- <li><a href="<?= base_url().'register/keluar';?>">Surat Keluar</a></li> -->
-                  <?php if($_SESSION['role'] != 'user'){?>
-                  <li class="<?= current_active($title, 'Lembar Pengolahan');?>"><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
-                  <li class="<?= current_active($title, 'Warkat Purchasing');?>"><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
-                  <li class="<?= current_active($title, 'Garansi Bank');?>"><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
-                  <?php }?>
-                </ul>
+              <div class="collapsible-header waves-effect" style="padding-left: 0px !important;" id="countMyTask">
+                <i class="fa fa-caret-down right <?= caretup($page, 'Register');?>"></i>Register<?= $this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows() > 0 ? '<span class="new badge red" data-badge-caption="">'.$this->Register_masuk_model->get_my_task($_SESSION['username'])->num_rows().'</span>': '';?>
+              </div>
+              <ul class="collapsible-body">
+                <li class="<?= current_active($title, 'Register Masuk');?>" id="countMyTaskLi"><a href="<?= base_url().'register/masuk';?>">Surat Masuk </a></li>
+                <?php if($_SESSION['role'] != 'user'){?>
+                <li class="<?= current_active($title, 'Lembar Pengolahan');?>"><a href="<?= base_url().'register/lembar_pengolahan';?>">Lembar Pengolahan</a></li>
+                <li class="<?= current_active($title, 'Warkat Purchasing');?>"><a href="<?= base_url().'register/warkat';?>">Warkat Purchasing</a></li>
+                <li class="<?= current_active($title, 'Garansi Bank');?>"><a href="<?= base_url().'register/gb';?>">Garansi Bank</a></li>
+                <?php }?>
+              </ul>
             </li>
           </ul>
           <li class="bold <?= current_active($page, 'TDR');?>">
               <a href="<?= base_url().'tdr';?>" class="waves-effect waves-teal">TDR</a>
+              
+          </li>
+          <li class="bold">
+              <a href="<?= base_url().'apps';?>" class="waves-effect waves-teal">Apps</a>
+              
+          </li>
+          <li class="bold">
+              <a href="<?= base_url().'apps/calendar';?>" class="waves-effect waves-teal">Kalender</a>
               
           </li>
           <!-- <li class="bold">
@@ -151,7 +165,7 @@
 <script src="<?= base_url().'assets/materialSummernote-master/js/codeMirror/codemirror.js';?>"></script>
 <script src="<?= base_url().'assets/materialSummernote-master/js/codeMirror/xml.js';?>"></script>
 <script src="<?= base_url().'assets/materialSummernote-master/js/materialSummernote.js';?>"></script>
-<script type="text/javascript" src="<?= base_url().'assets/js/chart.min.js';?>"></script>
+<!-- <script type="text/javascript" src="<?= base_url().'assets/js/chart.min.js';?>"></script> -->
 <script type="text/javascript" src="<?= base_url().'assets/js/chartjs.min.js';?>"></script>
 <script type="text/javascript" src="<?= base_url().'assets/js/utility.js';?>"></script>
 <script type="text/javascript" src="<?= base_url().'assets/socket.io/dist/socket.io.js';?>"></script>
@@ -227,27 +241,54 @@
       let nama = data.nama+' ';
       let gambar = data.gambar;
       let time = data.time;
-      let username = data.username;
+      let type = data.type;
+      let username = data.username;//sendby
 
-      if(user.includes('<?= $_SESSION['username'];?>') && user.includes("all") === false){
+      if(type != 'all' ){
         let toastHTML = nama+' says : '+kata+'<a href="<?= base_url().'broadcast';?>" class="btn-flat toast-action">Reply</a>';
-        M.toast({
-          html: toastHTML,
-          classes: 'rounded',
-          displayLength: 30000
-        });
-        notifikasi(kata, nama, gambar)
-      }else if(user.includes("all") === true && "<?= $_SESSION['role'];?>" != 'user'){
+        
+        let html = "";
+        if(user == "<?= $_SESSION['username'];?>"){
+          html = `<li class="collection-item avatar"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a style="font-size: 10px">from `+username+` @`+time+`</a></div></li>`;
+          $('#list').append(html);
+          let chatHistory = document.getElementById("list");
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+          M.toast({
+            html: toastHTML,
+            displayLength: 10000
+          });
+          notifikasi(kata, nama, gambar)
+          //tujuan nya ada yang sedang login
+        }else if(user.includes('<?= $_SESSION['username'];?>')){
+          html = `<li class="collection-item avatar"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a style="font-size: 10px">from `+username+` @`+time+`</a></div></li>`;
+          $('#list').append(html);
+          let chatHistory = document.getElementById("list");
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+
+          M.toast({
+            html: toastHTML,
+            displayLength: 10000
+          });
+          notifikasi(kata, nama, gambar)
+
+        }else if(username == '<?= $_SESSION['username'];?>'){
+          html = `<li class="collection-item avatar teal lighten-4"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a style="font-size: 10px">to `+user+` @`+time+`</a></div></li>`;
+          $('#list').append(html);
+          let chatHistory = document.getElementById("list");
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+        
+      }else if(type == 'all' && "<?= $_SESSION['role'];?>" != 'user'){
         let loc = data.loc;
         let toastHTML = nama+' says to All: '+kata+'<a href="<?= base_url().'broadcast';?>" class="btn-flat toast-action">Reply</a>';
         
 
         let html = "";
         if(username == "<?= $_SESSION['username'];?>"){
-          html = `<li class="collection-item avatar teal lighten-4"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a>from `+nama+` @`+time+`</a></div></li>`;
+          html = `<li class="collection-item avatar teal lighten-4"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a style="font-size: 10px">from `+nama+` @`+time+`</a></div></li>`;
         
         }else{
-          html = `<li class="collection-item avatar"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a>from `+nama+` @`+time+`</a></div></li>`;
+          html = `<li class="collection-item avatar"><img src="`+gambar+`" alt="" class="circle"><div>`+kata+`<br><a style="font-size: 10px">from `+nama+` @`+time+`</a></div></li>`;
           M.toast({
             html: toastHTML,
             displayLength: 10000
@@ -288,6 +329,8 @@
           html = '<i class="material-icons right">arrow_drop_down</i>Register';
           htmli = `<a href="<?= base_url().'register/masuk';?>">Surat Masuk</a>`;
         }
+        
+
         $('#countMyTask').html(html);
         $('#countMyTaskLi').html(htmli);
       

@@ -5,9 +5,10 @@
         <div class="row">
           <div class="col s12">
             <ul class="tabs" style="overflow-x: hidden">
-              <li class="tab col s3"><a href="#menu1">Change Password <i class="fa fa-pencil-square-o"></i></a></li>
-              <li class="tab col s3"><a class="" href="#menu2">Change Picture <i class="fa fa-photo"></i></a></li>
-              <li class="tab col s3"><a href="#menu3">Tanggal Libur <i class="fa fa-calendar"></i></a></li>
+              <li class="tab col s3"><a href="#menu1"><i class="fa fa-pencil-square-o"></i>Change Password</a></li>
+              <li class="tab col s3"><a class="" href="#menu2"><i class="fa fa-photo"></i>Change Picture</a></li>
+              <li class="tab col s3"><a href="#menu3"><i class="fa fa-calendar"></i>Tanggal Libur</a></li>
+              <li class="tab col s3"><a href="#menu4"><i class="fa fa-database"></i>Master Setting</a></li>
             </ul>
           </div>
           <div id="menu1" class="col s12" style="padding-top: 50px">
@@ -28,6 +29,17 @@
                 </div>
               </div>
             <?= form_close();?>
+          </div>
+          <div id="menu4" class="col s12" style="padding-top: 50px">
+            <table class="table display" id="table_setting" width="100%">
+              <thead class="teal white-text">
+                <tr>
+                  <th class="center">No.</th>
+                  <th>Nama</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+            </table>
           </div>
           <div id="menu2" class="col s12" style="padding-top: 50px">
             <?= form_open_multipart('', array('id'=>'form_pict'));?>
@@ -119,8 +131,7 @@
         $('#btn-upload').removeClass('hide');
       }
     });
-    let chatHistorys = document.getElementById("list-all");
-        chatHistorys.scrollTop = chatHistorys.scrollHeight;
+    
     $('#form_cp').on('submit', function(e){
       let form = $(this);
       e.preventDefault();

@@ -244,9 +244,10 @@
       "createdRow" : function(row, data, index){
         $(row).addClass('row');
         $(row).attr('data-id',data['id_invoice']);
-        if(data['status'] == 'Sudah Dibayarkan'){
-          $(row).addClass('green accent-2');
-        }else if(data['status'] == 'On. Proses Ke Bag. Pembayaran'){
+
+        if(data['status'] == '14'){
+          $(row).addClass('green');
+        }else if(data['status'] == '13'){
           $(row).addClass('orange lighten-3');
         }else{
           $(row).addClass('deep-orange lighten-2');

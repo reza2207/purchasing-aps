@@ -60,3 +60,5 @@ $route['register/warkat'] = 'register/warkat';
 $route['forgot_password'] = 'user/forgot_password';
 $route['add_user'] = 'user/add_user';
 $route['register/get_detail_masuk/(:any)'] = 'register/get_detail_masuk';
+
+$route['belajar'] = 'welcome/belajar';

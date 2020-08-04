@@ -246,7 +246,7 @@ background: #D7A42B;color:white;
   <div class="modal-footer">
     <?php 
     if($_SESSION['role'] != "user"){?>
-    <button class="waves-blue btn-flat left teal white-text" id="btn-comment" aria-label="Tambah Comment" data-balloon-pos="right"><i class='fa fa-pencil-square-o'></i></button>
+    <button class="waves-blue btn-flat left teal white-text" id="btn-comment" aria-label="Tambah Comment" data-balloon-pos="right" title="comment"><i class='fa fa-comment'></i></button>
     <button class="waves-blue btn-flat left orange white-text" id="btn-reminder" aria-label="Reminder Jatuh Tempo PKS" data-balloon-pos="right"><i class='fa fa-mail-forward'></i></button>
     <?php }?>
     

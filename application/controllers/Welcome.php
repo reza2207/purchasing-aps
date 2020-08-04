@@ -151,4 +151,9 @@ class Welcome extends CI_Controller {
         
 	}
 
+    public function belajar()
+    {
+        $this->load->view('belajar');
+    }
+
 }
